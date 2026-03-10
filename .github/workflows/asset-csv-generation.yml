@@ -59,7 +59,7 @@ jobs:
         # Get the list of changed files in the assets directory
         if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
           # For manual dispatch, detect all assets
-          ASSETS=$(find assets/controlled-vocabularies -maxdepth 1 -type d ! -name controlled-vocabularies -exec basename {} \; | sort -u | jq -R -s -c 'split("\n")[:-1]')
+          ASSETS=$(find assets/controlled-vocabularies -maxdepth 1 -type f -name \*.ttl -exec basename {} \; | sort -u | jq -R -s -c 'split("\n")[:-1]')
           echo "Detected assets for manual dispatch: ${ASSETS}"
         else
           true # XXX: uncomment
@@ -68,7 +68,9 @@ jobs:
           # ASSETS=$(echo "$CHANGED_FILES" | cut -d/ -f3 | sort -u | jq -R -s -c 'split("\n")[:-1] | map(select(length > 0))')
         fi
 
-        ASSETS=$(find assets/controlled-vocabularies -maxdepth 1 -type d ! -name controlled-vocabularies -exec basename {} \; | sort -u | jq -R -s -c 'split("\n")[:-1]')
+        ASSETS=$(find assets/controlled-vocabularies  \
+          -type f -name \*.ttl  -exec dirname {} \; | \
+          sort -u | jq -R -s -c 'split("\n")[:-1]')
 
         echo "assets=${ASSETS}" >> "$GITHUB_OUTPUT"
         echo "Detected assets: ${ASSETS}"
@@ -99,29 +101,10 @@ jobs:
         pip install -q "git+https://github.com/${{ github.repository }}.git@ioggstream-63#egg=dati-semantic-apis"
     - name: Create datapackage metadata
       working-directory: >-
-        assets/controlled-vocabularies/${{ matrix.asset }}
+        ${{ matrix.asset }}
       run: |
-        # Find the TTL and frame files
-        TTL_FILE=$(ls *.ttl 2>/dev/null | head -1)
-        FRAME_FILE=$(ls *.frame.yamlld 2>/dev/null | head -1)
-
-        if [ -z "$TTL_FILE" ] || [ -z "$FRAME_FILE" ]; then
-          echo "::warning::Missing TTL or frame file for asset ${MATRIX_ASSET}"
-          exit 0
-        fi
-
-        # Extract vocabulary URI from the OAS3 file if available
-        OAS_FILE=$(ls *.oas3.yaml 2>/dev/null | head -1)
-
-        # Generate datapackage.yaml with force flag
-        python -m tools.commands datapackage create \
-          --ttl "$TTL_FILE" \
-          --frame "$FRAME_FILE" \
-          --vocabulary-uri "changeme" \
-          --output "datapackage.yaml" \
-          --lang it \
-          --force
-
+        ASSET_NAME=$(ls *.ttl 2>/dev/null | sed 's/\.ttl$//')
+        sh -x /home/runner/work/dati-semantic-csv-apis/dati-semantic-csv-apis/create-dataframe.sh "$ASSET_NAME"
         echo "Generated datapackage.yaml for ${MATRIX_ASSET}"
       env:
         MATRIX_ASSET: ${{ matrix.asset }}
@@ -131,7 +114,7 @@ jobs:
         git config user.name "github-actions[bot]"
         git config user.email "github-actions[bot]@users.noreply.github.com"
 
-        git add "assets/controlled-vocabularies/${{ matrix.asset }}/datapackage.yaml"
+        git add "${{ matrix.asset }}/datapackage.yaml"
         if git diff --cached --quiet; then
           echo "No changes to commit"
           exit 0
