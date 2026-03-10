@@ -8,7 +8,7 @@ ASSET_NAME="$1"
 
 python -m tools.commands datapackage create \
     --ttl "${ASSET_NAME}.ttl" \
-    --frame "${FRAME_FILE}.frame.yamlld" \
+    --frame "${ASSET_NAME}.frame.yamlld" \
     --vocabulary-uri "changeme" \
     --output "datapackage.yaml" \
     --lang it \
