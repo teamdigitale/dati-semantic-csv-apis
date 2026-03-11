@@ -6,7 +6,7 @@
 
 ASSET_NAME="$1"
 
-python -m tools.commands datapackage create \
+/usr/local/bin/schema_gov_it_tools.bin datapackage create \
     --ttl "${ASSET_NAME}.ttl" \
     --frame "${ASSET_NAME}.frame.yamlld" \
     --vocabulary-uri "changeme" \
