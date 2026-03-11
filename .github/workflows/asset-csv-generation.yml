@@ -38,6 +38,7 @@ env:
   PYTHON_VERSION: '3.14'
   SOURCE_REF: ${{ github.event.pull_request.head.sha || github.sha
     }}
+  CHECKOUT_REF: assets
 jobs:
   # Detect which assets changed in this push
   detect-changes:
@@ -76,6 +77,9 @@ jobs:
         echo "Detected assets: ${ASSETS}"
   #
   # Job 1: Create Frictionless Data Package metadata
+  #   only if it is not already present.
+  #   This is just a test workflow to create datapackage
+  #   stubs.
   #
   ci-pre-tabular:
     needs: detect-changes
@@ -94,12 +98,11 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
       with:
         persist-credentials: true
-        ref: assets
+        ref: ${{ env.CHECKOUT_REF }}
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-        # cache: 'pip'
     - name: Download binary artifact
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -119,7 +122,15 @@ jobs:
         ${{ matrix.asset }}
       run: |
         ASSET_NAME=$(ls *.ttl 2>/dev/null | sed 's/\.ttl$//')
-        sh -x /home/runner/work/dati-semantic-csv-apis/dati-semantic-csv-apis/create-datapackage.sh "$ASSET_NAME"
+
+        /usr/local/bin/schema_gov_it_tools.bin datapackage create \
+        --ttl "${ASSET_NAME}.ttl" \
+        --frame "${ASSET_NAME}.frame.yamlld" \
+        --vocabulary-uri "changeme" \
+        --output "datapackage.yaml" \
+        --lang it \
+        --force
+
         echo "Generated datapackage.yaml for ${MATRIX_ASSET}"
       env:
         MATRIX_ASSET: ${{ matrix.asset }}
@@ -157,12 +168,11 @@ jobs:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
       with:
         persist-credentials: true
-        ref: assets
+        ref: ${{ env.CHECKOUT_REF }}
     - name: Set up Python
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-        cache: 'pip'
     - name: Download binary artifact
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -210,8 +220,8 @@ jobs:
         MATRIX_ASSET: ${{ matrix.asset }}
     - name: Check for CSV files
       id: check-csv
-      working-directory: assets/controlled-vocabularies/${{ matrix.asset
-        }}
+      working-directory: >-
+        ${{ matrix.asset }}
       run: |
         if ls *.csv 1> /dev/null 2>&1; then
           echo "csv_exists=true" >> "$GITHUB_OUTPUT"
