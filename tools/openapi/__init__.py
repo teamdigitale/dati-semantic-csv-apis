@@ -531,6 +531,8 @@ def add_constraints_from_context(schema, frame):
     # First, recursively add format: uri to all URI fields
     add_url_format_recursively(schema)
 
+    IDENTIFIER_PATTERN = "^[A-Za-z0-9._/-]+$"
+
     context = frame.context
     properties = schema.get("properties", {})
 
@@ -575,7 +577,7 @@ def add_constraints_from_context(schema, frame):
         if predicate.endswith(("notation", "identifier")):
             if prop_schema.get("type") == "string":
                 log.debug("Adding notation constraints to field '%s'", field)
-                prop_schema["pattern"] = "^[A-Za-z0-9._-]+$"
+                prop_schema["pattern"] = IDENTIFIER_PATTERN
                 prop_schema["minLength"] = 1
 
         # SKOS prefLabel or RDFS label default constraints
