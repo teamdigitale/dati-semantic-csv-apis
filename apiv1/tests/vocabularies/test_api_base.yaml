@@ -118,11 +118,13 @@ testcases:
     - Response status is 400
   request:
   - method: get
+    url: "/vocabularies?limit=0&offset=12506&description=%2F3f"
+  - method: get
     url: /vocabularies?limit=1,2,3&offset=0
   - method: get
-    url: /vocabularies/istat/ateco-2025?limit=1,2,3&offset=0
-  - method: get
     url: /vocabularies?limit=-1&offset=0
+  - method: get
+    url: /vocabularies/istat/ateco-2025?limit=1,2,3&offset=0
   - method: get
     url: /vocabularies/istat/ateco-2025?limit=1.2&offset=0
   - method: get
@@ -240,3 +242,33 @@ testcases:
       status_code: 200
       headers:
       - cache-control: max-age=3600
+- name: can_get_existing_item
+  description: |-
+    When:
+
+    - GET with valid query parameters
+
+    Then:
+
+    - Response status is 200, and the expected items are returned.
+  request:
+  - method: get
+    url: "/vocabularies/istat/ateco-2025/A01"
+  expected:
+    response:
+      status_code: 200
+- name: cannot_get_missing_item
+  description: |-
+    When:
+
+    - GET with valid query parameters
+
+    Then:
+
+    - Response status is 404, and the expected error message is returned.
+  request:
+  - method: get
+    url: "/vocabularies/istat/ateco-2025/INVALID_ID"
+  expected:
+    response:
+      status_code: 404

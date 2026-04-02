@@ -202,16 +202,10 @@ async def get_item(
 
     if item is None:
         # Return RFC 9457 Problem Details
-        problem = {
-            "type": "about:blank",
-            "title": "Not Found",
-            "status": 404,
-            "detail": f"Vocabulary item with ID '{id}' not found",
-        }
-        return ConnexionResponse(
-            body=problem,
-            status_code=404,
-            content_type="application/problem+json",
+        raise ProblemException(
+            title="Not Found",
+            status=404,
+            detail=f"Vocabulary item with ID '{id}' not found",
         )
     api_url = "/".join(
         [request.state.api_base_url.rstrip("/"), agencyId, keyConcept]

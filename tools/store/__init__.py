@@ -297,6 +297,12 @@ class APIStore:
         Common FTS5 query syntax is supported: ``term``, ``term1 term2``,
         ``"exact phrase"``, ``term*`` (prefix), ``term1 OR term2``.
         """
+        if offset and not limit:
+            log.debug(
+                "When offset is set without a valid limit, defaulting to limit=20"
+            )
+            limit = 20
+
         conn = self.connect()
         conn.row_factory = self.row_factory
 
@@ -325,6 +331,7 @@ class APIStore:
         if limit:
             qp["limit"] = str(limit)
             q += " LIMIT :limit "
+            # Ignore offset when limit is not set.
         if offset:
             qp["offset"] = str(offset)
             q += " OFFSET :offset "

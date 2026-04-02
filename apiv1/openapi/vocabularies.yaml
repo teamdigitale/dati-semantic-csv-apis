@@ -220,8 +220,8 @@ paths:
         Returns a list of all vocabulary items in the controlled vocabulary.
 
         Pagination is implemented via
-        - offset
         - cursor, using the `id` of the last item in the previous page.
+        This is to maintain a stable pagination mechanism even when the underlying dataset changes.
       operationId: vocabularies.data.show_items
       security:
         - {}
