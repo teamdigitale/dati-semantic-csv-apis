@@ -1,0 +1,259 @@
+import logging
+import time
+from itertools import batched
+from pathlib import Path
+
+import pyld
+from pyld import jsonld
+
+from tools.base import URI, JsonLD, JsonLDFrame
+
+log = logging.getLogger(__name__)
+
+
+def _validate_id_field(item: dict) -> None:
+    """Validate the presence and structure of the 'id' field in a framed item."""
+    if "id" not in item:
+        raise ValueError(f"Missing 'id' field in item {item}")
+
+    id_value = item["id"]
+    if not isinstance(id_value, str):
+        if "@language" in id_value:
+            raise ValueError(
+                f"Unexpected '@language' in an identifier field: {id_value} in item {item}. See SKOS https://www.w3.org/TR/skos-reference/#L2655 for details."
+            )
+        if id_value.get("@type") == "xsd:string":
+            raise ValueError(
+                f"Unexpected '@type' of 'xsd:string' in an identifier field: {id_value} in item {item}. See SKOS https://www.w3.org/TR/skos-reference/#L2655 for details."
+            )
+
+
+def _validate_vocab_entries(item: dict) -> None:
+    """Validate the optional 'vocab' field structure of a framed item."""
+    if "vocab" not in item:
+        return
+
+    vocabularies = item["vocab"]
+    if vocabularies is None:
+        return
+    if not isinstance(vocabularies, list):
+        raise ValueError(
+            f"Unexpected 'vocab' field type: {type(vocabularies)} in item {item}"
+        )
+
+    for vocab_entry in vocabularies:
+        if not isinstance(vocab_entry, dict):
+            raise ValueError(
+                f"Unexpected 'vocab' entry type: {type(vocab_entry)} in item {item}"
+            )
+        if "@type" in vocab_entry:
+            raise ValueError(
+                f"Unexpected '@type' in 'vocab' entry: {vocab_entry} in item {item}"
+            )
+
+
+def framer(
+    ld_doc: JsonLD,
+    frame: JsonLDFrame,
+    batch_size: int = 0,
+    *,
+    pre_filter_by_type: bool = False,
+) -> JsonLD:
+    """
+    Apply a JSON-LD frame to a JSON-LD serialized RDF data to produce a JSON output.
+    When requested, it processes in batches to improve performance:
+    this can be useful for large datasets,
+    but may cause issues with nested entries
+    that span across batches because properties
+    that are not included in the batch may not be embedded properly.
+
+    Args:
+        ld_doc: JSON-LD document to be framed
+        frame: JSON-LD frame specification
+        batch_size: Number of records to process per batch.
+            If 0 (default), process all at once to ensure
+            proper embedding of referenced properties.
+
+    Returns:
+        JsonLD: Framed JSON-LD document containing @context and @graph fields.
+    """
+
+    original_context = ld_doc.get("@context", frame.context)
+
+    # Determine items to process
+    if isinstance(ld_doc, dict) and "@graph" in ld_doc:
+        items = ld_doc["@graph"]
+    elif isinstance(ld_doc, list):
+        items = ld_doc
+    else:
+        items = [ld_doc]
+
+    if pre_filter_by_type and frame.get("@type") is not None:
+        frame_type = pyld.jsonld.expand(
+            {"@context": frame.context, "@type": frame["@type"]}
+        )
+        assert isinstance(frame_type, list)
+        assert isinstance(frame_type[0]["@type"], list)
+        selected_types = set(frame_type[0]["@type"])
+
+        log.info("Pre-filtering by type %s", frame["@type"])
+        items = [
+            item
+            for item in items
+            if set(item.get("@type", [])) & selected_types
+        ]
+        assert items
+
+    num_items = len(items)
+    log.info(
+        f"Dataset contains {num_items} items, processing "
+        + (
+            f"in batches of {batch_size}"
+            if batch_size > 0
+            else "without batching"
+        )
+    )
+
+    # Always use batch processing for consistent code path
+    all_framed_items: list = []
+    statistics: dict[str, int | list] = {
+        "source_items": 0,
+        "framed_items": 0,
+        "filtered": [],
+    }
+
+    #
+    # To reduce issues with large datasets (e.g., RAM usage, ...)
+    # process items in batches.
+    # Note: when "@embed" != "@never", nested entries may not
+    #   be fully captured if they span across batches.
+    #
+    for batch in batched(items, batch_size) if batch_size > 0 else [items]:
+        batch_len: int = len(batch)
+        log.info(f"Processing batch ({batch_len} items)")
+        statistics["source_items"] += batch_len  # type: ignore
+
+        # Create batch document with original context
+        batch_doc: JsonLD = {
+            "@context": original_context,
+            "@graph": list(batch),
+        }
+
+        batch_frame_start = time.time()
+        framed_batch = jsonld.frame(
+            batch_doc, frame, options={"processingMode": "json-ld-1.1"}
+        )
+        # for item in framed_batch["@graph"]:
+        #     for k in item:
+        #         if isinstance(item[k], dict) and item[k].get(
+        #             "@type", ""
+        #         ).endswith((":string", "#string")):
+        #             item[k] = item[k]["@value"]
+
+        batch_frame_time = time.time() - batch_frame_start
+        log.info(f"Batch framing took {batch_frame_time:.3f}s")
+
+        if "@type" in framed_batch and "@graph" not in framed_batch:
+            log.debug(
+                "Framing resulted in a single item instead of a graph, "
+                "wrapping it in @graph for consistency"
+            )
+            framed_batch = {
+                "@context": framed_batch["@context"],
+                "@graph": [framed_batch],
+            }
+
+        #
+        # Control block for debugging framing issues.
+        #
+        assert "@graph" in framed_batch, (
+            "Empty batch framing result, '@graph' key missing"
+        )
+
+        for item in framed_batch["@graph"]:
+            _validate_vocab_entries(item)
+            _validate_id_field(item)
+        #
+        # Log differences to troubleshoot
+        #   the framing process.
+        #
+        framed_items_len = len(framed_batch["@graph"])
+        batch_ids = {i["@id"].split("/")[-1] for i in batch}
+        framed_ids = {Path(i[URI]).name for i in framed_batch["@graph"]}
+
+        if framed_items_len != batch_len:
+            statistics["filtered"].extend(list(batch_ids - framed_ids))  # type: ignore
+
+        # Extract framed items from batch
+        all_framed_items.extend(framed_batch["@graph"])
+
+    statistics["framed_items"] = len(all_framed_items)
+    statistics["filtered"].sort()  # type: ignore
+    # Assemble final result
+    framed: JsonLD = {
+        "@context": frame.context,
+        "@graph": all_framed_items,
+    }
+    framed["statistics"] = statistics  # type: ignore
+
+    log.info(f"Batched framing completed, total items: {len(all_framed_items)}")
+
+    return framed
+
+
+def update_frame_with_key_field(framed: JsonLD, base_uri: str) -> None:
+    """
+    If the URI field of every entry starts with base_uri,
+    we can safely assume that the relative part of the URI
+    can be used as a "key" field.
+    So, add the "key" field to every entry containing the relative part of the URI.
+
+    Since a JSON-LD context can only define one "@id" mapping,
+    and this is "uri",
+    disassociate the "key" field in the "@context".
+    """
+    base_uri_len = len(base_uri)
+    context, graph = framed["@context"], framed["@graph"]
+    # Disassociate "key" field in context.
+    context["key"] = None
+
+    for entry in graph:
+        if not entry[URI].startswith(base_uri):
+            raise ValueError(
+                f"Entry URI {entry[URI]} does not start with base URI {base_uri}"
+            )
+        entry["key"] = entry[URI][base_uri_len:]
+
+
+def select_fields_inplace(framed: JsonLD, selected_fields: list[str]) -> None:
+    """
+    Slice the give data retaining only the
+    fields explicitly mentioned in the frame,
+    and discarding the others, (e.g., the remnants
+    of an rdf:Property that have an unmentioned
+    `@language` or `@type` field).
+    """
+    _, graph = framed["@context"], framed["@graph"]
+    for item in graph:
+        item_fields = list(item.keys())
+        for f in item_fields:
+            if f not in selected_fields:
+                del item[f]
+
+
+def select_fields(framed: JsonLD, selected_fields: list[str]) -> JsonLD:
+    """
+    Slice the give data retaining only the
+    fields explicitly mentioned in the frame,
+    and discarding the others, (e.g., the remnants
+    of an rdf:Property that have an unmentioned
+    `@language` or `@type` field).
+    """
+    _, graph = framed["@context"], framed["@graph"]
+    return {
+        "@context": framed["@context"],
+        "@graph": [
+            {f: item[f] for f in selected_fields if f in item} for item in graph
+        ],
+        "statistics": framed.get("statistics", {}),
+    }

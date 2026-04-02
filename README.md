@@ -1,0 +1,95 @@
+# Dati Semantic APIs
+
+This repository provides documents, tools and PoC
+for the management of semantic assets in the context
+of the National Data Catalog for Semantic Interoperability.
+
+This project is related to:
+
+- <https://schema.gov.it>
+- <https://github.com/teamdigitale/dati-semantic-schema-editor>
+
+## Table of contents
+
+- 💻 [Usage](#usage)
+
+<!-- - 🚀 [API](#api) -->
+
+<!-- - 📋 [Development](#development) -->
+
+- 📝 [Contributing](#contributing)
+- ⚖️ [License](#license)
+
+## Usage
+
+The core documentation for this project
+is in :flag-it: Italian.
+You can find it in the [docs](docs) folder.
+
+- [CSV Serialization](docs/README.csv.md)
+- [REST API for Controlled Vocabularies](docs/README.api.md)
+
+Run `tools` tests with:
+
+```bash
+docker compose up test
+```
+
+Build and run the API with:
+
+```bash
+docker compose up api-data
+```
+
+## Contributing
+
+Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on:
+
+- using [pre-commit](CONTRIBUTING.md#pre-commit);
+- following the git flow and making good [pull requests](CONTRIBUTING.md#making-a-pr).
+
+Repository layout is the following:
+
+```text
+#
+# Documentation.
+#
+docs/
+└── adr
+#
+# Shared test assets.
+#
+assets/controlled-vocabularies/
+├── agente_causale
+│   └── latest
+├── ateco-2007-2022
+└── ateco-2025
+#
+# PoC Python code and tests.
+#
+tools/
+tests/
+```
+
+## Using this repository
+
+You can create new projects starting from this repository,
+so you can use a consistent CI and checks for different projects.
+
+See the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+## Testing github actions
+
+Tune the Github pipelines in [.github/workflows](.github/workflows/).
+
+To speed up the development, you can test the pipeline with [act](https://github.com/nektos/act).
+Installing `act` is beyond the scope of this document.
+
+To test the pipeline locally and ensure that secrets (e.g., service accounts and other credentials)
+are correctly configured, use:
+
+```bash
+# Run a specific job in the pipeline
+act -j test -s CI_API_TOKEN="$(cat gh-ci.json)" \
+     -s CI_ACCOUNT=my-secret-account
+```

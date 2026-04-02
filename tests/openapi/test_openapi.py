@@ -1,0 +1,265 @@
+from operator import itemgetter
+from pathlib import Path
+
+import pytest
+import yaml
+from deepdiff import DeepDiff
+from jsonschema import Draft7Validator
+
+# from rdflib.plugins.serializers.jsonld import from_rdf
+# from rdflib.plugins.parsers.jsonld import to_rdf
+from tests.constants import ASSETS, SNAPSHOTS, TESTCASES
+from tests.harness import assert_schema, assert_snapshot_matches_data
+from tools.base import APPLICATION_LD_JSON_FRAMED, JsonLD, JsonLDFrame, RDFText
+from tools.openapi import (
+    Apiable,
+    OpenAPI,
+)
+from tools.utils import SafeQuotedStringDumper
+
+vocabularies: list[Path] = list(ASSETS.glob("**/*.data.yaml"))
+
+OPENAPI_TESTCASES = [
+    pytest.param(
+        *itemgetter("data", "frame", "expected_jsonschema")(x),
+        id=x["name"],
+    )
+    for x in TESTCASES
+    if "expected_jsonschema" in x
+]
+
+
+@pytest.mark.parametrize(
+    "data,frame,expected_jsonschema",
+    argvalues=[
+        itemgetter("expected_payload", "frame", "expected_jsonschema")(x)
+        for x in TESTCASES
+        if "expected_jsonschema" in x
+    ],
+    ids=[x["name"] for x in TESTCASES if "expected_jsonschema" in x],
+)
+def test_openapi_minimal(
+    data: dict,
+    frame: JsonLDFrame,
+    expected_jsonschema: dict,
+    *,
+    snapshot_dir: Path,
+):
+    """
+    Test the OpenAPI schema generation from JSON-LD frames and data.
+
+    Given:
+    - RDF vocabulary data in JSON-LD format
+    - A JSON-LD frame with @context definitions
+
+    When:
+    - I create an instance of the Apiable class with the RDF data and frame
+    - I generate the complete json_schema stub
+
+    Then:
+    - The OpenAPI schema should be created successfully
+    - The schema should include the expected properties and constraints
+    - The schema should be valid according to the OpenAPI specification
+    """
+    jsonschema_oas3_yaml = snapshot_dir / "oas3_schema.yaml"
+
+    frame = JsonLDFrame(frame)
+    apiable = Apiable(
+        {"@graph": data, "@context": frame.context},
+        frame,
+        format=APPLICATION_LD_JSON_FRAMED,
+    )
+
+    schema_instances: JsonLD = apiable.create_api_data()
+    assert schema_instances, "Expected non-empty schema instances"
+    json_schema = apiable.json_schema(
+        schema_instances=schema_instances,
+        add_constraints=True,
+        validate_output=True,
+    )
+    jsonschema_oas3_yaml.write_text(
+        yaml.dump(json_schema, Dumper=SafeQuotedStringDumper, sort_keys=True)
+    )
+    delta = DeepDiff(json_schema, expected_jsonschema, ignore_order=True)
+
+    for expected_equals in (
+        "properties",
+        "x-jsonld-context",
+    ):
+        assert expected_equals not in delta
+
+    assert_schema(schema_copy=json_schema, frame=frame)
+
+
+@pytest.mark.parametrize(
+    "turtle,frame,expected_jsonschema",
+    argvalues=OPENAPI_TESTCASES,
+)
+def test_openapi_metadata(
+    turtle: RDFText,
+    frame: JsonLDFrame,
+    expected_jsonschema: dict,
+    *,
+    snapshot: Path,
+    request: pytest.FixtureRequest,
+):
+    """
+    Test the OpenAPI schema generation from JSON-LD frames and data.
+
+    Given:
+    - RDF vocabulary data in JSON-LD format
+    - A JSON-LD frame with @context definitions
+
+    When:
+    - I create an instance of the Apiable class with the RDF data and frame
+    - I generate the complete OpenAPI stub
+
+    Then:
+    - The OpenAPI schema should be created successfully
+    - The schema should include the expected properties and constraints
+    - The schema should be valid according to the OpenAPI specification
+    """
+    if "-eu-" in request.node.callspec.id:
+        pytest.skip("EU vocabularies are not supported yet")
+
+    oas3_yaml = snapshot / "base" / f"{request.node.callspec.id}.oas3.yaml"
+    frame = JsonLDFrame(frame)
+    apiable = Apiable(turtle, frame)
+
+    openapi: OpenAPI = apiable.openapi()
+    assert_snapshot_matches_data(
+        oas3_yaml,
+        current_data=openapi,
+        update=True,
+    )
+
+
+@pytest.mark.parametrize(
+    "turtle,frame,expected_jsonschema",
+    argvalues=OPENAPI_TESTCASES,
+)
+def test_openapi_datastore_from_rdf(
+    turtle: RDFText,
+    frame: JsonLDFrame,
+    expected_jsonschema: dict,
+    snapshot_dir: Path,
+    request: pytest.FixtureRequest,
+):
+    """
+    Test the OpenAPI schema generation from JSON-LD frames and data.
+
+    Given:
+    - RDF vocabulary data in Turte
+    - A JSON-LD frame with @context definitions
+
+    When:
+    - I create an instance of the Apiable class with the RDF data and frame
+    - Generate the API payload
+    - I create a datastore with the above payload
+
+    Then:
+    - The datastore should be created successfully
+    - I can query the datastore
+    - The datastore content respects the JSON Schema
+    """
+    if "-eu-" in request.node.callspec.id:
+        pytest.skip("EU vocabularies are not supported yet")
+
+    oas3_yaml = SNAPSHOTS / "base" / f"{request.node.callspec.id}.oas3.yaml"
+    if isinstance(expected_jsonschema, (str, type(None))):
+        oas3 = yaml.safe_load(oas3_yaml.read_text())
+        expected_jsonschema = oas3["components"]["schemas"]["Item"]
+    validator = Draft7Validator(expected_jsonschema)
+    datafile_db = snapshot_dir / "data.db"
+    # Given an RDF vocabulary and a frame...
+    frame = JsonLDFrame(frame)
+
+    # When I create an Apiable instance...
+    apiable = Apiable(turtle, frame)
+
+    # .. and generate the iterable API payload...
+    data: JsonLD = apiable.create_api_data()
+    assert data
+    # ... and serialize it to a SQLite database
+    apiable.to_db(
+        data=data,
+        datafile=datafile_db,
+        force=True,
+    )
+
+    # Then I can query the datastore ...
+    rows = apiable.from_db(datafile_db)["@graph"]
+    # ... and the content should be valid according to the JSON Schema
+    errors = [
+        f"{e.json_path}: {e.message}"
+        for r in rows
+        for e in validator.iter_errors(r)
+    ]
+    assert not errors, "Invalid db._text JSON:\n" + "\n".join(errors[:5])
+
+
+@pytest.mark.parametrize(
+    "turtle,frame,expected_jsonschema",
+    argvalues=OPENAPI_TESTCASES,
+)
+def test_openapi_datastore_from_jsonld(
+    turtle: RDFText,
+    frame: JsonLDFrame,
+    expected_jsonschema: dict,
+    snapshot_dir: Path,
+    request: pytest.FixtureRequest,
+):
+    """
+    Test the OpenAPI schema generation from JSON-LD frames and data.
+
+    Given:
+    - RDF vocabulary data in Turte
+    - An OAS
+    - JSON-LD payload
+
+    When:
+    - I create a datastore with the above payload
+
+    Then:
+    - The datastore should be created successfully
+    - I can query the datastore
+    - The datastore content respects the JSON Schema
+    """
+    if "-eu-" in request.node.callspec.id:
+        pytest.skip("EU vocabularies are not supported yet")
+
+    oas3_yaml = SNAPSHOTS / "base" / f"{request.node.callspec.id}.oas3.yaml"
+    data_yaml = oas3_yaml.with_suffix("").with_suffix(".data.yaml")
+
+    if isinstance(expected_jsonschema, (str, type(None))):
+        oas3 = yaml.safe_load(oas3_yaml.read_text())
+        expected_jsonschema = oas3["components"]["schemas"]["Item"]
+    validator = Draft7Validator(expected_jsonschema)
+    datafile_db = snapshot_dir / "data.db"
+    # Given an RDF vocabulary and a frame...
+    context = expected_jsonschema["x-jsonld-context"]
+    frame = JsonLDFrame(
+        {"@context": context, "@type": expected_jsonschema["x-jsonld-type"]}
+    )
+
+    frame.validate(strict=True)
+
+    # When I create an Apiable instance...
+    apiable = Apiable(turtle, frame)
+
+    # .. and generate the iterable API payload...
+    data = yaml.safe_load(data_yaml.read_text())
+    # ... and serialize it to a SQLite database
+    apiable.to_db(
+        data={"@graph": data}, datafile=datafile_db, force=True, openapi=oas3
+    )
+
+    # Then I can query the datastore ...
+    rows = apiable.from_db(datafile_db)["@graph"]
+    # ... and the content should be valid according to the JSON Schema
+    errors = [
+        f"{e.json_path}: {e.message}"
+        for r in rows
+        for e in validator.iter_errors(r)
+    ]
+    assert not errors, "Invalid db._text JSON:\n" + "\n".join(errors[:5])

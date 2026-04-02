@@ -1,0 +1,73 @@
+---
+#
+# docker-compose up -d dev
+#
+services:
+  dev:
+    build:
+      context: .
+      target: dev
+    working_dir: /code
+    volumes:
+    - .:/code
+
+  test:
+    build:
+      context: .
+      target: test
+
+  api-catalog:
+    build:
+      context: .
+      dockerfile: apiv1/Dockerfile
+      target: catalog-api
+    ports:
+    - "8000:8080"
+    volumes:
+    - ./tests/api/vocabularies.linkset.yaml:/app/vocabularies.yaml:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+  api-data:
+    build:
+      context: .
+      dockerfile: apiv1/Dockerfile
+      target: data-api
+    restart: no
+    environment:
+    # App configuration.
+    - HARVEST_DB=https://raw.githubusercontent.com/teamdigitale/dati-semantic-harvest/refs/heads/harvest/vocabularies.db
+    - API_BASE_URL=https://localhost
+    - PREDECESSOR_BASE_URL=https://schema.gov.it/api
+    - CORS_ORIGINS=*
+    # Uvicorn configuration.
+    - UVICORN_WORKERS=4
+    - UVICORN_LOG_LEVEL=debug
+    ports:
+    - "8001:8080"
+    volumes:
+    - ./assets:/assets:ro
+    - ./apiv1/tests/data/:/data:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
+      interval: 1m30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+  api-data-tls:
+    image: docker.io/caddy:2
+    ports:
+    - "80:80"
+    - "443:443"
+    volumes:
+    - ./tests/data/Caddyfile:/etc/caddy/Caddyfile:ro
+    - caddy_deleteme:/data
+    depends_on:
+    - api-data
+
+volumes:
+  caddy_deleteme:

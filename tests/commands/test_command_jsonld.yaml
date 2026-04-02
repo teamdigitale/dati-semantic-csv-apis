@@ -1,0 +1,316 @@
+---
+- id: create_jsonld_ateco-2025
+  marks:
+  - asset
+  description: |-
+    Given:
+    - the ateco-2025 TTL file
+    - a JSON-LD frame
+    When:
+    - I run the `jsonld create` command
+    Then:
+    - the command exits successfully
+    - the output JSON-LD file contains 3257 items
+  steps:
+  - description: |-
+      When:
+      - I run the `jsonld create` command
+
+      Then:
+      - the command exits successfully
+      - the output JSON-LD file contains 3257 items
+    command:
+    - jsonld
+    - create
+    - --ttl
+    - assets/controlled-vocabularies/ateco-2025/ateco-2025.ttl
+    - --frame
+    - assets/controlled-vocabularies/ateco-2025/ateco-2025.frame.yamlld
+    - --vocabulary-uri
+    - https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025
+    - --frame-only
+    - --output
+    - tests/data/snapshots/ateco-2025/ateco-2025.data.yamlld
+    - --force
+    expected:
+      files:
+      - path: tests/data/snapshots/ateco-2025/ateco-2025.data.yamlld
+        snapshot: tests/data/snapshots/ateco-2025/ateco-2025.data.yamlld
+        compare: data
+      logs:
+      - >-
+        Dataset contains 3345 items
+      #, processing in batches of 1000
+      - >-
+        Batched framing completed, total items: 3257
+- id: create_jsonld_agente_causale
+  marks:
+  - asset
+  description: |-
+    Given:
+    - a TTL file
+    - a JSON-LD frame
+    When:
+    - I run the `jsonld create` command
+    Then:
+    - the command exits successfully
+    - the output JSON-LD file contains 2922 items
+  steps:
+  - description: |-
+      When:
+      - I run the `jsonld create` command
+      - without batching because we need to access the full graph
+        for integrating parent entries.
+
+      Then:
+      - the command exits successfully
+      - the output JSON-LD file contains 2922 items
+    command:
+    - jsonld
+    - create
+    - --ttl
+    - assets/controlled-vocabularies/agente_causale/latest/agente_causale.ttl
+    - --frame
+    - assets/controlled-vocabularies/agente_causale/latest/agente_causale.frame.yamlld
+    - --vocabulary-uri
+    - https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale
+    - --batch-size
+    - "0"
+    - --frame-only
+    - --output
+    - tests/data/snapshots/agente_causale/agente_causale.data.yamlld
+    - --force
+    expected:
+      files:
+      - path: tests/data/snapshots/agente_causale/agente_causale.data.yamlld
+        snapshot: tests/data/snapshots/agente_causale/agente_causale.data.yamlld
+        compare: data
+      logs:
+      - >-
+        Dataset contains 2929 items, processing without batching
+      - >-
+        Batched framing completed, total items: 2922
+- id: create_jsonld_ateco-2025_pre_filtered
+  marks:
+  - asset
+  description: |-
+    Given:
+    - the ateco-2025 TTL file
+    - a JSON-LD frame
+    When:
+    - I run the `jsonld create --pre-filter-by-type` command
+    Then:
+    - the command exits successfully
+    - the output JSON-LD file contains 3257 items
+  steps:
+  - description: |-
+      When:
+      - I run the `jsonld create` command
+
+      Then:
+      - the command exits successfully
+      - the output JSON-LD file contains 3257 items
+    command:
+    - jsonld
+    - create
+    - --ttl
+    - assets/controlled-vocabularies/ateco-2025/ateco-2025.ttl
+    - --frame
+    - assets/controlled-vocabularies/ateco-2025/ateco-2025.frame.yamlld
+    - --vocabulary-uri
+    - https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025
+    - --frame-only
+    - --output
+    - tests/data/snapshots/ateco-2025/ateco-2025-pre-filtered.data.yamlld
+    - --pre-filter-by-type
+    - --force
+    expected:
+      files:
+      - path: tests/data/snapshots/ateco-2025/ateco-2025-pre-filtered.data.yamlld
+        snapshot: tests/data/snapshots/ateco-2025/ateco-2025-pre-filtered.data.yamlld
+        compare: data
+      logs:
+      - >-
+        Dataset contains 3257 items
+      - >-
+        Batched framing completed, total items: 3257
+      - >-
+        Pre-filtering by type.*covapit:PrivateOrgActivityType
+
+#
+# Not asset tests
+#
+- id: create_jsonld_provinces
+  description: |-
+    Given:
+    - the provinces TTL file
+    - a JSON-LD frame
+    When:
+    - I run the `jsonld create` command
+    Then:
+    - the command exits successfully
+    - the output JSON-LD file contains 107 items
+  steps:
+  - description: |-
+      When:
+      - I run the `jsonld create` command
+
+      Then:
+      - the command exits successfully
+      - the output JSON-LD file contains 107 items
+    command:
+    - jsonld
+    - create
+    - --ttl
+    - assets/controlled-vocabularies/provinces/provinces.ttl
+    - --frame
+    - assets/controlled-vocabularies/provinces/provinces.frame.yamlld
+    - --vocabulary-uri
+    - https://w3id.org/italia/stat/controlled-vocabulary/economy/provinces
+    - --frame-only
+    - --output
+    - tests/data/snapshots/provinces/provinces.data.yamlld
+    - --force
+    expected:
+      files:
+      - path: tests/data/snapshots/provinces/provinces.data.yamlld
+        snapshot: tests/data/snapshots/provinces/provinces.data.yamlld
+        compare: data
+      logs:
+      - >-
+        Dataset contains 343 items
+      - >-
+        Batched framing completed, total items: 107
+
+#
+# EU vocabulary, not currently supported.
+#
+- id: create_currency
+  marks:
+  - asset
+  description: |-
+    Given:
+    - a TTL file
+    - a JSON-LD frame
+    When:
+    - I run the `jsonld create` command
+    Then:
+    - the command exits successfully
+    - the output JSON-LD file contains 179 items
+  steps:
+  - command:
+    - jsonld
+    - create
+    - --ttl
+    - assets/controlled-vocabularies/currency/currency.ttl
+    - --frame
+    - assets/controlled-vocabularies/currency/currency.frame.yamlld
+    - --vocabulary-uri
+    - http://publications.europa.eu/resource/authority/currency
+    - --batch-size
+    - "0"
+    - --frame-only
+    - --output
+    - tests/data/snapshots/currency/currency.data.yamlld
+    - --force
+    expected:
+      logs:
+      - >-
+        Dataset contains 286 items, processing without batching
+      - >-
+        Batched framing completed, total items: 179
+      files:
+      - path: tests/data/snapshots/currency/currency.data.yamlld
+        snapshot: tests/data/snapshots/currency/currency.data.yamlld
+        compare: data
+- id: validate_currency
+  marks:
+  - asset
+  description: |-
+    Given:
+    - a currency TTL file
+    - a previously created JSON-LD snapshot
+    When:
+    - I run the `jsonld validate` command
+    Then:
+    - the command exits successfully
+    - validation passes
+    - logs are as expected
+  steps:
+  - command:
+    - jsonld
+    - validate
+    - --ttl
+    - assets/controlled-vocabularies/currency/currency.ttl
+    - --vocabulary-uri
+    - http://publications.europa.eu/resource/authority/currency
+    - --jsonld
+    - tests/data/snapshots/currency/currency.data.yamlld
+    expected:
+      logs:
+      - >-
+        Vocabulary URI http://publications.europa.eu/resource/authority/currency
+        found in original RDF graph
+      - >-
+        Framed JSON-LD graph has 1074 triples
+      stdout:
+      - >-
+        JSON-LD validation passed
+
+- id: jsonld_create_without_frame_only
+  description: |-
+    Given:
+    - a TTL and frame
+
+    When:
+    - I run `jsonld create` without --frame-only
+
+    Then:
+    - the command exits successfully (covers the frame_only=False branch)
+  steps:
+  - command:
+    - jsonld
+    - create
+    - --ttl
+    - assets/controlled-vocabularies/provinces/provinces.ttl
+    - --frame
+    - assets/controlled-vocabularies/provinces/provinces.frame.yamlld
+    - --vocabulary-uri
+    - https://w3id.org/italia/controlled-vocabulary/territorial-classifications/provinces
+    - --output
+    - tests/data/snapshots/provinces/provinces-unfiltered.deleteme.data.yamlld
+    - --force
+    expected:
+      exit_status: 0
+      stdout:
+      - >-
+        ✓ Created
+
+- id: jsonld_validate_wrong_uri
+  description: |-
+    Given:
+    - a TTL file
+    - a vocabulary URI that does not exist in the TTL
+
+    When:
+    - I run `jsonld validate`
+
+    Then:
+    - the command exits with error code 1
+    - an error message is shown (covers exception handler and URI-not-found branch)
+  steps:
+  - command:
+    - jsonld
+    - validate
+    - --ttl
+    - assets/controlled-vocabularies/provinces/provinces.ttl
+    - --vocabulary-uri
+    - https://not-in-graph.example.com
+    - --jsonld
+    - assets/controlled-vocabularies/provinces/provinces.frame.yamlld
+    expected:
+      exit_status: 1
+      stdout:
+      - >-
+        ✗ JSON-LD validation failed.*not found in original RDF
+        graph

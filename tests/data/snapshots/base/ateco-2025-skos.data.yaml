@@ -1,0 +1,58 @@
+- '@type':
+  - skos:Concept
+  - >-
+    covapit:PrivateOrgActivityType
+  id: '01'
+  label: >-
+    Produzioni vegetali e animali, caccia e servizi connessi
+  label_de: "Landwirtschaft, Jagd und damit verbundene T\xE4tigkeiten"
+  label_en: >-
+    Crop and animal production, hunting and related service activities
+  level: '2'
+  parent:
+  - '@type':
+    - skos:Concept
+    - >-
+      covapit:PrivateOrgActivityType
+    id: A
+    uri: A
+  uri: '01'
+  vocab:
+  - uri: ../ateco-2025
+- '@type':
+  - skos:Concept
+  - >-
+    covapit:PrivateOrgActivityType
+  id: '01.2'
+  label: >-
+    Coltivazione di colture agricole permanenti
+  label_de: "Anbau mehrj\xE4hriger Pflanzen"
+  label_en: >-
+    Growing of perennial crops
+  level: '3'
+  parent:
+  - '@type':
+    - skos:Concept
+    - >-
+      covapit:PrivateOrgActivityType
+    id: '01'
+    uri: '01'
+  uri: '012'
+  vocab:
+  - uri: ../ateco-2025
+- '@type':
+  - skos:Concept
+  - >-
+    covapit:PrivateOrgActivityType
+  id: A
+  label: >-
+    AGRICOLTURA, SILVICOLTURA E PESCA
+  label_de: >-
+    LAND- UND FORSTWIRTSCHAFT, FISCHEREI
+  label_en: >-
+    AGRICULTURE, FORESTRY AND FISHING
+  level: '1'
+  parent: []
+  uri: A
+  vocab:
+  - uri: ../ateco-2025

@@ -1,0 +1,27 @@
+- '@type': skos:Concept
+  deprecated: 'false'
+  id: eng
+  label: English
+  label_de: Englisch
+  label_it: inglese
+  label_sl: "angle\u0161\u010Dina"
+  uri: >-
+    http://publications.europa.eu/resource/authority/language/ENG
+  vocab:
+  - uri: >-
+      http://publications.europa.eu/resource/authority/language/0001
+  - uri: >-
+      http://publications.europa.eu/resource/authority/language/0002
+  - uri: >-
+      http://publications.europa.eu/resource/authority/language
+- '@type': skos:Concept
+  deprecated: 'false'
+  id: spn
+  label: "Sanapan\xE1"
+  uri: >-
+    http://publications.europa.eu/resource/authority/language/SPN
+  vocab:
+  - uri: >-
+      http://publications.europa.eu/resource/authority/language/0003
+  - uri: >-
+      http://publications.europa.eu/resource/authority/language
