@@ -1,12 +1,26 @@
 ---
 #
-# docker-compose up -d dev
+# This dockerfile eases development:
+#
+# Create a .env file with the current user's UID and GID:
+#   echo -e "UID=$(id -u)\nGID=$(id -g)" > .env
+#
+# Development environment:
+#   docker-compose up -d dev
+#
+# Local API testing environment:
+#   docker-compose up -d api-data-tls
+#   open https://localhost/ui/
+#
+# Spin latest built images from GitHub Container Registry:
+#   docker-compose up -d api-data-public-tls
 #
 services:
   dev:
     build:
       context: .
       target: dev
+    user: "${UID:-1000}:${GID:-1000}"
     working_dir: /code
     volumes:
     - .:/code
@@ -15,27 +29,14 @@ services:
     build:
       context: .
       target: test
+    user: "${UID:-1000}:${GID:-1000}"
 
-  api-catalog:
-    build:
-      context: .
-      dockerfile: apiv1/Dockerfile
-      target: catalog-api
-    ports:
-    - "8000:8080"
-    volumes:
-    - ./tests/api/vocabularies.linkset.yaml:/app/vocabularies.yaml:ro
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
-      interval: 1m30s
-      timeout: 30s
-      retries: 5
-      start_period: 30s
-  api-data:
+  api-data: &api
     build:
       context: .
       dockerfile: apiv1/Dockerfile
       target: data-api
+    user: "${UID:-1000}:${GID:-1000}"
     restart: no
     environment:
     # App configuration.
@@ -49,7 +50,6 @@ services:
     ports:
     - "8001:8080"
     volumes:
-    - ./assets:/assets:ro
     - ./apiv1/tests/data/:/data:ro
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080/status"]
@@ -58,16 +58,28 @@ services:
       retries: 5
       start_period: 30s
 
-  api-data-tls:
+  api-data-tls: &tls
     image: docker.io/caddy:2
     ports:
     - "80:80"
     - "443:443"
     volumes:
-    - ./tests/data/Caddyfile:/etc/caddy/Caddyfile:ro
+    - ./tests/data/Caddyfile.api-data:/etc/caddy/Caddyfile:ro
     - caddy_deleteme:/data
     depends_on:
     - api-data
+
+  api-data-public:
+    <<: *api
+    build: {}
+    image: ghcr.io/teamdigitale/dati-semantic-csv-apis-data:latest
+  api-data-public-tls:
+    <<: *tls
+    volumes:
+    - ./tests/data/Caddyfile.api-data-public:/etc/caddy/Caddyfile:ro
+    - caddy_deleteme:/data
+    depends_on:
+    - api-data-public
 
 volumes:
   caddy_deleteme:

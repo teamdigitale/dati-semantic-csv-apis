@@ -325,9 +325,15 @@ paths:
           required: true
           schema:
             type: string
-            pattern: ^[A-Za-z0-9._-]{1,128}$
+            pattern: ^[A-Za-z0-9._/-]{1,128}$
             maxLength: 128
-          description: The unique identifier of the vocabulary item.
+            format: path
+          description: |-
+            The unique identifier of the vocabulary item.
+
+            Since some identifiers may contain slashes,
+            the `id` parameter is defined with `format: path`,
+            and the regex pattern is defined accordingly.
       responses:
         '200':
           description: |-

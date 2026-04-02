@@ -17,7 +17,7 @@ components:
           type: string
         id:
           minLength: 1
-          pattern: ^[A-Za-z0-9._-]+$
+          pattern: ^[A-Za-z0-9._/-]+$
           type: string
         label_it:
           maxLength: 500
