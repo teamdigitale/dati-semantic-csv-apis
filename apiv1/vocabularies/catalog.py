@@ -11,6 +11,7 @@ from typing import Any
 
 from common.utils import _get_database_or_fail
 from connexion import request
+from connexion.exceptions import BadRequestProblem
 
 from tools.store import APIStore
 
@@ -86,7 +87,10 @@ def list_vocabularies_by_agency(
     **kwargs: Any,
 ) -> tuple[dict[str, Any], int, dict[str, str]]:
     if kwargs:
-        raise ValueError(f"Unexpected query parameters: {kwargs}")
+        raise BadRequestProblem(f"Unexpected query parameters: {kwargs}")
+
+    if offset and not limit:
+        raise BadRequestProblem("Offset cannot be used without a valid limit")
 
     db: APIStore = _get_database_or_fail()
 
@@ -226,8 +230,12 @@ def list_vocabularies(
         Linkset dictionary with filtered items.
     """
     if kwargs:
-        raise ValueError(f"Unexpected query parameters: {kwargs}")
+        raise BadRequestProblem(detail=f"Unexpected query parameters: {kwargs}")
 
+    if offset and not limit:
+        raise BadRequestProblem(
+            detail="Offset cannot be used without a valid limit"
+        )
     db: APIStore = _get_database_or_fail()
 
     rows = db.search_metadata(
