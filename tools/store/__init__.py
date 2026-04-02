@@ -325,7 +325,10 @@ class APIStore:
         if limit:
             qp["limit"] = str(limit)
             q += " LIMIT :limit "
+            # Ignore offset when limit is not set.
         if offset:
+            if not limit:
+                raise ValueError("Offset cannot be used without a limit")
             qp["offset"] = str(offset)
             q += " OFFSET :offset "
 

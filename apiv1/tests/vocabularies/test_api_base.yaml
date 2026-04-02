@@ -127,6 +127,8 @@ testcases:
     url: /vocabularies/istat/ateco-2025?limit=1.2&offset=0
   - method: get
     url: /vocabularies/istat/ateco-2025?limit=5&offset=10
+  - method: get
+    url: "/vocabularies?hreflang=aq&description=PyxJr&limit=0&offset=12506&author=%5BFiltered%5D&concept=y%2F&title=%3Ac"
   expected:
     response:
       status_code: 400
