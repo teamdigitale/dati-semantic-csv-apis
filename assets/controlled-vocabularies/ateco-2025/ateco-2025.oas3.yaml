@@ -11,10 +11,11 @@ components:
           service activities
         level: '2'
         parent:
-        - url: A
-        url: '01'
+        - id: A
+          uri: A
+        uri: '01'
         vocab:
-        - url: ../ateco-2025
+        - uri: ../ateco-2025
       properties:
         id:
           minLength: 1
@@ -37,25 +38,32 @@ components:
         parent:
           items:
             properties:
-              url:
+              id:
+                type: string
+              uri:
                 format: uri-reference
                 type: string
             required:
-            - url
+            - id
+            - uri
             type: object
+          maxItems: 100
+          minItems: 0
           type: array
-        url:
+        uri:
           format: uri-reference
           type: string
         vocab:
           items:
             properties:
-              url:
+              uri:
                 format: uri-reference
                 type: string
             required:
-            - url
+            - uri
             type: object
+          maxItems: 100
+          minItems: 0
           type: array
       required:
       - id
@@ -64,7 +72,7 @@ components:
       - label_en
       - level
       - parent
-      - url
+      - uri
       - vocab
       type: object
       x-jsonld-context:
@@ -91,14 +99,14 @@ components:
         parent:
           '@container': '@set'
           '@context':
-            url: '@id'
+            uri: '@id'
           '@id': skos:broader
         skos: http://www.w3.org/2004/02/skos/core#
-        url: '@id'
+        uri: '@id'
         vocab:
           '@container': '@set'
           '@context':
-            url: '@id'
+            uri: '@id'
           '@id': skos:inScheme
         xkos: http://rdf-vocabulary.ddialliance.org/xkos#
         xsd: http://www.w3.org/2001/XMLSchema#
@@ -109,8 +117,9 @@ components:
         valid: true
 info:
   contact:
-    email: fake@example.com
-    name: Fake Name
+    email: ndc-segr-tec@istat.it
+    name: Segreteria Tecnica Istat - Progetto PNRR National Data
+      Catalog
     url: https://w3id.org/italia/data/public-organization/ISTAT
   description: "Classificazione statistica delle attività economiche
     finalizzata all’elaborazione di statistiche ufficiali, aventi
