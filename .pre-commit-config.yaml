@@ -1,3 +1,4 @@
+---
 #
 # Run pre-commit hooks. You can run them without installing
 #  the hook with
@@ -9,9 +10,9 @@
 #
 # Note: Use docker images with specific digests to ensure reproducibility and security.
 default_stages:
-  - pre-commit
-  - manual
-  - pre-push
+- pre-commit
+- manual
+- pre-push
 # Override language hinting because we need mypy to use python3.12,
 #   even if some hooks don't support it yet.
 default_language_version:
@@ -33,6 +34,7 @@ repos:
   - id: check-json
   - id: check-yaml
     args: [--allow-multiple-documents]
+    exclude: 'assets/.*/'
   # Security checks.
   - id: detect-private-key
   - id: detect-aws-credentials
@@ -44,7 +46,7 @@ repos:
   hooks:
   - id: yamlfmt
     files: \.(yaml|yml)$
-    exclude: '.spectral|config\.yaml|apiv1/openapi|tests/data/snapshots/.*\.yaml'
+    exclude: 'assets/.*'
 - repo: https://github.com/executablebooks/mdformat
   rev: 0.7.17
   hooks:
@@ -78,7 +80,8 @@ repos:
     pass_filenames: false
     exclude: ^(tests/|tools|openapi)
     entry: >-
-      bash -c 'cd apiv1 && mypy -p common -p vocabularies --ignore-missing-imports' --
+      bash -c 'cd apiv1 && mypy -p common -p vocabularies --ignore-missing-imports'
+      --
 #
 # Generators.
 #
@@ -124,15 +127,16 @@ repos:
 - repo: https://github.com/zizmorcore/zizmor-pre-commit
   rev: v1.22.0
   hooks:
-    - id: zizmor
+  - id: zizmor
 - repo: local
   hooks:
   - id: trufflehog
     name: TruffleHog v3.93.3
     description: Detect secrets in your data.
-    entry: bash -c 'docker run -c 2 --rm -v "$(pwd):/workdir" -i --rm
-      docker.io/trufflesecurity/trufflehog@sha256:06c1f230512cbb694954716fa5e0adbfb95809c7bfb5a50c25110847417b69db git file:///workdir --since-commit
-      HEAD --results=verified,unknown --fail'
+    entry: bash -c 'docker run -c 2 --rm -v "$(pwd):/workdir"
+      -i --rm docker.io/trufflesecurity/trufflehog@sha256:06c1f230512cbb694954716fa5e0adbfb95809c7bfb5a50c25110847417b69db
+      git file:///workdir --since-commit HEAD --results=verified,unknown
+      --fail'
     language: system
     stages: ["pre-push"]
   - id: spectral
@@ -141,9 +145,11 @@ repos:
     description: Validate OpenAPI specifications with Spectral.
     # choices: "error", "warn", "info", "hint"
     entry: >-
-      bash -c 'docker run --rm -v "$(pwd):/workdir" -w /workdir -i --rm
+      bash -c 'docker run --rm -v "$(pwd):/workdir" -w /workdir
+      -i --rm
       docker.io/stoplight/spectral@sha256:b3d5a530f83c4a72df69e682c5ac928bc9821b5ca3c42529e81d926c80fa50ab
-      lint -F hint -vvv --ruleset .spectral/rulesets/.openapirc.yml "$@"' --
+      lint -F hint -vvv --ruleset .spectral/rulesets/.openapirc.yml
+      "$@"' --
     files: >-
       apiv1/openapi/.*\.(yaml|yml)$
     stages:
