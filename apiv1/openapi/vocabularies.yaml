@@ -438,10 +438,10 @@ components:
         Cursor for pagination.
         It is the `id` of the last item
         in the previous page.
+
+        See also [Pagination](#/components/schemas/next_cursor).
       schema:
-        type: string
-        pattern: ^[A-Za-z0-9._-]{1,128}$
-        maxLength: 128
+        $ref: '#/components/schemas/IdString'
       example: '11160204'
     agencyIdPath:
       name: agencyId
@@ -568,6 +568,17 @@ components:
         pattern: $[a-zA-Z0-9=;" -]{0,255}
         type: string
   schemas:
+    IdString:
+      description: |-
+        An identifier string that constrains
+        the length and characters of the input.
+
+        This is a substring match on the corresponding field of
+        the vocabulary metadata.
+      type: string
+      pattern: ^[A-Za-z0-9._/-]{1,128}$
+      maxLength: 128
+      example: '11160204'
     LanguageTagShort:
       description: ISO 639-1 2-letter language code
       type: string
@@ -648,17 +659,6 @@ components:
       maximum: 200
       default: 20
       example: 50
-    Offset:
-      description: |-
-        An offset for pagination.
-
-        This API supports at maximum ~100_000 items vocabularies.
-      type: integer
-      format: int32
-      minimum: 0
-      maximum: 100000
-      default: 0
-      example: 0
     Url:
       description: An URL that is either absolute or relative.
       type: string
@@ -679,18 +679,23 @@ components:
         '@vocab': http://www.w3.org/2004/02/skos/core#
         l0: https://w3id.org/italia/onto/l0/
         limit: null
-        offset: null
-        totalResults: null
+        next_cursor: null
         items:
           '@container': '@set'
           '@id': l0:hasMember
       properties:
-        totalResults:
-          $ref: '#/components/schemas/Offset'
         limit:
           $ref: '#/components/schemas/Limit'
-        offset:
-          $ref: '#/components/schemas/Offset'
+        next_cursor:
+          description: |-
+            Cursor for pagination.
+
+            It is the `id` of the last item in the previous page.
+            the next page can be retrieved by using this value as the `cursor` query parameter.
+            If there are no more items to return, this field is null.
+          nullable: true
+          oneOf:
+            - $ref: '#/components/schemas/IdString'
         items:
           type: array
           minItems: 0
@@ -719,9 +724,7 @@ components:
           - uri: https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale
       properties:
         id:
-          minLength: 1
-          pattern: ^[A-Za-z0-9._-]+$
-          type: string
+          $ref: '#/components/schemas/IdString'
         label:
           maxLength: 500
           minLength: 1
@@ -1144,6 +1147,17 @@ components:
       properties:
         href:
           $ref: '#/components/schemas/URI'
+    Offset:
+      description: |-
+        An offset for pagination.
+
+        This API supports at maximum ~100_000 items vocabularies.
+      type: integer
+      format: int32
+      minimum: 0
+      maximum: 100000
+      default: 0
+      example: 0
     AsciiText:
       description: |-
         An ASCII text string that constrains

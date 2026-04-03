@@ -118,20 +118,35 @@ testcases:
     - Response status is 400
   request:
   - method: get
-    url: "/vocabularies?limit=0&offset=12506&description=%2F3f"
-  - method: get
     url: /vocabularies?limit=1,2,3&offset=0
   - method: get
     url: /vocabularies?limit=-1&offset=0
   - method: get
-    url: /vocabularies/istat/ateco-2025?limit=1,2,3&offset=0
+    url: /vocabularies/istat/ateco-2025?limit=1,2,3
   - method: get
-    url: /vocabularies/istat/ateco-2025?limit=1.2&offset=0
+    url: /vocabularies/istat/ateco-2025?limit=1.2
   - method: get
     url: /vocabularies/istat/ateco-2025?limit=5&offset=10
   expected:
     response:
       status_code: 400
+- name: pagination_data_limit
+  description: |-
+    When:
+
+    - GET with an explicit limit parameter
+
+    Then:
+
+    - Response status is 200 and limit is echoed back correctly.
+  request:
+  - method: get
+    url: /vocabularies/istat/ateco-2025?limit=5
+  expected:
+    response:
+      status_code: 200
+      json:
+        limit: 5
 - name: pagination_acceptable
   description: |-
     When:
@@ -142,6 +157,9 @@ testcases:
 
     - Response status is 200, and the last pagination parameter is used.
   request:
+  - description: limit=0 is ignored and silently treated as 10
+    method: get
+    url: "/vocabularies?limit=0&offset=12506&description=%2F3f"
   - method: get
     url: /vocabularies?limit=5&offset=10
   - method: get
@@ -157,17 +175,18 @@ testcases:
 
     Then:
 
-    - Response status is 200, and the cursor parameters are accepted.
+    - Response status is 200, cursor parameters are accepted,
+      and next_cursor is absent when there are no more results.
   request:
   - method: get
-    url: /vocabularies/istat/ateco-2025?cursor=A00
+    url: /vocabularies/istat/ateco-2025?cursor=A00&limit=30
   expected:
     response:
       status_code: 200
+      count: 30
       json:
-        limit: 20
-        offset: 0
-        totalResults: 1
+        next_cursor: A31
+        limit: 30
         items:
         - id: A01
           label: Item A01
@@ -180,7 +199,32 @@ testcases:
 
     Then:
 
-    - Response status is 200, and the cursor parameters are accepted.
+    - Response status is 200, cursor parameters are accepted,
+      and next_cursor is absent when there are no more results.
+  request:
+  - method: get
+    url: /vocabularies/istat/ateco-2025?limit=30
+  expected:
+    response:
+      status_code: 200
+      count: 30
+      json:
+        limit: 30
+        next_cursor: A30
+        items:
+        - id: A01
+          label: Item A01
+          uri: https://example.com/vocabularies/test/A01
+
+- name: pagination_data_cursor_empty
+  description: |-
+    When:
+
+    - GET with a cursor pointing past the last item
+
+    Then:
+
+    - Response status is 200 and items is empty.
   request:
   - method: get
     url: /vocabularies/istat/ateco-2025?cursor=A01
@@ -189,8 +233,6 @@ testcases:
       status_code: 200
       json:
         limit: 20
-        offset: 0
-        totalResults: 0
         items: []
 
 #

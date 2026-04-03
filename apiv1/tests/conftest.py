@@ -47,18 +47,19 @@ def single_entry_db(tmp_path: Path) -> str:
             key_concept="ateco-2025",
             rows=[
                 {
-                    "id": "A01",
-                    "uri": "https://example.com/vocabularies/test/A01",
-                    "label": "Item A01",
+                    "id": f"A{_id:02d}",
+                    "uri": f"https://example.com/vocabularies/test/A{_id:02d}",
+                    "label": f"Item A{_id:02d}",
                     "level": "1",
                     "_text": json.dumps(
                         {
-                            "id": "A01",
-                            "label": "Item A01",
-                            "uri": "https://example.com/vocabularies/test/A01",
+                            "id": f"A{_id:02d}",
+                            "label": f"Item A{_id:02d}",
+                            "uri": f"https://example.com/vocabularies/test/A{_id:02d}",
                         }
                     ),
                 }
+                for _id in range(100)
             ],
         )
         db.create_fts_table()

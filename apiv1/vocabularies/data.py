@@ -59,6 +59,18 @@ def _transform_item(obj: Any, api_base_url: str) -> Any:
         return obj
 
 
+def _render_item(item: dict[str, Any], base_url: str) -> dict[str, Any]:
+    """Render a vocabulary item by removing @type and adding hrefs."""
+    assert isinstance(item, dict), (
+        f"Expected item to be a dict, got {type(item)}"
+    )
+    assert "id" in item
+    return {
+        **item,
+        "href": f"{base_url}{item['id']}",
+    }
+
+
 def _get_metadata_or_fail(
     harvest_db: APIStore,
     agency_id: str,
@@ -79,55 +91,10 @@ def _get_metadata_or_fail(
     return row
 
 
-def _query_vocabulary_items_or_fail(
-    items: list[dict[str, Any]],
-    limit: int = 10,
-    offset: int = 0,
-    cursor: str | None = None,
-    label: str | None = None,
-) -> list[dict[str, Any]]:
-    """Return paginated vocabulary items with an optional label filter."""
-    if label:
-        label_lower = str(label).lower()
-        items = [
-            item
-            for item in items
-            if label_lower
-            in item.get("label", item.get("label_it", "")).lower()
-        ]
-
-    if cursor:
-        cursor_index = next(
-            (i for i, item in enumerate(items) if item.get("id") == cursor),
-            -1,
-        )
-        if cursor_index >= 0:
-            items = items[cursor_index + 1 :]
-    else:
-        items = items[offset:]
-
-    return items[:limit]
-
-
-async def status() -> ConnexionResponse:
-    """
-    Health check endpoint to verify that the API is running.
-
-    Returns:
-        A ConnexionResponse with status code 200 and a simple JSON body.
-    """
-    return ConnexionResponse(
-        status_code=200,
-        content_type="application/json",
-        body={"status": 200, "title": "OK"},
-    )
-
-
 async def show_items(
     agencyId: str,
     keyConcept: str,
     limit: int = 20,
-    offset: int = 0,
     cursor: str = "",
     label: str | None = None,
     **kwargs: Any,
@@ -137,13 +104,8 @@ async def show_items(
 
     Args:
         limit: Maximum number of items to return (default: 20).
-        offset: Offset for pagination (default: 0).
         cursor: Cursor for pagination (ID of the last item in previous page).
         label: Filter items by label.
-
-    Returns:
-        A tuple containing the paginated response dictionary, HTTP status code 200,
-        and response headers.
     """
     assert agencyId
     assert keyConcept
@@ -151,27 +113,18 @@ async def show_items(
     harvest_db = _get_database_or_fail()
 
     log.debug("Extra query parameters: %s", kwargs)
-    all_items = harvest_db.get_vocabulary_dataset(
+    items = harvest_db.get_vocabulary_dataset(
         agencyId,
         keyConcept,
-        params={
-            "limit": limit,
-            "cursor": cursor,
-        },
+        params={"limit": limit + 1, "cursor": cursor, "label": label},
     )
 
-    items = _query_vocabulary_items_or_fail(
-        all_items,
-        limit=limit,
-        offset=offset,
-        cursor=cursor,
-        label=label,
-    )
+    next_cursor = items[limit]["id"] if len(items) > limit else None
+    items = items[:limit]
 
     response = {
-        "totalResults": len(all_items),
         "limit": limit,
-        "offset": offset,
+        "next_cursor": next_cursor,
         "items": items,
     }
     return ConnexionResponse(
@@ -259,18 +212,9 @@ async def dump_vocabulary_dataset(
     )
 
 
-def render_item(item: dict[str, Any], base_url: str) -> dict[str, Any]:
-    """Render a vocabulary item by removing @type and adding hrefs."""
-    assert isinstance(item, dict), (
-        f"Expected item to be a dict, got {type(item)}"
-    )
-    assert "id" in item
-    return {
-        **item,
-        "href": f"{base_url}{item['id']}",
-    }
-
-
+#
+# Metadata and Status.
+#
 async def show_vocabulary_spec(
     agencyId: str, keyConcept: str
 ) -> ConnexionResponse:
@@ -319,3 +263,17 @@ async def show_vocabulary_spec(
         raise NotImplementedError(
             f"OpenAPI specification not available for agency_id={agencyId} and key_concept={keyConcept}"
         ) from e
+
+
+async def status() -> ConnexionResponse:
+    """
+    Health check endpoint to verify that the API is running.
+
+    Returns:
+        A ConnexionResponse with status code 200 and a simple JSON body.
+    """
+    return ConnexionResponse(
+        status_code=200,
+        content_type="application/json",
+        body={"status": 200, "title": "OK"},
+    )
