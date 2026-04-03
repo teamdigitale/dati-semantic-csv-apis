@@ -74,7 +74,7 @@ def create_datapackage(
             created += "T00:00:00Z"
         datapackage["created"] = created
 
-    keywords = vocabulary.get_values(DCAT.keyword)
+    keywords = vocabulary.keywords
     if keywords:
         keywords.sort()
         datapackage["keywords"] = keywords

@@ -85,8 +85,14 @@ info:
   contact:
     url: >-
       https://w3id.org/italia/social-security/data/organization/inps
-  description: >-
+  description: |+
     Vocabolario controllato sulla tipologia di retribuzione
+
+    ## Metadata:
+
+    URI: https://w3id.org/italia/social-security/controlled-vocabulary/domesticWorkServices/tipo_mansione_lavoratore_domestico
+    Keywords: domestic work services, domestic worker's role type, inps, inps, servizi per il lavoro domestico, tipo di mansione del lavoratore domestico
+
   title: >-
     Vocabolario controllato sulla tipologia di mansione svolta dal Lavoratore Domestico
   version: '0.1'

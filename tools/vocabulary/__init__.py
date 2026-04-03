@@ -226,6 +226,14 @@ class VocabularyMetadata(Graph):
             f"Vocabulary {self.identifier} has a description that is not a string: {description}"
         )
 
+    @property
+    def keywords(self) -> list[str]:
+        if keywords := self.get_values(DCAT.keyword):
+            ret = [str(keyword) for keyword in keywords]
+            ret.sort()
+            return ret
+        return []
+
 
 class Vocabulary:
     """

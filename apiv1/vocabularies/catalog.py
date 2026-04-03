@@ -27,7 +27,6 @@ def filter_vocabularies(
     concept: str | None = None,
     type_: str | None = None,
     title: str | None = None,
-    description: str | None = None,
 ):
     """
     Filter vocabulary items based on provided criteria.
@@ -44,11 +43,6 @@ def filter_vocabularies(
     """
     for item in items:
         if title and title.lower() not in item.get("title", "").lower():
-            continue
-        if (
-            description
-            and description.lower() not in item.get("description", "").lower()
-        ):
             continue
         if author and item.get("author") != author:
             continue
@@ -74,71 +68,6 @@ def get_status():
         200,
         {"Content-Type": "application/json"},
     )
-
-
-def list_vocabularies_by_agency(
-    agencyId: str,
-    title: str | None = None,
-    description: str | None = None,
-    author: str | None = None,
-    hreflang: str | None = None,
-    concept: str | None = None,
-    type: str | None = None,
-    limit: int = LIMIT_DEFAULT,
-    offset: int = 0,
-    **kwargs: Any,
-) -> tuple[dict[str, Any], int, dict[str, str]]:
-    if kwargs:
-        raise BadRequestProblem(f"Unexpected query parameters: {kwargs}")
-
-    limit = limit or LIMIT_DEFAULT
-
-    db: APIStore = _get_database_or_fail()
-
-    rows = db.search_metadata(
-        query=description or "", agency_id=agencyId, limit=limit, offset=offset
-    )
-
-    items: list[dict[str, Any]] = [
-        item
-        for x in rows
-        if (
-            item := _to_catalog_item(
-                dict(x),
-                request.state.api_base_url,
-                request.state.predecessor_base_url,
-            )
-        )
-        is not None
-    ]
-
-    filtered_items = list(
-        filter_vocabularies(
-            items,
-            author=author,
-            hreflang=hreflang,
-            concept=concept,
-            type_=type,
-            title=title,
-            description=description,
-        )
-    )
-
-    result = {
-        "linkset": [
-            {
-                "anchor": request.state.api_base_url,
-                "api-catalog": request.state.api_base_url,
-                "item": filtered_items[offset : offset + limit],
-                "total_count": len(filtered_items),
-                "count": len(filtered_items[offset : offset + limit]),
-                "limit": limit,
-                "offset": offset,
-            }
-        ]
-    }
-
-    return result, 200, {"Content-Type": "application/linkset+json"}
 
 
 def _to_catalog_item(
@@ -202,34 +131,18 @@ def _to_catalog_item(
         return None
 
 
-def list_vocabularies(
-    title: str | None = None,
-    description: str | None = None,
-    author: str | None = None,
-    hreflang: str | None = None,
-    concept: str | None = None,
-    type: str | None = None,
-    limit: int = LIMIT_DEFAULT,
-    offset: int = 0,
-    **kwargs: Any,
+def _list_vocabularies_impl(
+    q: str | None,
+    title: str | None,
+    author: str | None,
+    hreflang: str | None,
+    concept: str | None,
+    type: str | None,
+    limit: int,
+    offset: int,
+    kwargs: dict[str, Any],
+    agency_id: str | None = None,
 ) -> tuple[dict[str, Any], int, dict[str, str]]:
-    """
-    Get vocabularies with optional filtering.
-
-    This handler loads the vocabularies linkset and applies filters
-    based on the query parameters.
-
-    Args:
-        author: Filter by author URI.
-        hreflang: Filter by language code.
-        concept: Filter by concept identifier.
-        type: Filter by vocabulary type URI.
-        limit: Maximum number of items to return.
-        offset: Number of items to skip before starting to collect the result set.
-
-    Returns:
-        Linkset dictionary with filtered items.
-    """
     if kwargs:
         raise BadRequestProblem(detail=f"Unexpected query parameters: {kwargs}")
 
@@ -238,7 +151,7 @@ def list_vocabularies(
     db: APIStore = _get_database_or_fail()
 
     rows = db.search_metadata(
-        query=description or "", limit=limit, offset=offset
+        query=q or "", agency_id=agency_id, limit=limit, offset=offset
     )
 
     items: list[dict[str, Any]] = [
@@ -253,7 +166,7 @@ def list_vocabularies(
         )
         is not None
     ]
-    # Apply filters
+
     filtered_items = list(
         filter_vocabularies(
             items,
@@ -262,18 +175,15 @@ def list_vocabularies(
             concept=concept,
             type_=type,
             title=title,
-            description=description,
         )
     )
 
-    # Reconstruct linkset with filtered items
     result = {
         "linkset": [
             {
                 "anchor": request.state.api_base_url,
                 "api-catalog": request.state.api_base_url,
                 "item": filtered_items[offset : offset + limit],
-                # Pagination metadata.
                 "total_count": len(filtered_items),
                 "count": len(filtered_items[offset : offset + limit]),
                 "limit": limit,
@@ -283,3 +193,67 @@ def list_vocabularies(
     }
 
     return result, 200, {"Content-Type": "application/linkset+json"}
+
+
+def list_vocabularies(
+    q: str | None = None,
+    title: str | None = None,
+    author: str | None = None,
+    hreflang: str | None = None,
+    concept: str | None = None,
+    type: str | None = None,
+    limit: int = LIMIT_DEFAULT,
+    offset: int = 0,
+    **kwargs: Any,
+) -> tuple[dict[str, Any], int, dict[str, str]]:
+    """
+    Get vocabularies with optional filtering.
+
+    Args:
+        author: Filter by author URI.
+        hreflang: Filter by language code.
+        concept: Filter by concept identifier.
+        type: Filter by vocabulary type URI.
+        limit: Maximum number of items to return.
+        offset: Number of items to skip before starting to collect the result set.
+
+    Returns:
+        Linkset dictionary with filtered items.
+    """
+    return _list_vocabularies_impl(
+        q=q,
+        title=title,
+        author=author,
+        hreflang=hreflang,
+        concept=concept,
+        type=type,
+        limit=limit,
+        offset=offset,
+        kwargs=kwargs,
+    )
+
+
+def list_vocabularies_by_agency(
+    agencyId: str,
+    q: str | None = None,
+    title: str | None = None,
+    author: str | None = None,
+    hreflang: str | None = None,
+    concept: str | None = None,
+    type: str | None = None,
+    limit: int = LIMIT_DEFAULT,
+    offset: int = 0,
+    **kwargs: Any,
+) -> tuple[dict[str, Any], int, dict[str, str]]:
+    return _list_vocabularies_impl(
+        q=q,
+        title=title,
+        author=author,
+        hreflang=hreflang,
+        concept=concept,
+        type=type,
+        limit=limit,
+        offset=offset,
+        kwargs=kwargs,
+        agency_id=agencyId,
+    )
