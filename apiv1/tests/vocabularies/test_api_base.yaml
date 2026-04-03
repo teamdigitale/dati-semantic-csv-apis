@@ -159,7 +159,7 @@ testcases:
   request:
   - description: limit=0 is ignored and silently treated as 10
     method: get
-    url: "/vocabularies?limit=0&offset=12506&description=%2F3f"
+    url: "/vocabularies?limit=0&offset=12506&q=%2F3f"
   - method: get
     url: /vocabularies?limit=5&offset=10
   - method: get
@@ -249,7 +249,7 @@ testcases:
     - Response status is 400
   request:
   - method: get
-    url: "/vocabularies?concept=t%1E&description=%E2%80%88S7H&hreflang=sx&limit=131"
+    url: "/vocabularies?concept=t%1E&q=%E2%80%88S7H&hreflang=sx&limit=131"
   - method: get
     url: "/vocabularies?concept=G%2Fx%0C%C2%A0uhJ%0B%1FSp%2F%E2%81%9F%C2%85tXQ0B"
   expected:
@@ -269,16 +269,16 @@ testcases:
     - Response status is 200
   request:
   - method: get
-    url: "/vocabularies?concept=valid&description=valid&hreflang=sx&limit=131"
+    url: "/vocabularies?concept=valid&q=valid&hreflang=sx&limit=131"
   expected:
     response:
       status_code: 200
 - name: random_strings
   request:
   - method: get
-    url: "/vocabularies?concept=OYWHWxVQtX9Qxn%2F&description=PbBMRDxk1BTD23%2F&hreflang=us"
+    url: "/vocabularies?concept=OYWHWxVQtX9Qxn%2F&q=PbBMRDxk1BTD23%2F&hreflang=us"
   - method: get
-    url: "/vocabularies?limit=172&concept=br7Z5E2sx8&hreflang=rl&offset=43029&title=GyN&description=-"
+    url: "/vocabularies?limit=172&concept=br7Z5E2sx8&hreflang=rl&offset=43029&title=GyN&q=-"
   expected:
     response:
       status_code: 200
