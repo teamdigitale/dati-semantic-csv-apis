@@ -628,15 +628,11 @@ components:
           description: |-
             Cursor for pagination.
 
-            It is the `id` of the last item in the previous page:
+            It is the `id` of the last item in the previous page.
             the next page can be retrieved by using this value as the `cursor` query parameter.
             If there are no more items to return, this field is null.
+          nullable: true
           oneOf:
-          - description: |-
-              No more items to return.
-            type: "string"
-            nullable: true
-            enum: [null]
           - $ref: "#/components/schemas/IdString"
         items:
           type: array

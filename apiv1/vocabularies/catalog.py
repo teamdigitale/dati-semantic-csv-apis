@@ -15,6 +15,8 @@ from connexion.exceptions import BadRequestProblem
 
 from tools.store import APIStore
 
+LIMIT_DEFAULT = 20
+
 log = logging.getLogger(__name__)
 
 
@@ -82,14 +84,14 @@ def list_vocabularies_by_agency(
     hreflang: str | None = None,
     concept: str | None = None,
     type: str | None = None,
-    limit: int = 10,
+    limit: int = LIMIT_DEFAULT,
     offset: int = 0,
     **kwargs: Any,
 ) -> tuple[dict[str, Any], int, dict[str, str]]:
     if kwargs:
         raise BadRequestProblem(f"Unexpected query parameters: {kwargs}")
 
-    limit = limit or 10
+    limit = limit or LIMIT_DEFAULT
 
     db: APIStore = _get_database_or_fail()
 
@@ -207,7 +209,7 @@ def list_vocabularies(
     hreflang: str | None = None,
     concept: str | None = None,
     type: str | None = None,
-    limit: int = 10,
+    limit: int = LIMIT_DEFAULT,
     offset: int = 0,
     **kwargs: Any,
 ) -> tuple[dict[str, Any], int, dict[str, str]]:
@@ -231,10 +233,8 @@ def list_vocabularies(
     if kwargs:
         raise BadRequestProblem(detail=f"Unexpected query parameters: {kwargs}")
 
-    if offset and not limit:
-        raise BadRequestProblem(
-            detail="Offset cannot be used without a valid limit"
-        )
+    limit = limit or LIMIT_DEFAULT
+
     db: APIStore = _get_database_or_fail()
 
     rows = db.search_metadata(

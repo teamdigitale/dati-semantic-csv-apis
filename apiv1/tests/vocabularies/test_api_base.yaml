@@ -118,8 +118,6 @@ testcases:
     - Response status is 400
   request:
   - method: get
-    url: "/vocabularies?limit=0&offset=12506&description=%2F3f"
-  - method: get
     url: /vocabularies?limit=1,2,3&offset=0
   - method: get
     url: /vocabularies?limit=-1&offset=0
@@ -159,6 +157,9 @@ testcases:
 
     - Response status is 200, and the last pagination parameter is used.
   request:
+  - description: limit=0 is ignored and silently treated as 10
+    method: get
+    url: "/vocabularies?limit=0&offset=12506&description=%2F3f"
   - method: get
     url: /vocabularies?limit=5&offset=10
   - method: get
