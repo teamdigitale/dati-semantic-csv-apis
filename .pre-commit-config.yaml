@@ -23,7 +23,9 @@ repos:
   hooks:
   # Manage spaces.
   - id: trailing-whitespace
+    exclude: 'assets/.*\.ttl'
   - id: end-of-file-fixer
+    exclude: 'assets/.*\.ttl'
   - id: check-added-large-files
   - id: check-symlinks
   - id: mixed-line-ending
