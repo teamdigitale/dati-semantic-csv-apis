@@ -114,7 +114,19 @@ info:
     email: info@dati.gov.it
     name: banche dati e open data
     url: https://w3id.org/italia/data/public-organization/agid
-  description: Vocabolario controllato delle province d'Italia e relativo codice regione
+  description: 'Vocabolario controllato delle province d''Italia e relativo codice
+    regione
+
+
+    ## Metadata:
+
+
+    URI: https://w3id.org/italia/controlled-vocabulary/territorial-classifications/provinces
+
+    Keywords: Province, Province, Provinces, Provincia
+
+
+    '
   title: Vocabolario Controllato delle Province d'Italia
   version: 2.0 - allineamento all'ontologia e alle pratiche di gestione dei vocabolari
     controllati di OntoPiA

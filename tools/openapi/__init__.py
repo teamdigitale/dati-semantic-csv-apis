@@ -268,12 +268,19 @@ class Apiable(Vocabulary):
             max_samples=kwargs.pop("max_samples", None),
             **kwargs,
         )
+
+        description = metadata.description or ""
+
+        description += f"\n\n## Metadata:\n\nURI: {self.uri()}\n"
+        if keywords := metadata.keywords:
+            description += f"Keywords: {', '.join(keywords)}\n\n"
+
         openapi = {
             "openapi": "3.0.0",
             "info": {
                 "title": metadata.title,
                 "version": metadata.version or "1.0.0",
-                "description": metadata.description or "",
+                "description": description,
                 "x-summary": metadata.get_first_value(
                     [
                         DCTERMS.abstract,

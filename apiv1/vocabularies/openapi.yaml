@@ -127,7 +127,7 @@ paths:
       - $ref: '#/components/parameters/concept'
       # Text filters
       - $ref: '#/components/parameters/title'
-      - $ref: '#/components/parameters/description'
+      - $ref: '#/components/parameters/q'
       responses:
         '200':
           $ref: '#/components/responses/APICatalogItems'
@@ -143,7 +143,7 @@ paths:
       summary: Get controlled vocabularies
       description: |
         Returns a linkset of controlled vocabularies in RFC 9727 format.
-        Supports filtering by author, language, and concept.
+        Supports filtering by author, language, concept, and a general query string.
       tags:
       - discover-vocabularies
       parameters:
@@ -156,7 +156,7 @@ paths:
       - $ref: '#/components/parameters/concept'
       # Text filters
       - $ref: '#/components/parameters/title'
-      - $ref: '#/components/parameters/description'
+      - $ref: '#/components/parameters/q'
       responses:
         '200':
           $ref: '#/components/responses/APICatalogItems'
@@ -517,18 +517,14 @@ components:
       schema:
         $ref: '#/components/schemas/TextFilter'
       example: ateco
-    description:
-      name: description
+    q:
+      name: q
       in: query
       explode: false
       description: >-
-        Filter by vocabulary description.
+        Filter by a query string.
 
-        This is a substring match on the description field of
-        the vocabulary metadata.
-
-        TODO: Further matching criteria may be added
-        in the future.
+        This is a match on various metadata fields of the vocabulary.
 
         TODO: As a request parameter, we can further
         constrain the maximum length.

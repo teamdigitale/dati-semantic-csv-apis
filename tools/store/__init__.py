@@ -52,14 +52,15 @@ FTS_TABLE = "_metadata_fts"
 # Consider tweaking `tokenize` option.
 CREATE_FTS_TABLE_SQL = f"""
 CREATE VIRTUAL TABLE IF NOT EXISTS {FTS_TABLE}
-USING fts5(title, description, tokenize = 'trigram');
+USING fts5(title, description, catalog, tokenize = 'trigram');
 """
 
 POPULATE_FTS_TABLE_SQL = f"""
-INSERT INTO {FTS_TABLE}(rowid, title, description)
+INSERT INTO {FTS_TABLE}(rowid, title, description, catalog)
 SELECT rowid,
        json_extract(openapi, '$.info.title'),
-       json_extract(openapi, '$.info.description')
+       json_extract(openapi, '$.info.description'),
+       catalog
 FROM _metadata
 """
 
