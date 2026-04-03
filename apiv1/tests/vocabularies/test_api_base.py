@@ -51,6 +51,12 @@ def test_base_requests(single_entry_db, testcase):
 
             # Then I got the expected status code ..
             assert response.status_code == expected["response"]["status_code"]
+            if expected_count := expected["response"].get("count"):
+                assert (
+                    len(response.json().get("items", [])) == expected_count
+                ), (
+                    f"Expected 'count' to be {expected_count}, but got {len(response.json().get('items', []))}"
+                )
 
             # .. headers are as expected ..
             if expected_headers := expected["response"].get("headers"):

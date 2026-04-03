@@ -480,9 +480,18 @@ class APIStore:
             query_params |= {"cursor": params["cursor"]}
             qs += " AND id > :cursor "
 
+        if params.get("label"):
+            query_params["label"] = f"%{params['label'].lower()}%"
+            qs += " AND (LOWER(label) LIKE :label OR LOWER(json_extract(_text, '$.label_it')) LIKE :label) "
+
         if "limit" in params:
             query_params |= {"limit": params["limit"]}
             qs += " LIMIT :limit "
+
+        if params.get("offset"):
+            raise ValueError("Offset-based pagination is not supported yet")
+            query_params["offset"] = params["offset"]
+            qs += " OFFSET :offset "
 
         log.info("Executing SQL query %s with params %s", qs, query_params)
         try:

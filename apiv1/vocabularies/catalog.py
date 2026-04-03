@@ -89,8 +89,7 @@ def list_vocabularies_by_agency(
     if kwargs:
         raise BadRequestProblem(f"Unexpected query parameters: {kwargs}")
 
-    if offset and not limit:
-        raise BadRequestProblem("Offset cannot be used without a valid limit")
+    limit = limit or 10
 
     db: APIStore = _get_database_or_fail()
 
