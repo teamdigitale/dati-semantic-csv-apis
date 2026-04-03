@@ -58,6 +58,7 @@ jobs:
           api:
             - '!tests/**'
             - '!tools/**'
+            - 'tools/store/**'
     - name: Set outputs (always true for tags)
       id: set-outputs
       env:
@@ -198,8 +199,8 @@ jobs:
         include:
         - target: data-api
           image_suffix: "-data"
-          tag_pattern: "^refs/tags/data@(.+)$"
-          force_push_label: push-container:data  # Label prefix to force push the image in pull request
+          tag_pattern: "^refs/tags/(.+)$"
+          force_push_label: push-container:api  # Label prefix to force push the image in pull request
     name: Docker Build ${{ matrix.target }}
     steps:
     - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd  # v6.0.2
@@ -218,7 +219,7 @@ jobs:
       env:
         GITHUB_REF: ${{ github.ref }}
       run: |
-        # set -euo pipefail
+        set -euo pipefail
         # GITHUB_REF is a GitHub-controlled variable with format: refs/heads/*, refs/tags/*, refs/pull/*/merge
         if [[ "${GITHUB_REF}" == "refs/heads/main" ]] || [[ "${{ github.event_name }}" == "pull_request" ]] || [[ "${GITHUB_REF}" =~ ${{ matrix.tag_pattern }} ]]; then
           echo "build=true" >> "$GITHUB_OUTPUT"
