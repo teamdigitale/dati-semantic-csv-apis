@@ -2,6 +2,7 @@
 #
 # Content-Type: application/ld+yaml; profile="http://www.w3.org/ns/json-ld#frame"
 #
+# jsonld create --frame-only
 
 # Use context.
 "@context": &jsonld_context
