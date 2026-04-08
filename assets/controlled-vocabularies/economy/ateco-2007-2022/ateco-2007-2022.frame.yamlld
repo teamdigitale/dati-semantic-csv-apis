@@ -15,36 +15,27 @@
   covapit: https://w3id.org/italia/onto/COV/
 
   # Fields
-  url: "@id"
+  uri: "@id"
   id:
     "@id": skos:notation
 
-  # Localize labels
+  # This dataset does not have
+  #   localized labels.
   label:
     "@id": skos:prefLabel
-    "@language": it
-  label_it:
-    "@id": skos:prefLabel
-    "@language": it
-  label_en:
-    "@id": skos:prefLabel
-    "@language": en
-  label_de:
-    "@id": skos:prefLabel
-    "@language": de
 
   # Hierarchy
   parent:
     "@id": skos:broader
     "@container": "@set"
     "@context":
-      url: "@id"
+      uri: "@id"
 
   vocab:
     "@id": skos:inScheme
     "@container": "@set"
     "@context":
-      url: "@id"
+      uri: "@id"
 
   level:
     "@id": clvapit:hasRankOrder
@@ -58,23 +49,18 @@
 "@type":
   - &jsonld_type "covapit:PrivateOrgActivityType"
 
-url: {}
+uri: {}
 id: {}
-label_it: {}
-label_en: {}
-label_de: {}
-label:
-  "@language": ["it", "en", "de"]
-  "@value": {}
+label: {}
 level: {}
 
 vocab:
-- url: https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2007-2022
+- uri: https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2007-2022
   "@explicit": true
   "@embed": "@never"
 
 parent:
-- url: {}
+- uri: {}
   id: {}
   "@embed": "@always"
   "@explicit": true
