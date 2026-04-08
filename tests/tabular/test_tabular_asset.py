@@ -32,7 +32,15 @@ def test_tabular_metadata(
     """
     datapackage_yaml = snapshot / request.node.name / "datapackage.yaml"
     datapackage_yaml.parent.mkdir(parents=True, exist_ok=True)
-    tabular = Tabular(rdf_data=vocabulary_ttl, frame={"@context": {}})
+    tabular = Tabular(
+        rdf_data=vocabulary_ttl,
+        frame={
+            "@context": {
+                "uri": "@id",
+                "label": "http://www.w3.org/2004/02/skos/core#prefLabel",
+            }
+        },
+    )
     try:
         tabular.uri()
     except UnsupportedVocabularyError:
