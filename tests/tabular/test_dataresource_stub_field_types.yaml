@@ -162,7 +162,7 @@ testcases:
         "@id": "http://www.w3.org/2004/02/skos/core#notation"
 
       #Localize labels. Order is relevant.
-      label_it:
+      label:
         "@id": http://www.w3.org/2004/02/skos/core#prefLabel
         "@language": it
       # When mapping to a list, use @container: @set
@@ -237,7 +237,7 @@ testcases:
     - "https://w3id.org/italia/work-accident/onto/adm_serv/AgenteCausaleINAIL"
     uri: {}
     id: {}
-    label_it:
+    label:
       "@language": ["it"]
       "@value": {}
     level: {}

@@ -8,7 +8,7 @@
   id:
     '@id': skos:notation
   l0: https://w3id.org/italia/onto/l0/
-  label_it:
+  label:
     '@id': skos:prefLabel
     '@language': it
   nuts:
@@ -39,7 +39,7 @@
   - skos:Concept
   acronym: TO
   id: '001'
-  label_it: Torino
+  label: Torino
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC11
   parent:
@@ -54,7 +54,7 @@
   - skos:Concept
   acronym: VC
   id: '002'
-  label_it: Vercelli
+  label: Vercelli
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC12
   parent:
@@ -69,7 +69,7 @@
   - skos:Concept
   acronym: 'NO'
   id: '003'
-  label_it: Novara
+  label: Novara
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC15
   parent:
@@ -84,7 +84,7 @@
   - skos:Concept
   acronym: CN
   id: '004'
-  label_it: Cuneo
+  label: Cuneo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC16
   parent:
@@ -99,7 +99,7 @@
   - skos:Concept
   acronym: AT
   id: '005'
-  label_it: Asti
+  label: Asti
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC17
   parent:
@@ -114,7 +114,7 @@
   - skos:Concept
   acronym: AL
   id: '006'
-  label_it: Alessandria
+  label: Alessandria
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC18
   parent:
@@ -129,7 +129,7 @@
   - skos:Concept
   acronym: AO
   id: '007'
-  label_it: Valle d'Aosta/Vallée d'Aoste
+  label: Valle d'Aosta/Vallée d'Aoste
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC20
   parent:
@@ -144,7 +144,7 @@
   - skos:Concept
   acronym: IM
   id: 008
-  label_it: Imperia
+  label: Imperia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC31
   parent:
@@ -159,7 +159,7 @@
   - skos:Concept
   acronym: SV
   id: 009
-  label_it: Savona
+  label: Savona
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC32
   parent:
@@ -174,7 +174,7 @@
   - skos:Concept
   acronym: GE
   id: '010'
-  label_it: Genova
+  label: Genova
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC33
   parent:
@@ -189,7 +189,7 @@
   - skos:Concept
   acronym: SP
   id: '011'
-  label_it: La Spezia
+  label: La Spezia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC34
   parent:
@@ -204,7 +204,7 @@
   - skos:Concept
   acronym: VA
   id: '012'
-  label_it: Varese
+  label: Varese
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC41
   parent:
@@ -219,7 +219,7 @@
   - skos:Concept
   acronym: CO
   id: '013'
-  label_it: Como
+  label: Como
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC42
   parent:
@@ -234,7 +234,7 @@
   - skos:Concept
   acronym: SO
   id: '014'
-  label_it: Sondrio
+  label: Sondrio
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC44
   parent:
@@ -249,7 +249,7 @@
   - skos:Concept
   acronym: MI
   id: '015'
-  label_it: Milano
+  label: Milano
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC45
   parent:
@@ -264,7 +264,7 @@
   - skos:Concept
   acronym: BG
   id: '016'
-  label_it: Bergamo
+  label: Bergamo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC43
   - uri: http://nuts.geovocab.org/id/ITC46
@@ -280,7 +280,7 @@
   - skos:Concept
   acronym: BS
   id: '017'
-  label_it: Brescia
+  label: Brescia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC47
   parent:
@@ -295,7 +295,7 @@
   - skos:Concept
   acronym: PV
   id: 018
-  label_it: Pavia
+  label: Pavia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC48
   parent:
@@ -310,7 +310,7 @@
   - skos:Concept
   acronym: CR
   id: 019
-  label_it: Cremona
+  label: Cremona
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC4A
   parent:
@@ -325,7 +325,7 @@
   - skos:Concept
   acronym: MN
   id: '020'
-  label_it: Mantova
+  label: Mantova
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC4B
   parent:
@@ -340,7 +340,7 @@
   - skos:Concept
   acronym: BZ
   id: '021'
-  label_it: Bolzano/Bozen
+  label: Bolzano/Bozen
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD10
   parent:
@@ -355,7 +355,7 @@
   - skos:Concept
   acronym: TN
   id: '022'
-  label_it: Trento
+  label: Trento
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD20
   parent:
@@ -370,7 +370,7 @@
   - skos:Concept
   acronym: VR
   id: '023'
-  label_it: Verona
+  label: Verona
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD31
   parent:
@@ -385,7 +385,7 @@
   - skos:Concept
   acronym: VI
   id: '024'
-  label_it: Vicenza
+  label: Vicenza
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD32
   parent:
@@ -400,7 +400,7 @@
   - skos:Concept
   acronym: BL
   id: '025'
-  label_it: Belluno
+  label: Belluno
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD33
   parent:
@@ -415,7 +415,7 @@
   - skos:Concept
   acronym: TV
   id: '026'
-  label_it: Treviso
+  label: Treviso
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD34
   parent:
@@ -430,7 +430,7 @@
   - skos:Concept
   acronym: VE
   id: '027'
-  label_it: Venezia
+  label: Venezia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD35
   parent:
@@ -445,7 +445,7 @@
   - skos:Concept
   acronym: PD
   id: 028
-  label_it: Padova
+  label: Padova
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD36
   parent:
@@ -460,7 +460,7 @@
   - skos:Concept
   acronym: RO
   id: 029
-  label_it: Rovigo
+  label: Rovigo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD37
   parent:
@@ -475,7 +475,7 @@
   - skos:Concept
   acronym: UD
   id: '030'
-  label_it: Udine
+  label: Udine
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD33
   - uri: http://nuts.geovocab.org/id/ITD42
@@ -491,7 +491,7 @@
   - skos:Concept
   acronym: GO
   id: '031'
-  label_it: Gorizia
+  label: Gorizia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD43
   parent:
@@ -506,7 +506,7 @@
   - skos:Concept
   acronym: TS
   id: '032'
-  label_it: Trieste
+  label: Trieste
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD44
   parent:
@@ -521,7 +521,7 @@
   - skos:Concept
   acronym: PC
   id: '033'
-  label_it: Piacenza
+  label: Piacenza
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD51
   parent:
@@ -536,7 +536,7 @@
   - skos:Concept
   acronym: PR
   id: '034'
-  label_it: Parma
+  label: Parma
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD52
   parent:
@@ -551,7 +551,7 @@
   - skos:Concept
   acronym: RE
   id: '035'
-  label_it: Reggio nell'Emilia
+  label: Reggio nell'Emilia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD53
   parent:
@@ -566,7 +566,7 @@
   - skos:Concept
   acronym: MO
   id: '036'
-  label_it: Modena
+  label: Modena
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD54
   parent:
@@ -581,7 +581,7 @@
   - skos:Concept
   acronym: BO
   id: '037'
-  label_it: Bologna
+  label: Bologna
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD55
   parent:
@@ -596,7 +596,7 @@
   - skos:Concept
   acronym: FE
   id: 038
-  label_it: Ferrara
+  label: Ferrara
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD56
   parent:
@@ -611,7 +611,7 @@
   - skos:Concept
   acronym: RA
   id: 039
-  label_it: Ravenna
+  label: Ravenna
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD57
   parent:
@@ -626,7 +626,7 @@
   - skos:Concept
   acronym: FC
   id: '040'
-  label_it: Forlì-Cesena
+  label: Forlì-Cesena
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD58
   parent:
@@ -641,7 +641,7 @@
   - skos:Concept
   acronym: PU
   id: '041'
-  label_it: Pesaro e Urbino
+  label: Pesaro e Urbino
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE31
   parent:
@@ -656,7 +656,7 @@
   - skos:Concept
   acronym: AN
   id: '042'
-  label_it: Ancona
+  label: Ancona
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE32
   parent:
@@ -671,7 +671,7 @@
   - skos:Concept
   acronym: MC
   id: '043'
-  label_it: Macerata
+  label: Macerata
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE33
   parent:
@@ -686,7 +686,7 @@
   - skos:Concept
   acronym: AP
   id: '044'
-  label_it: Ascoli Piceno
+  label: Ascoli Piceno
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE34
   parent:
@@ -701,7 +701,7 @@
   - skos:Concept
   acronym: MS
   id: '045'
-  label_it: Massa-Carrara
+  label: Massa-Carrara
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE11
   parent:
@@ -716,7 +716,7 @@
   - skos:Concept
   acronym: LU
   id: '046'
-  label_it: Lucca
+  label: Lucca
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE12
   parent:
@@ -731,7 +731,7 @@
   - skos:Concept
   acronym: PT
   id: '047'
-  label_it: Pistoia
+  label: Pistoia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE13
   parent:
@@ -746,7 +746,7 @@
   - skos:Concept
   acronym: FI
   id: 048
-  label_it: Firenze
+  label: Firenze
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE14
   parent:
@@ -761,7 +761,7 @@
   - skos:Concept
   acronym: LI
   id: 049
-  label_it: Livorno
+  label: Livorno
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE16
   parent:
@@ -776,7 +776,7 @@
   - skos:Concept
   acronym: PI
   id: '050'
-  label_it: Pisa
+  label: Pisa
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE17
   parent:
@@ -791,7 +791,7 @@
   - skos:Concept
   acronym: AR
   id: '051'
-  label_it: Arezzo
+  label: Arezzo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE18
   parent:
@@ -806,7 +806,7 @@
   - skos:Concept
   acronym: SI
   id: '052'
-  label_it: Siena
+  label: Siena
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE19
   parent:
@@ -821,7 +821,7 @@
   - skos:Concept
   acronym: GR
   id: '053'
-  label_it: Grosseto
+  label: Grosseto
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE1A
   parent:
@@ -836,7 +836,7 @@
   - skos:Concept
   acronym: PG
   id: '054'
-  label_it: Perugia
+  label: Perugia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE21
   parent:
@@ -851,7 +851,7 @@
   - skos:Concept
   acronym: TR
   id: '055'
-  label_it: Terni
+  label: Terni
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE22
   parent:
@@ -866,7 +866,7 @@
   - skos:Concept
   acronym: VT
   id: '056'
-  label_it: Viterbo
+  label: Viterbo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE41
   parent:
@@ -881,7 +881,7 @@
   - skos:Concept
   acronym: RI
   id: '057'
-  label_it: Rieti
+  label: Rieti
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE42
   parent:
@@ -896,7 +896,7 @@
   - skos:Concept
   acronym: RM
   id: 058
-  label_it: Roma
+  label: Roma
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE43
   parent:
@@ -911,7 +911,7 @@
   - skos:Concept
   acronym: LT
   id: 059
-  label_it: Latina
+  label: Latina
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE44
   parent:
@@ -926,7 +926,7 @@
   - skos:Concept
   acronym: FR
   id: '060'
-  label_it: Frosinone
+  label: Frosinone
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE45
   parent:
@@ -941,7 +941,7 @@
   - skos:Concept
   acronym: CE
   id: '061'
-  label_it: Caserta
+  label: Caserta
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF31
   parent:
@@ -956,7 +956,7 @@
   - skos:Concept
   acronym: BN
   id: '062'
-  label_it: Benevento
+  label: Benevento
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF32
   parent:
@@ -971,7 +971,7 @@
   - skos:Concept
   acronym: NA
   id: '063'
-  label_it: Napoli
+  label: Napoli
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF33
   parent:
@@ -986,7 +986,7 @@
   - skos:Concept
   acronym: AV
   id: '064'
-  label_it: Avellino
+  label: Avellino
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF34
   parent:
@@ -1001,7 +1001,7 @@
   - skos:Concept
   acronym: SA
   id: '065'
-  label_it: Salerno
+  label: Salerno
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF35
   parent:
@@ -1016,7 +1016,7 @@
   - skos:Concept
   acronym: AQ
   id: '066'
-  label_it: L'Aquila
+  label: L'Aquila
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF11
   parent:
@@ -1031,7 +1031,7 @@
   - skos:Concept
   acronym: TE
   id: '067'
-  label_it: Teramo
+  label: Teramo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF12
   parent:
@@ -1046,7 +1046,7 @@
   - skos:Concept
   acronym: PE
   id: 068
-  label_it: Pescara
+  label: Pescara
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF13
   parent:
@@ -1061,7 +1061,7 @@
   - skos:Concept
   acronym: CH
   id: 069
-  label_it: Chieti
+  label: Chieti
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF14
   parent:
@@ -1076,7 +1076,7 @@
   - skos:Concept
   acronym: CB
   id: '070'
-  label_it: Campobasso
+  label: Campobasso
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF22
   parent:
@@ -1091,7 +1091,7 @@
   - skos:Concept
   acronym: FG
   id: '071'
-  label_it: Foggia
+  label: Foggia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF41
   parent:
@@ -1106,7 +1106,7 @@
   - skos:Concept
   acronym: BA
   id: '072'
-  label_it: Bari
+  label: Bari
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF42
   parent:
@@ -1121,7 +1121,7 @@
   - skos:Concept
   acronym: TA
   id: '073'
-  label_it: Taranto
+  label: Taranto
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF43
   parent:
@@ -1136,7 +1136,7 @@
   - skos:Concept
   acronym: BR
   id: '074'
-  label_it: Brindisi
+  label: Brindisi
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF44
   parent:
@@ -1151,7 +1151,7 @@
   - skos:Concept
   acronym: LE
   id: '075'
-  label_it: Lecce
+  label: Lecce
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF45
   parent:
@@ -1166,7 +1166,7 @@
   - skos:Concept
   acronym: PZ
   id: '076'
-  label_it: Potenza
+  label: Potenza
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF51
   parent:
@@ -1181,7 +1181,7 @@
   - skos:Concept
   acronym: MT
   id: '077'
-  label_it: Matera
+  label: Matera
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF52
   parent:
@@ -1196,7 +1196,7 @@
   - skos:Concept
   acronym: CS
   id: 078
-  label_it: Cosenza
+  label: Cosenza
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF61
   parent:
@@ -1211,7 +1211,7 @@
   - skos:Concept
   acronym: CZ
   id: 079
-  label_it: Catanzaro
+  label: Catanzaro
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF63
   parent:
@@ -1226,7 +1226,7 @@
   - skos:Concept
   acronym: RC
   id: 080
-  label_it: Reggio di Calabria
+  label: Reggio di Calabria
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF65
   parent:
@@ -1241,7 +1241,7 @@
   - skos:Concept
   acronym: TP
   id: 081
-  label_it: Trapani
+  label: Trapani
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG11
   parent:
@@ -1256,7 +1256,7 @@
   - skos:Concept
   acronym: PA
   id: 082
-  label_it: Palermo
+  label: Palermo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG12
   parent:
@@ -1271,7 +1271,7 @@
   - skos:Concept
   acronym: ME
   id: 083
-  label_it: Messina
+  label: Messina
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG13
   parent:
@@ -1286,7 +1286,7 @@
   - skos:Concept
   acronym: AG
   id: 084
-  label_it: Agrigento
+  label: Agrigento
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG14
   parent:
@@ -1301,7 +1301,7 @@
   - skos:Concept
   acronym: CL
   id: 085
-  label_it: Caltanissetta
+  label: Caltanissetta
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG15
   parent:
@@ -1316,7 +1316,7 @@
   - skos:Concept
   acronym: EN
   id: 086
-  label_it: Enna
+  label: Enna
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG16
   parent:
@@ -1331,7 +1331,7 @@
   - skos:Concept
   acronym: CT
   id: 087
-  label_it: Catania
+  label: Catania
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG17
   parent:
@@ -1346,7 +1346,7 @@
   - skos:Concept
   acronym: RG
   id: 088
-  label_it: Ragusa
+  label: Ragusa
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG18
   parent:
@@ -1361,7 +1361,7 @@
   - skos:Concept
   acronym: SR
   id: 089
-  label_it: Siracusa
+  label: Siracusa
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG19
   parent:
@@ -1376,7 +1376,7 @@
   - skos:Concept
   acronym: SS
   id: 090
-  label_it: Sassari
+  label: Sassari
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG25
   - uri: http://nuts.geovocab.org/id/ITG29
@@ -1392,7 +1392,7 @@
   - skos:Concept
   acronym: NU
   id: 091
-  label_it: Nuoro
+  label: Nuoro
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG2A
   - uri: http://nuts.geovocab.org/id/ITG26
@@ -1408,7 +1408,7 @@
   - skos:Concept
   acronym: CA
   id: 092
-  label_it: Cagliari
+  label: Cagliari
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG27
   parent:
@@ -1423,7 +1423,7 @@
   - skos:Concept
   acronym: PN
   id: 093
-  label_it: Pordenone
+  label: Pordenone
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD41
   parent:
@@ -1438,7 +1438,7 @@
   - skos:Concept
   acronym: IS
   id: 094
-  label_it: Isernia
+  label: Isernia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF21
   parent:
@@ -1453,7 +1453,7 @@
   - skos:Concept
   acronym: OR
   id: 095
-  label_it: Oristano
+  label: Oristano
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG28
   parent:
@@ -1468,7 +1468,7 @@
   - skos:Concept
   acronym: BI
   id: 096
-  label_it: Biella
+  label: Biella
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC13
   parent:
@@ -1483,7 +1483,7 @@
   - skos:Concept
   acronym: LC
   id: 097
-  label_it: Lecco
+  label: Lecco
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC43
   parent:
@@ -1498,7 +1498,7 @@
   - skos:Concept
   acronym: LO
   id: 098
-  label_it: Lodi
+  label: Lodi
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC49
   parent:
@@ -1513,7 +1513,7 @@
   - skos:Concept
   acronym: RN
   id: 099
-  label_it: Rimini
+  label: Rimini
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD59
   - uri: http://nuts.geovocab.org/id/ITE31
@@ -1529,7 +1529,7 @@
   - skos:Concept
   acronym: PO
   id: '100'
-  label_it: Prato
+  label: Prato
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE15
   parent:
@@ -1544,7 +1544,7 @@
   - skos:Concept
   acronym: KR
   id: '101'
-  label_it: Crotone
+  label: Crotone
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF62
   parent:
@@ -1559,7 +1559,7 @@
   - skos:Concept
   acronym: VV
   id: '102'
-  label_it: Vibo Valentia
+  label: Vibo Valentia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF64
   parent:
@@ -1574,7 +1574,7 @@
   - skos:Concept
   acronym: VB
   id: '103'
-  label_it: Verbano-Cusio-Ossola
+  label: Verbano-Cusio-Ossola
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC14
   parent:
@@ -1589,7 +1589,7 @@
   - skos:Concept
   acronym: MB
   id: '108'
-  label_it: Monza e della Brianza
+  label: Monza e della Brianza
   nuts:
   - uri: http://nuts.geovocab.org/id/-
   parent:
@@ -1604,7 +1604,7 @@
   - skos:Concept
   acronym: FM
   id: '109'
-  label_it: Fermo
+  label: Fermo
   nuts:
   - uri: http://nuts.geovocab.org/id/-
   parent:
@@ -1619,7 +1619,7 @@
   - skos:Concept
   acronym: BT
   id: '110'
-  label_it: Barletta-Andria-Trani
+  label: Barletta-Andria-Trani
   nuts:
   - uri: http://nuts.geovocab.org/id/-
   parent:
@@ -1634,7 +1634,7 @@
   - skos:Concept
   acronym: SU
   id: '111'
-  label_it: Sud Sardegna
+  label: Sud Sardegna
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG2A
   - uri: http://nuts.geovocab.org/id/ITG2B

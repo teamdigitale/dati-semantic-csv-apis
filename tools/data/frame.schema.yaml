@@ -4,6 +4,33 @@ description: |-
   This JSON Schema defines the structure of JSON-LD frames used in the API and CSV generation in the https://schema.gov.it ecosystem.
   Thus, it is not a generic JSON Schema validator for all JSON-LD frames, but rather a specific schema that enforces the necessary constraints for the frames used in this project.
 $defs:
+  HierarchicalArray:
+    description: |-
+      A hierarchical field must be structured as an array in the JSON-LD output to correctly represent multiple values and maintain compatibility with JSON-LD framing.
+
+      The "@container": "@set" directive is used to indicate that the field should be treated as a set of values, allowing for multiple entries without enforcing a specific order. This is essential for fields like "parent" that may have multiple broader concepts in a hierarchical structure.
+
+      Additionally, the "@type" of the field must not conflict with the JSON array structure, ensuring that the data can be correctly framed and processed without errors.
+    type: object
+    required:
+    - "@container"
+    properties:
+      "@container":
+        enum:
+        - "@set"
+        - "@list"
+      "@type":
+        description: |-
+          A hierarchical field must not have an "@type" that conflicts with the JSON array structure.
+        not:
+          enum:
+          - "@vocab"
+          - "@id"
+      "@context":
+        properties:
+          uri:
+            const: "@id"
+
   JSONLDContext:
     description: |-
       The standardized "@context" must be a dictionary,
@@ -14,58 +41,31 @@ $defs:
       have a consistent structure once projected to a CSV or an API response
       distribution.
     type: object
+    required:
+    - uri
+    - label
     properties:
       uri:
         description: |-
           The "uri" field must be mapped to "@id" to ensure that the unique identifier of each item is correctly represented in the JSON-LD output.
         const: "@id"
+      label:
+        description: |-
+          The "label" field is required
       parent:
         description: |-
           The "parent" field, if present, must be mapped to "skos:broader" and use "@container": "@set" to ensure that hierarchical relationships between items are correctly represented as an array of broader concepts in the JSON-LD output.
 
           Further implementations may allow for additional
           mappings beyond skos:broader.
-        type: object
-        required:
-        - "@container"
-        properties:
-          "@container":
-            enum:
-            - "@set"
-            - "@list"
-          "@type":
-            description: |-
-              The "parent" field must not have an "@type" that conflicts with the JSON array structure.
-            not:
-              enum:
-              - "@vocab"
-              - "@id"
-          "@context":
-            properties:
-              uri:
-                const: "@id"
+        $ref: "#/$defs/HierarchicalArray"
       vocab:
         description: |-
           The "vocab" field, if present, must not have an "@type" that conflicts with the JSON array structure.
 
           This field is used to represent the vocabulary or scheme to which the item belongs, and it must be structured as an array of URIs in the JSON-LD output.
-        type: object
-        required:
-        - "@container"
-        properties:
-          "@container":
-            enum:
-            - "@set"
-            - "@list"
-          "@type":
-            not:
-              enum:
-              - "@vocab"
-              - "@id"
-          "@context":
-            properties:
-              uri:
-                const: "@id"
+        $ref: "#/$defs/HierarchicalArray"
+
 type: object
 required:
 - "@context"

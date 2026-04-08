@@ -81,19 +81,19 @@ def test_create_payload(snapshot):
     Example:
 
     - id: '1'
-      label_it: Agenti chimici inorganici
+      label: Agenti chimici inorganici
       level: 1
       uri: https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale/grande_gruppo/1
       href: https://schema.gov.it/vocabularies/v1/vocabularies/inail/agente_causale/1
 
     - id: '1.1'
-      label_it: Agenti chimici inorganici gruppo a
+      label: Agenti chimici inorganici gruppo a
       level: 2
       uri: https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale/gruppo/1.1
       href: https://schema.gov.it/vocabularies/v1/vocabularies/inail/agente_causale/1.1
 
     - id: "11110103"
-      label_it: Idruri
+      label: Idruri
       level: 3
       uri: https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale/agente/11110103
       href: https://schema.gov.it/vocabularies/v1/vocabularies/inail/agente_causale/11110103

@@ -179,7 +179,7 @@ testcases:
         "@id": "skos:notation"
 
       #Localize labels. Order is relevant.
-      label_it:
+      label:
         "@id": skos:prefLabel
         "@language": it
       # When mapping to a list, use @container: @set
@@ -219,7 +219,7 @@ testcases:
     - "https://w3id.org/italia/work-accident/onto/adm_serv/AgenteCausaleINAIL"
     uri: {}
     id: {}
-    label_it:
+    label:
       "@language": ["it"]
       "@value": {}
     level: {}
@@ -242,7 +242,7 @@ testcases:
   expected_payload: agente_causale_skos.data.yaml
   expected_jsonschema: agente_causale_skos.oas3.yaml
   expected_csv: |
-    id,label_it,level,parent,url,vocab
+    id,label,level,parent,url,vocab
     11110101,Idrogeno,3,gruppo/1.1,agente/11110101,../agente_causale
     11110102,Tritio,3,gruppo/1.1,agente/11110102,../agente_causale
     1,Agenti chimici inorganici,1,[],grande_gruppo/1,../agente_causale
@@ -277,7 +277,7 @@ testcases:
         fields:
         - name: id
           type: string
-        - name: label_it
+        - name: label
           type: string
         - name: level
           type: integer
@@ -330,7 +330,7 @@ testcases:
       #
       uri: "@id"
       id: "dct:identifier"
-      label_it:
+      label:
         "@id": rdfs:label
         "@language": it
       level:
@@ -345,7 +345,7 @@ testcases:
     - "https://w3id.org/italia/work-accident/onto/adm_serv/AgenteCausaleINAIL"
     level: {}
     id: {}
-    label_it:
+    label:
       "@language": ["it", "en"]
       "@value": {}
   expected_payload: agente_causale_rdfs.data.yaml
@@ -463,9 +463,6 @@ testcases:
       label:
         "@id": skos:prefLabel
         "@language": it
-      label_it:
-        "@id": skos:prefLabel
-        "@language": it
       label_en:
         "@id": skos:prefLabel
         "@language": en
@@ -507,7 +504,6 @@ testcases:
     id: {}
     label_de: {}
     label_en: {}
-    label_it: {}
     label:
       "@language": ["it", "en", "de"]
       "@value": {}

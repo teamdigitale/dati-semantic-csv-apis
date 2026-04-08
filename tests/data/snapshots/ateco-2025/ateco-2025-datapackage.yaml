@@ -67,9 +67,6 @@ resources:
       label_en:
         '@id': skos:prefLabel
         '@language': en
-      label_it:
-        '@id': skos:prefLabel
-        '@language': it
       level:
         '@id': clvapit:hasRankOrder
         '@type': xsd:int
