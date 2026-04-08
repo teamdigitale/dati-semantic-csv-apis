@@ -13,7 +13,6 @@ from importlib.metadata import PackageNotFoundError, version
 
 import click
 
-from tools._build_info import BUILD_COMMIT
 from tools.commands.apistore import apistore
 from tools.commands.csv import csv
 from tools.commands.datapackage import datapackage
@@ -28,10 +27,7 @@ def _cli_version_string() -> str:
     try:
         pkg_version = version("dati-semantic-apis")
     except PackageNotFoundError:
-        pkg_version = "0+unknown"
-
-    if BUILD_COMMIT and BUILD_COMMIT != "unknown":
-        return f"{pkg_version}+{BUILD_COMMIT}"
+        pkg_version = "0+dev"
 
     return pkg_version
 

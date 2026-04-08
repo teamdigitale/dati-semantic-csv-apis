@@ -1,5 +1,5 @@
 [build-system]
-requires = ["setuptools>=68.0", "wheel"]
+requires = ["setuptools>=80", "wheel", "setuptools-scm[simple]>=9.2"]
 build-backend = "setuptools.build_meta"
 
 [project]
@@ -48,8 +48,6 @@ exclude = ["docs*", "tests*", "assets*", "apiv1*"]
 
 [tool.setuptools.package-data]
 "*" = ["*.yaml", "*.yml", "*.csv", "*.json", "*.ttl", "*.yamlld"]
-
-[tool.setuptools_scm]
 
 #
 # Testing configuration.
