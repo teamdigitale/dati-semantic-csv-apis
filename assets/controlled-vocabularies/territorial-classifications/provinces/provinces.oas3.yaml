@@ -4,7 +4,7 @@ components:
       example:
         acronym: TO
         id: '001'
-        label_it: Torino
+        label: Torino
         nuts:
         - uri: http://nuts.geovocab.org/id/ITC11
         parent:
@@ -19,7 +19,7 @@ components:
           minLength: 1
           pattern: ^[A-Za-z0-9._/-]+$
           type: string
-        label_it:
+        label:
           maxLength: 500
           minLength: 1
           type: string
@@ -65,7 +65,7 @@ components:
       required:
       - acronym
       - id
-      - label_it
+      - label
       - nuts
       - parent
       - uri
@@ -81,7 +81,7 @@ components:
         id:
           '@id': skos:notation
         l0: https://w3id.org/italia/onto/l0/
-        label_it:
+        label:
           '@id': skos:prefLabel
           '@language': it
         nuts:
