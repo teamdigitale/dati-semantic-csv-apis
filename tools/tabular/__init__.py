@@ -249,9 +249,6 @@ class Tabular(Vocabulary):
         if not resource_path:
             raise ValueError("resource_path is required")
 
-        if not self.frame or "@context" not in self.frame:
-            raise ValueError("frame must contain @context")
-
         # Extract field definitions from frame's @context
         context = self.frame["@context"]
         expanded_context = expand_context_to_absolute_uris(context)

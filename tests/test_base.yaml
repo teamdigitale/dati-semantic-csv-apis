@@ -57,6 +57,58 @@ testcases:
     - TypeA
     - TypeB
 
+- id: uri not mapped to @id
+  description: |-
+    When:
+
+    - A JSON-LD frame with 'uri' in @context not mapped to '@id'.
+
+    Then:
+
+    - A ValueError is raised.
+  frame:
+    "@context":
+      uri: "http://example.com/uri"
+    "@type": SomeType
+
+- id: parent uri not mapped to @id
+  description: |-
+    When:
+
+    - A JSON-LD frame where parent/@context/uri is not mapped to '@id'.
+
+    Then:
+
+    - A ValueError is raised.
+  frame:
+    "@context":
+      uri: "@id"
+      parent:
+        "@id": "http://www.w3.org/2004/02/skos/core#broader"
+        "@container": "@set"
+        "@context":
+          uri: "http://example.com/uri"
+    "@type": SomeType
+
+- id: vocab uri not mapped to @id
+  description: |-
+    When:
+
+    - A JSON-LD frame where vocab/@context/uri is not mapped to '@id'.
+
+    Then:
+
+    - A ValueError is raised.
+  frame:
+    "@context":
+      uri: "@id"
+      vocab:
+        "@id": "http://www.w3.org/2004/02/skos/core#inScheme"
+        "@container": "@set"
+        "@context":
+          uri: "http://example.com/uri"
+    "@type": SomeType
+
 - id: invalid allowed value for id field
   description: |-
     When:

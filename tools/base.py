@@ -7,6 +7,7 @@ from importlib.resources.abc import Traversable
 from pathlib import Path
 from typing import Any, TypedDict, cast
 
+import jsonschema
 import yaml
 
 from tools.utils import expand_context_to_absolute_uris
@@ -29,6 +30,7 @@ APPLICATION_LD_JSON_FRAMED = (
     APPLICATION_LD_JSON + '; profile="http://www.w3.org/ns/json-ld#framed"'
 )
 DATADIR: Traversable = importlib.resources.files(__name__) / "data"
+_FRAME_SCHEMA = yaml.safe_load((DATADIR / "frame.schema.yaml").read_text())
 
 JsonScalar = (int, float, bool, str, type(None))
 DbScalar = JsonScalar + (bytes,)  # SQLite-compatible
@@ -123,6 +125,11 @@ class JsonLDFrame(dict):
                 f"String @context is not supported: {self.context}"
             )
 
+        try:
+            jsonschema.validate(dict(self), _FRAME_SCHEMA)
+        except jsonschema.ValidationError as e:
+            raise ValueError(e.message) from e
+
         # Check if @type exists
         _type = self.get("@type")
         if not _type:
@@ -165,22 +172,6 @@ class JsonLDFrame(dict):
                 if field not in ALLOWED_VALUES:
                     continue
                 expected_iris = ALLOWED_VALUES[field]
-
-                # parent and vocab must be dicts with @container: @set
-                # and must not have @type: @vocab or @type: @id
-                if field in ("parent", "vocab"):
-                    if not isinstance(definition, dict):
-                        raise ValueError(
-                            f"Frame field '{field}' must be a dict, got {type(definition).__name__}"
-                        )
-                    if definition.get("@container") not in ("@set", "@list"):
-                        raise ValueError(
-                            f"Frame field '{field}' must contain '@container': '@set' or '@list', got {definition.get('@container')}"
-                        )
-                    if definition.get("@type") in ("@vocab", "@id"):
-                        raise ValueError(
-                            f"Frame field '{field}' must not contain '@type': '@vocab' or '@type': '@id'"
-                        )
 
                 # Extract @id from dict if definition is a dict (e.g., {"@id": "...", "@container": "@set"})
                 actual_iri = (

@@ -131,7 +131,9 @@ info:
     \ negli anni la classificazione ha subito due aggiornamenti, uno nel 2021 l'altro\
     \ nel 2022;\n    - Ateco 2002: 883 categorie, raggruppate in 514 classi, 224 gruppi,\
     \ 62 divisioni, 17 sezioni, 16 sottosezioni;\n    - Ateco 1991: 874 categorie,\
-    \ raggruppate in 512 classi, 222 gruppi, 60 divisioni, 17 sezioni, 16 sottosezioni."
+    \ raggruppate in 512 classi, 222 gruppi, 60 divisioni, 17 sezioni, 16 sottosezioni.\n\
+    \n## Metadata:\n\nURI: https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025\n\
+    Keywords: Ateco, Ateco2025, Attività Economica, classificazione\n\n"
   title: Ateco 2025 - Classificazione delle attività economiche
   version: versione 2025
   x-agencyId: istat
