@@ -154,7 +154,10 @@ class JsonLDFrame(dict):
                     "http://purl.org/dc/terms/identifier",
                     "http://purl.org/dc/elements/1.1/identifier",
                 ],
-                "label": ["http://www.w3.org/2004/02/skos/core#prefLabel"],
+                "label": [
+                    "http://www.w3.org/2004/02/skos/core#prefLabel",
+                    "http://www.w3.org/2000/01/rdf-schema#label",
+                ],
                 #'label_de': ['http://www.w3.org/2004/02/skos/core#prefLabel'],
                 #'label_en': ['http://www.w3.org/2004/02/skos/core#prefLabel'],
                 #'label_it': ['http://www.w3.org/2004/02/skos/core#prefLabel'],
