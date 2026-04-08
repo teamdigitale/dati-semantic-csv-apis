@@ -301,7 +301,43 @@
       stdout:
       - >-
         ✓ Created
+- id: openapi_create_fail_with_mismatching_frame_and_jsonld
+  description: |-
+    Given:
+    - a JSON-LD file with a context
+    - a JSON-LD frame that do not match the fields in the JSON-LD file
 
+    When:
+    - I run `openapi create` with both --jsonld and --frame
+
+    Then:
+    - the command exits successfully
+    - a warning message is shown indicating the mismatch (covers logging for mismatching frame and jsonld)
+  steps:
+  - command:
+    - openapi
+    - create
+    - --ttl
+    - assets/controlled-vocabularies/provinces/provinces.ttl
+    - --jsonld
+    - tests/data/snapshots/provinces/provinces.data.yamlld
+    - --frame
+    - assets/controlled-vocabularies/agente_causale/latest/agente_causale.frame.yamlld
+    - --vocabulary-uri
+    - https://w3id.org/italia/controlled-vocabulary/territorial-classifications/provinces
+    - --output
+    - tests/data/snapshots/provinces/provinces-invalid-frame.deleteme.oas3.yaml
+    - --force
+    expected:
+      exit_status: 1
+      logs:
+      - >-
+        Frame compatibility check failed: 201 triples in sample
+        not found in full dataset
+      stdout:
+      - Existing framed data may not be fully compatible with
+        the frame. Please ensure the data matches the frame's
+        structure.
 - id: openapi_validate_invalid_spec
   description: |-
     Given:

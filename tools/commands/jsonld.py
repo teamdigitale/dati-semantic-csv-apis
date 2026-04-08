@@ -7,6 +7,7 @@ Commands for creating and validating JSON-LD artifacts.
 
 import logging
 from pathlib import Path
+from typing import cast
 
 import click
 import orjson as json
@@ -14,7 +15,7 @@ import yaml
 from rdflib.compare import IsomorphicGraph
 
 from tools.base import URI, JsonLDFrame
-from tools.commands.utils import check_output_file
+from tools.commands.utils import check_output_file, yaml_dump
 from tools.projector import select_fields_inplace
 from tools.utils import IGraph
 from tools.vocabulary import Vocabulary
@@ -216,7 +217,7 @@ def create_jsonld_framed(
         framed["@graph"] = sorted(framed["@graph"], key=lambda x: x.get(URI))
 
     with output.open("w", encoding="utf-8") as f:
-        yaml.safe_dump(framed, f, allow_unicode=True, indent=2, sort_keys=True)
+        yaml_dump(cast(dict, framed), f)
 
 
 def validate_jsonld_subset(

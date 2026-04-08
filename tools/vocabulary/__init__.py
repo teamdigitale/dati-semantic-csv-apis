@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, cast
 
 import orjson
+import orjson as json
 from rdflib import DCTERMS, OWL, SKOS, Graph, Namespace
 
 # from rdflib.plugins.serializers.jsonld import from_rdf
@@ -18,6 +19,7 @@ from tools.base import (
     RDFText,
 )
 from tools.projector import framer
+from tools.utils import IGraph
 
 log = logging.getLogger(__name__)
 
@@ -427,3 +429,48 @@ class Vocabulary:
                 framed = result
             log.info(f"Callback applied successfully: {callback.__name__}")
         return framed
+
+
+def is_frame_compatible_with_data(
+    frame: JsonLDFrame, data: JsonLD, sample_size: int = 20
+) -> bool:
+    """
+    Check that a JSON-LD frame is compatible with a framed JSON-LD dataset
+    by verifying a sample of entries are a subset of the RDF graph derived
+    from the full dataset.
+
+    Builds two graphs from `data`:
+    - the full graph (all entries)
+    - a sample graph (first `sample_size` entries re-framed with `frame`'s context)
+
+    Returns True if the sample graph is a subset of the full graph,
+    i.e. no triples in the sample fall outside the full dataset.
+    """
+    graph = data.get("@graph", [])
+    full_doc = {"@context": data.get("@context", {}), "@graph": graph}
+    sample_doc = {
+        "@context": dict(frame.context),
+        "@graph": graph[:sample_size],
+    }
+
+    try:
+        full_ig = IGraph.parse(
+            data=json.dumps(full_doc), format="application/ld+json"
+        )
+        sample_ig = IGraph.parse(
+            data=json.dumps(sample_doc), format="application/ld+json"
+        )
+    except Exception:
+        log.exception(
+            "Failed to parse JSON-LD data for frame compatibility check"
+        )
+        return False
+
+    extra = sample_ig - full_ig
+    if extra:
+        log.warning(
+            "Frame compatibility check failed: %d triples in sample not found in full dataset",
+            len(extra),
+        )
+        return False
+    return True

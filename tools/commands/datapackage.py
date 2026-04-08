@@ -17,7 +17,7 @@ import click
 import yaml
 from frictionless import Package
 
-from tools.commands.utils import check_output_file
+from tools.commands.utils import check_output_file, yaml_dump
 from tools.tabular import Tabular
 
 log = logging.getLogger(__name__)
@@ -172,9 +172,7 @@ def create_datapackage_metadata(
     # Write the datapackage stub to the output file
     log.debug(f"Writing datapackage stub to {output}")
     with output.open("w", encoding="utf-8") as f:
-        yaml.safe_dump(
-            datapackage_stub, f, allow_unicode=True, indent=2, sort_keys=True
-        )
+        yaml_dump(datapackage_stub, f)
 
     log.info(f"Datapackage stub created: {output}")
 

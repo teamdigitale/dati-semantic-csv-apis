@@ -11,7 +11,7 @@ import click
 import yaml
 
 from tools.base import TEXT_TURTLE, JsonLDFrame
-from tools.commands.utils import check_output_file
+from tools.commands.utils import check_output_file, yaml_dump
 from tools.openapi import Apiable
 
 log = logging.getLogger(__name__)
@@ -88,14 +88,18 @@ def create_command(
 
     check_output_file(output, force)
 
-    create_oas_spec(
-        ttl=ttl,
-        jsonld=jsonld,
-        frame=frame,
-        vocabulary_uri=vocabulary_uri,
-        output=output,
-        max_samples=max_samples or None,
-    )
+    try:
+        create_oas_spec(
+            ttl=ttl,
+            jsonld=jsonld,
+            frame=frame,
+            vocabulary_uri=vocabulary_uri,
+            output=output,
+            max_samples=max_samples or None,
+        )
+    except Exception as e:
+        click.secho(f"✗ openapi creation failed: {e}", fg="red", err=True)
+        raise click.Abort() from e
     click.echo(f"✓ Created: {output}")
 
 
@@ -128,7 +132,6 @@ def create_oas_spec(
     with jsonld.open() as f:
         apiable.json_ld = yaml.safe_load(f)
 
-    # Generate OpenAPI specification
     log.debug("Generating OpenAPI specification")
     openapi_spec = apiable.openapi(
         add_constraints=True,
@@ -136,12 +139,9 @@ def create_oas_spec(
         max_samples=max_samples,
     )
 
-    # Write to output file
     log.debug(f"Writing OpenAPI specification to {output}")
     with output.open("w", encoding="utf-8") as f:
-        yaml.safe_dump(
-            openapi_spec, f, allow_unicode=True, indent=2, sort_keys=True
-        )
+        yaml_dump(openapi_spec, f)
 
     log.info(f"openapi stub created: {output}")
     return apiable

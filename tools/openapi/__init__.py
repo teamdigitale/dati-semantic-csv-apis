@@ -22,7 +22,12 @@ from tools.base import (
     JSONLDText,
     RDFText,
 )
-from tools.vocabulary import LANG_NONE, Vocabulary, VocabularyMetadata
+from tools.vocabulary import (
+    LANG_NONE,
+    Vocabulary,
+    VocabularyMetadata,
+    is_frame_compatible_with_data,
+)
 
 from .jsonschema import OAS3SchemaBuilder
 
@@ -69,6 +74,10 @@ class Apiable(Vocabulary):
         frame: JsonLDFrame,
         format=TEXT_TURTLE,
     ):
+        # Fail fast if the frame is invalid.
+        frame.validate(strict=True)
+        self.frame = frame
+
         if isinstance(rdf_data, (str, Path)):
             super().__init__(rdf_data, format=format)
         elif isinstance(rdf_data, dict):
@@ -84,10 +93,6 @@ class Apiable(Vocabulary):
             self.graph = to_rdf(rdf_data, self.graph)
         else:
             raise ValueError(f"Unsupported rdf_data type: {type(rdf_data)}")
-
-        frame.validate(strict=True)
-
-        self.frame = frame
 
     def create_api_data(self, sample=False) -> JsonLD:
         """
@@ -112,6 +117,11 @@ class Apiable(Vocabulary):
         else:
             log.info("Data is already framed, skipping framing step")
             data = self.json_ld
+            if not is_frame_compatible_with_data(self.frame, data):
+                raise ValueError(
+                    "Existing framed data may not be fully compatible with the frame. "
+                    "Please ensure the data matches the frame's structure."
+                )
 
         for callback in callbacks:
             ts = time.time()
