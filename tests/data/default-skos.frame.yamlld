@@ -21,9 +21,6 @@
   label:
     "@id": skos:prefLabel
     "@language": it
-  label_it:
-    "@id": skos:prefLabel
-    "@language": it
   label_en:
     "@id": skos:prefLabel
     "@language": en
@@ -67,7 +64,6 @@ uri: {}
 id: {}
 label_de: {}
 label_en: {}
-label_it: {}
 label:
   "@language": ["it", "en", "de"]
   "@value": {}

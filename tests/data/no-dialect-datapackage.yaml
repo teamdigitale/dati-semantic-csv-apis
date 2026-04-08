@@ -12,7 +12,7 @@ resources:
       type: string
     - name: id
       type: string
-    - name: label_it
+    - name: label
       type: string
     - name: acronym
       type: string
@@ -26,7 +26,7 @@ resources:
       id:
         '@id': skos:notation
       l0: https://w3id.org/italia/onto/l0/
-      label_it:
+      label:
         '@id': skos:prefLabel
         '@language': it
       owl: http://www.w3.org/2002/07/owl#

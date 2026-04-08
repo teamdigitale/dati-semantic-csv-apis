@@ -131,7 +131,7 @@
       - >-
         CSV roundtrip validation passed with 107 rows and 321
         triples
-- id: csv_create_no_output
+- id: csv_create_agente_causale_no_output
   description: |-
     Given:
     - a JSON-LD file and datapackage
@@ -156,7 +156,7 @@
       - >-
         Using output path from datapackage
 
-- id: csv_create_different_output
+- id: csv_create_agente_causale_different_output
   description: |-
     Given:
     - a JSON-LD file and datapackage
