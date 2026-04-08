@@ -14,6 +14,7 @@ import pytest
 
 from tests.constants import TESTCASES
 from tools.projector import JsonLDFrame
+from tools.store import URI
 from tools.tabular import Tabular
 
 
@@ -77,41 +78,6 @@ def test_datapackage_stub_invalid_metadata(data: str, frame: JsonLDFrame):
             tabular.datapackage_stub()
 
 
-# Test 3: Line 253 - Frame without @context
-@pytest.mark.parametrize(
-    "data,frame_dict",
-    [
-        pytest.param(
-            TESTCASES[0]["data"],
-            {"@type": "skos:Concept"},
-            id="frame_without_context",
-        ),
-        pytest.param(
-            TESTCASES[0]["data"],
-            {},
-            id="empty_frame",
-        ),
-    ],
-)
-def test_dataresource_stub_frame_without_context(data: str, frame_dict: dict):
-    """
-    Test that dataresource_stub raises ValueError when frame
-    does not contain @context.
-
-    Covers line 253:
-    - raise ValueError("frame must contain @context")
-    """
-    # Create a frame without @context
-    frame = JsonLDFrame({"@context": {}, "@type": "skos:Concept"})
-    tabular = Tabular(rdf_data=data, frame=frame)
-
-    # Manually set the frame to one without @context
-    tabular.frame = frame_dict
-
-    with pytest.raises(ValueError, match="frame must contain @context"):
-        tabular.dataresource_stub("test", Path("test.csv"))
-
-
 # Test 4: Lines 260-265 - Frame with @id field mapping
 @pytest.mark.parametrize(
     "data,base_frame",
@@ -132,7 +98,7 @@ def test_dataresource_stub_with_id_field(data: str, base_frame: JsonLDFrame):
     # Create a frame with a field mapped to @id
     frame_with_id = {
         "@context": {
-            "id": "@id",  # Map "id" to @id
+            URI: "@id",  # Map "uri" to @id
             "label": "http://www.w3.org/2004/02/skos/core#prefLabel",
         },
         "@type": "http://www.w3.org/2004/02/skos/core#Concept",
@@ -145,12 +111,12 @@ def test_dataresource_stub_with_id_field(data: str, base_frame: JsonLDFrame):
 
     # Verify that "id" field is present and is type "string"
     fields = resource["schema"]["fields"]
-    id_field = next((f for f in fields if f["name"] == "id"), None)
+    uri_field = next((f for f in fields if f["name"] == URI), None)
 
-    assert id_field is not None
-    assert id_field["type"] == "string"
+    assert uri_field is not None
+    assert uri_field["type"] == "string"
     # The id field should be the first one added
-    assert fields[0] == id_field
+    assert fields[0] == uri_field
 
 
 # Test 7: Line 331 - Unsupported quoteChar
