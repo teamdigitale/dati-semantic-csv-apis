@@ -6,7 +6,7 @@
   dct: http://purl.org/dc/terms/
   id:
     '@id': skos:notation
-  label: &id001
+  label:
     '@id': skos:prefLabel
     '@language': it
   label_de:
@@ -15,7 +15,6 @@
   label_en:
     '@id': skos:prefLabel
     '@language': en
-  label_it: *id001
   level:
     '@id': clvapit:hasRankOrder
     '@type': xsd:int

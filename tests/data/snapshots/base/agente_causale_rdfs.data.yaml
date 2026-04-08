@@ -3,7 +3,7 @@
     https://w3id.org/italia/work-accident/onto/adm_serv/AgenteCausaleINAIL
   - skos:Concept
   id: '11110101'
-  label_it: Idrogeno
+  label: Idrogeno
   level: '3'
   uri: agente/11110101
 - '@type':
@@ -11,7 +11,7 @@
     https://w3id.org/italia/work-accident/onto/adm_serv/AgenteCausaleINAIL
   - skos:Concept
   id: '11110102'
-  label_it: Tritio
+  label: Tritio
   level: '3'
   uri: agente/11110102
 - '@type':
@@ -19,7 +19,7 @@
     https://w3id.org/italia/work-accident/onto/adm_serv/AgenteCausaleINAIL
   - skos:Concept
   id: '1'
-  label_it: >-
+  label: >-
     Agenti chimici inorganici
   level: '1'
   uri: grande_gruppo/1
@@ -28,7 +28,7 @@
     https://w3id.org/italia/work-accident/onto/adm_serv/AgenteCausaleINAIL
   - skos:Concept
   id: '1.1'
-  label_it: >-
+  label: >-
     Agenti chimici inorganici gruppo a
   level: '2'
   uri: gruppo/1.1

@@ -49,7 +49,7 @@ def test_dataresource_stub_field_types(data: str, frame: JsonLDFrame):
     expected_fields = [
         {"name": URI, "type": "string"},
         {"name": "id", "type": "string"},
-        {"name": "label_it", "type": "string"},
+        {"name": "label", "type": "string"},
         {"name": "level", "type": "integer"},
         {"name": "integerField", "type": "integer"},
         {"name": "intField", "type": "integer"},

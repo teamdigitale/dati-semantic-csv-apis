@@ -42,8 +42,6 @@ resources:
       type: string
     - name: label
       type: string
-    - name: label_it
-      type: string
     - name: label_en
       type: string
     - name: label_de
@@ -67,9 +65,6 @@ resources:
       label_en:
         '@id': skos:prefLabel
         '@language': en
-      label_it:
-        '@id': skos:prefLabel
-        '@language': it
       level:
         '@id': clvapit:hasRankOrder
         '@type': xsd:int

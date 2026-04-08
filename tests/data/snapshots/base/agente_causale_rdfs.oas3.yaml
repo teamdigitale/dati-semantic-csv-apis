@@ -3,7 +3,7 @@ components:
     Item:
       example:
         id: '11110101'
-        label_it: Idrogeno
+        label: Idrogeno
         level: '3'
         uri: agente/11110101
       properties:
@@ -12,7 +12,7 @@ components:
           pattern: >-
             ^[A-Za-z0-9._/-]+$
           type: string
-        label_it:
+        label:
           maxLength: 500
           minLength: 1
           type: string
@@ -23,7 +23,7 @@ components:
           type: string
       required:
       - id
-      - label_it
+      - label
       - level
       - uri
       type: object
@@ -37,7 +37,7 @@ components:
         dct: >-
           http://purl.org/dc/terms/
         id: dct:identifier
-        label_it:
+        label:
           '@id': rdfs:label
           '@language': it
         level:

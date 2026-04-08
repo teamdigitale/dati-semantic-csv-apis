@@ -113,7 +113,7 @@ resources:
       type: array
       format: default
     # Derived from: skos:prefLabel @it
-    - name: label_it
+    - name: label
       title: Label (Italian)
       description: Preferred label in Italian (skos:prefLabel)
       type: string
@@ -215,7 +215,7 @@ resources:
       constraints:
         required: true
     # Derived from: skos:prefLabel @it
-    - name: label_it
+    - name: label
       title: Italian Label
       description: Preferred label in Italian
       constraints:

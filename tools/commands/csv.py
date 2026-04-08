@@ -164,7 +164,12 @@ def create_csv_from_jsonld(
     # This is not a valid frame for projection because
     #  it lacks "@type", so we don't validate it.
     frame = JsonLDFrame({"@context": context})
-
+    try:
+        frame.validate(strict=True, require_type=False)
+    except Exception as e:
+        log.error(f"Frame validation failed: {e}")
+        click.secho(f"✗ Frame validation failed: {e}", fg="red", err=True)
+        raise click.Abort() from e
     log.debug("Extracted frame context from datapackage")
 
     # Extract the CSV dialect from the datapackage

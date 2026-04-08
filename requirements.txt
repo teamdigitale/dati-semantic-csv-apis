@@ -5,7 +5,7 @@ orjson==3.11.6
 oxrdflib==0.5.0
 pandas==2.2.3
 pyyaml==6.0.3
-rdflib==7.5.0
+rdflib==7.6.0
 sqlalchemy==2.0.48
 #
 # The pyld version is pinned to a specific commit containing

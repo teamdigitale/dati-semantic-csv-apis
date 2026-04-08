@@ -92,7 +92,6 @@ components:
         label_en:
           '@id': skos:prefLabel
           '@language': en
-        label_it: *id001
         level:
           '@id': clvapit:hasRankOrder
           '@type': xsd:int

@@ -3,7 +3,7 @@ components:
     Item:
       example:
         id: '11110101'
-        label_it: Idrogeno
+        label: Idrogeno
         level: 3
         parent:
         - id: '1.1'
@@ -20,7 +20,7 @@ components:
           pattern: >-
             ^[A-Za-z0-9._/-]+$
           type: string
-        label_it:
+        label:
           maxLength: 500
           minLength: 1
           type: string
@@ -60,7 +60,7 @@ components:
           type: array
       required:
       - id
-      - label_it
+      - label
       - level
       - parent
       - uri
@@ -76,7 +76,7 @@ components:
           http://purl.org/dc/terms/
         id: &id001
           '@id': skos:notation
-        label_it:
+        label:
           '@id': skos:prefLabel
           '@language': it
         level:

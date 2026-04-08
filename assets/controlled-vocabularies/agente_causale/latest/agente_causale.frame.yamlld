@@ -28,7 +28,7 @@
     # "@type": "@value"
 
   #Localize labels. Order is relevant.
-  label_it:
+  label:
     "@id": skos:prefLabel
     "@language": it
 
@@ -58,7 +58,7 @@
   - &jsonld_type "INAILService:AgenteCausaleINAIL"
 uri: {}
 id: {}
-label_it:
+label:
   "@language": ["it"]
   "@value": {}
 level: {}
