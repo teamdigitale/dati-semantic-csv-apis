@@ -36182,8 +36182,8 @@
   - INAILService:AgenteCausaleINAIL
   - skos:Concept
   id: '40400007'
-  label: Movimenti asimmetrici (solo una parte del corpo esegue un compito per
-    un lungo periodo)
+  label: Movimenti asimmetrici (solo una parte del corpo esegue un compito per un
+    lungo periodo)
   level: 3
   parent:
   - '@type':
@@ -36198,8 +36198,7 @@
   - INAILService:AgenteCausaleINAIL
   - skos:Concept
   id: '40400008'
-  label: Utilizzo di strumenti (troppo pesanti) con movimenti falsi (movimenti
-    improvvisi)
+  label: Utilizzo di strumenti (troppo pesanti) con movimenti falsi (movimenti improvvisi)
   level: 3
   parent:
   - '@type':
@@ -38404,8 +38403,7 @@
   - INAILService:AgenteCausaleINAIL
   - skos:Concept
   id: '60401003'
-  label: Saldatura a bassa temperatura incluso saldatura di rame con raccordi a
-    pipa
+  label: Saldatura a bassa temperatura incluso saldatura di rame con raccordi a pipa
   level: 3
   parent:
   - '@type':
