@@ -37,7 +37,7 @@ env:
   CI: true
   PYTHON_VERSION: ${{ inputs.python_version }}
   VOCABULARY_DIR: 'assets/controlled-vocabularies'
-  CLI_VERSION: '0.0.11'
+  CLI_VERSION: '0.0.12'
 jobs:
   #
   # Job 1: Detect which assets changed and what type of files changed.
