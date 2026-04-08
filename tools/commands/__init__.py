@@ -9,11 +9,10 @@ Organized by artifact type:
 """
 
 import logging
-from importlib.metadata import PackageNotFoundError, version
 
 import click
 
-from tools._build_info import BUILD_COMMIT
+from tools._version import __version__
 from tools.commands.apistore import apistore
 from tools.commands.csv import csv
 from tools.commands.datapackage import datapackage
@@ -24,16 +23,7 @@ log = logging.getLogger(__name__)
 
 
 def _cli_version_string() -> str:
-    """Return CLI version string including build commit if available."""
-    try:
-        pkg_version = version("dati-semantic-apis")
-    except PackageNotFoundError:
-        pkg_version = "0+unknown"
-
-    if BUILD_COMMIT and BUILD_COMMIT != "unknown":
-        return f"{pkg_version}+{BUILD_COMMIT}"
-
-    return pkg_version
+    return __version__
 
 
 LOG_LEVELS = ["CRITICAL", "ERROR", "WARNING", "INFO", "DEBUG"]
