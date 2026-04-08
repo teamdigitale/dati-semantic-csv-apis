@@ -47,10 +47,10 @@
   - herapit:Area
   broader: []
   definition_en: Area CUN
-  definition_it: Area CUN
+  definition: Area CUN
   id: Area 02
   label_en: Physics
-  label_it: Scienze fisiche
+  label: Scienze fisiche
   level: '1'
   scheme:
   - uri: https://w3id.org/italia/controlled-vocabulary/classifications-for-universities/academic-disciplines
@@ -60,10 +60,10 @@
   - herapit:Area
   broader: []
   definition_en: Area CUN
-  definition_it: Area CUN
+  definition: Area CUN
   id: Area 03
   label_en: Chemistry
-  label_it: Scienze chimiche
+  label: Scienze chimiche
   level: '1'
   scheme:
   - uri: https://w3id.org/italia/controlled-vocabulary/classifications-for-universities/academic-disciplines
@@ -73,10 +73,10 @@
   - herapit:Area
   broader: []
   definition_en: Area CUN
-  definition_it: Area CUN
+  definition: Area CUN
   id: Area 04
   label_en: Earth sciences
-  label_it: Scienze della terra
+  label: Scienze della terra
   level: '1'
   scheme:
   - uri: https://w3id.org/italia/controlled-vocabulary/classifications-for-universities/academic-disciplines

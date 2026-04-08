@@ -22,7 +22,7 @@
   id:
     "@id": skos:notation
 
-  label_it:
+  label:
     "@id": skos:prefLabel
     "@language": it
 
@@ -66,7 +66,7 @@
   - &jsonld_type "clvapit:Province"
 uri: {}
 id: {}
-label_it: {}
+label: {}
 acronym: {}
 
 vocab:
