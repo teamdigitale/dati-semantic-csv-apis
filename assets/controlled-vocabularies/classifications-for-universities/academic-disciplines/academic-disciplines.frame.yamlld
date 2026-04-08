@@ -14,7 +14,7 @@
 
   id: skos:notation
 
-  label_it:
+  label:
     "@id": skos:prefLabel
     "@language": it
 
@@ -22,7 +22,7 @@
     "@id": skos:prefLabel
     "@language": en
 
-  definition_it:
+  definition:
     "@id": skos:definition
     "@language": it
 
@@ -52,9 +52,9 @@ scheme:
 
 uri: {}
 id: {}
-label_it: {}
+label: {}
 label_en: {}
-definition_it: {}
+definition: {}
 definition_en: {}
 level: {}
 

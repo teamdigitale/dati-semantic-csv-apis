@@ -8,7 +8,7 @@
   definition_en:
     '@id': skos:definition
     '@language': en
-  definition_it:
+  definition:
     '@id': skos:definition
     '@language': it
   herapit: https://w3id.org/italia/onto/HER/
@@ -16,7 +16,7 @@
   label_en:
     '@id': skos:prefLabel
     '@language': en
-  label_it:
+  label:
     '@id': skos:prefLabel
     '@language': it
   level:
@@ -34,10 +34,10 @@
   - herapit:Area
   broader: []
   definition_en: Area CUN
-  definition_it: Area CUN
+  definition: Area CUN
   id: Area 01
   label_en: Mathematics and informatics
-  label_it: Scienze matematiche e informatiche
+  label: Scienze matematiche e informatiche
   level: '1'
   scheme:
   - uri: https://w3id.org/italia/controlled-vocabulary/classifications-for-universities/academic-disciplines
