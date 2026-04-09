@@ -13,7 +13,7 @@ import click
 import yaml
 
 from tools.base import JsonLDFrame
-from tools.commands.utils import check_output_file
+from tools.commands.utils import check_output_file, handle_invalid_frame_error
 
 log = logging.getLogger(__name__)
 
@@ -25,6 +25,7 @@ def apistore():
 
 
 @apistore.command(name="create")
+@handle_invalid_frame_error
 @click.option(
     "--ttl",
     type=click.Path(

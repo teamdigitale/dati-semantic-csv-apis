@@ -15,7 +15,11 @@ import yaml
 from rdflib.compare import IsomorphicGraph
 
 from tools.base import URI, JsonLDFrame
-from tools.commands.utils import check_output_file, yaml_dump
+from tools.commands.utils import (
+    check_output_file,
+    handle_invalid_frame_error,
+    yaml_dump,
+)
 from tools.projector import select_fields_inplace
 from tools.utils import IGraph
 from tools.vocabulary import Vocabulary
@@ -30,6 +34,7 @@ def jsonld():
 
 
 @jsonld.command(name="create")
+@handle_invalid_frame_error
 @click.option(
     "--ttl",
     type=click.Path(

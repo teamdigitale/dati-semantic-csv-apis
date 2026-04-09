@@ -11,7 +11,11 @@ import click
 import yaml
 
 from tools.base import TEXT_TURTLE, JsonLDFrame
-from tools.commands.utils import check_output_file, yaml_dump
+from tools.commands.utils import (
+    check_output_file,
+    handle_invalid_frame_error,
+    yaml_dump,
+)
 from tools.openapi import Apiable
 
 log = logging.getLogger(__name__)
@@ -24,6 +28,7 @@ def openapi():
 
 
 @openapi.command(name="create")
+@handle_invalid_frame_error
 @click.option(
     "--ttl",
     type=click.Path(

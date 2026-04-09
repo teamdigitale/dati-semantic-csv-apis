@@ -51,6 +51,10 @@ type JSONLDText = str
 type JsonLDFunction = Callable[[JsonLD], JsonLD | None]
 
 
+class InvalidFrameError(ValueError):
+    """Exception raised for invalid JSON-LD frames."""
+
+
 class JsonLDFrame(dict):
     """
     JSON-LD Frame dictionary with helper methods.
@@ -121,28 +125,28 @@ class JsonLDFrame(dict):
             ValueError: If not valid.
         """
         if not isinstance(self.context, dict):
-            raise ValueError(
+            raise InvalidFrameError(
                 f"String @context is not supported: {self.context}"
             )
 
         try:
             jsonschema.validate(dict(self), _FRAME_SCHEMA)
         except jsonschema.ValidationError as e:
-            raise ValueError(e.message) from e
+            raise InvalidFrameError(e.message) from e
 
         # Check if @type exists
         _type = self.get("@type")
         if not _type:
             if require_type:
                 log.error("Frame must specify an @type")
-                raise ValueError("Frame must specify an @type")
+                raise InvalidFrameError("Frame must specify an @type")
 
         # Ensure only a single @type is specified
         if isinstance(_type, list) and len(_type) > 1:
             log.error(
                 "Frame must specify a single @type, found list: %s", _type
             )
-            raise ValueError(
+            raise InvalidFrameError(
                 f"Frame must specify a single @type, found list: {_type}"
             )
 
@@ -188,7 +192,7 @@ class JsonLDFrame(dict):
                         f"  - '{f}': {iris}"
                         for f, iris in ALLOWED_VALUES.items()
                     )
-                    raise ValueError(
+                    raise InvalidFrameError(
                         f"Frame field '{field}' must be one of {expected_iris}, "
                         f"got {actual_iri}.\n"
                         f"Supported fields and their allowed IRIs:\n{supported_fields}"
