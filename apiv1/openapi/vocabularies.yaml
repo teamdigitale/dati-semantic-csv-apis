@@ -156,7 +156,13 @@ paths:
           description: |-
             A successful response returns the OpenAPI specification
             for the vocabulary identified by `agencyId` and `keyConcept`.
+
+            To support both human users and machine clients,
+            the response supports text/plain too.
           content:
+            text/plain; charset=utf-8:
+              schema:
+                type: string
             application/openapi+yaml:
               schema:
                 type: object
