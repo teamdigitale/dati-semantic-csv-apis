@@ -166,9 +166,18 @@ def framer(
         #
         # Control block for debugging framing issues.
         #
-        assert "@graph" in framed_batch, (
-            "Empty batch framing result, '@graph' key missing"
-        )
+        if "@graph" not in framed_batch:
+            raise ValueError(
+                "Empty batch framing result, '@graph' key missing: "
+                "Either the frame is too restrictive and filters out all items in the batch, or the dataset is empty."
+                ""
+                + ("Try with --batch-size=0." if batch_size > 0 else "")
+                + (
+                    "Try without --pre-filter-by-type."
+                    if pre_filter_by_type
+                    else ""
+                )
+            )
 
         for item in framed_batch["@graph"]:
             _validate_vocab_entries(item)

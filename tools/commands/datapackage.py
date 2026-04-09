@@ -17,7 +17,11 @@ import click
 import yaml
 from frictionless import Package
 
-from tools.commands.utils import check_output_file, yaml_dump
+from tools.commands.utils import (
+    check_output_file,
+    handle_invalid_frame_error,
+    yaml_dump,
+)
 from tools.tabular import Tabular
 
 log = logging.getLogger(__name__)
@@ -30,6 +34,7 @@ def datapackage():
 
 
 @datapackage.command(name="create")
+@handle_invalid_frame_error
 @click.option(
     "--ttl",
     type=click.Path(

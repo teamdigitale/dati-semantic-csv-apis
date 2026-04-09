@@ -12,7 +12,7 @@ import click
 import yaml
 
 from tools.base import JsonLDFrame
-from tools.commands.utils import check_output_file
+from tools.commands.utils import check_output_file, handle_invalid_frame_error
 from tools.tabular.validate import TabularValidator
 from tools.utils import IGraph
 
@@ -26,6 +26,7 @@ def csv():
 
 
 @csv.command(name="create")
+@handle_invalid_frame_error
 @click.option(
     "--jsonld",
     type=click.Path(
@@ -164,12 +165,7 @@ def create_csv_from_jsonld(
     # This is not a valid frame for projection because
     #  it lacks "@type", so we don't validate it.
     frame = JsonLDFrame({"@context": context})
-    try:
-        frame.validate(strict=True, require_type=False)
-    except Exception as e:
-        log.error(f"Frame validation failed: {e}")
-        click.secho(f"✗ Frame validation failed: {e}", fg="red", err=True)
-        raise click.Abort() from e
+    frame.validate(strict=True, require_type=False)
     log.debug("Extracted frame context from datapackage")
 
     # Extract the CSV dialect from the datapackage
