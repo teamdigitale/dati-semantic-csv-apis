@@ -97,6 +97,17 @@ def test_base_requests(single_entry_db, testcase):
                 assert log in _logs
 
 
+def test_get_item_href_points_to_self(single_entry_db):
+    """href in the /{id} response must be the canonical self URL."""
+    config = _config(single_entry_db)
+    with client_harness(create_app, config) as (client, _):
+        url = "/vocabularies/istat/ateco-2025/A01"
+        response = client.get(url)
+        assert response.status_code == 200
+        expected_href = f"{config.API_BASE_URL.rstrip('/')}{url}"
+        assert response.json()["href"] == expected_href
+
+
 @pytest.mark.skip(reason="Check why it happens.")
 def test_missing_vocab_returns_404(
     broken_dataset_db,

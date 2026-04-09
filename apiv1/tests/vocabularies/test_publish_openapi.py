@@ -21,9 +21,13 @@ def test_show_vocabulary_spec(single_entry_db):
 
         spec = yaml.safe_load(response.text)
         assert spec["info"]["title"] == ATECO_SPEC["info"]["title"]
+        returned_item = spec["components"]["schemas"]["Item"]
+        stored_item = ATECO_SPEC["components"]["schemas"]["Item"]
+        # href: null is injected at serve time; verify the rest of the schema is unchanged.
+        assert returned_item["x-jsonld-context"].get("href") is None
         assert (
-            spec["components"]["schemas"]["Item"]
-            == ATECO_SPEC["components"]["schemas"]["Item"]
+            returned_item["x-jsonld-context"].items()
+            >= stored_item["x-jsonld-context"].items()
         )
         # The vocabulary-specific server URL should have been appended.
         server_urls = [s["url"] for s in spec.get("servers", [])]

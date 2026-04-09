@@ -161,7 +161,12 @@ async def get_item(
             detail=f"Vocabulary item with ID '{id}' not found",
         )
     api_url = "/".join(
-        [request.state.api_base_url.rstrip("/"), agencyId, keyConcept]
+        [
+            request.state.api_base_url.rstrip("/"),
+            "vocabularies",
+            agencyId,
+            keyConcept,
+        ]
     )
     item = _transform_item(item, api_url)
     return ConnexionResponse(
@@ -244,6 +249,8 @@ async def show_vocabulary_spec(
         spec["components"]["schemas"]["Item"] = vocabulary_oas["components"][
             "schemas"
         ]["Item"]
+        # href is reserved: the API injects it at response time to reference the current resource.
+        spec["components"]["schemas"]["Item"]["x-jsonld-context"]["href"] = None
         spec.setdefault("servers", []).append(
             {
                 "url": f"{request.state.api_base_url}/vocabularies/{agencyId}/{keyConcept}/"

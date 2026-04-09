@@ -133,6 +133,12 @@ $defs:
 
           - skos:inScheme
         $ref: "#/$defs/HierarchicalArray"
+      href:
+        description: |-
+          "href" is a reserved keyword automatically added by the API to each item
+          to reference the current resource URL.
+          If present in the context, it must be mapped to null to avoid conflicts.
+        const: null
 
 type: object
 required:
