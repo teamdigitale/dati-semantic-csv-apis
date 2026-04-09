@@ -1,0 +1,84 @@
+---
+- id: help_flag
+  description: |-
+    Given:
+    - the CLI
+    When:
+    - I run `--help`
+    Then:
+    - the command exits successfully
+    - the output contains the main command groups
+  steps:
+  - description: |-
+      When:
+      - I run `--help`
+      Then:
+      - the command exits successfully
+      - the output contains the main command groups
+    command:
+    - --help
+    expected:
+      exit_status: 0
+      stdout:
+      - jsonld
+      - datapackage
+      - csv
+      - openapi
+
+- id: help_invalid_frame_hints_dump_schema
+  description: |-
+    Given:
+    - an invalid JSON-LD frame file (missing required `label` field)
+    When:
+    - I run `jsonld create` with the invalid frame
+    Then:
+    - the command exits with an error
+    - the output mentions `help dump-schema`
+  steps:
+  - description: |-
+      When:
+      - I run `jsonld create` with an invalid frame
+      Then:
+      - the command exits with an error
+      - the output mentions `help dump-schema`
+    command:
+    - jsonld
+    - create
+    - --ttl
+    - assets/controlled-vocabularies/agente_causale/latest/agente_causale.ttl
+    - --frame
+    - tests/data/invalid-frame.yamlld
+    - --vocabulary-uri
+    - https://w3id.org/italia/controlled-vocabulary/classifications-for-social-security/agente-causale
+    - --output
+    - tests/data/snapshots/invalid-frame-output.deleteme.yaml
+    expected:
+      exit_status: 1
+      stdout:
+      - "help dump-schema"
+
+- id: help_dump_schema
+  description: |-
+    Given:
+    - the CLI
+    When:
+    - I run `help dump-schema`
+    Then:
+    - the command exits successfully
+    - the output contains the JSON Schema header
+  steps:
+  - description: |-
+      When:
+      - I run `help dump-schema`
+      Then:
+      - the command exits successfully
+      - the output contains the JSON Schema header
+    command:
+    - help
+    - dump-schema
+    expected:
+      exit_status: 0
+      stdout:
+      - "\\$schema: https://json-schema.org/draft/2020-12/schema"
+      - "uri"
+      - "label"
