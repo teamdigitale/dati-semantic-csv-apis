@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import starlette.convertors
 import yaml
 from common.cache_control_middleware import (
     CacheControlResponseHeaderMiddleware,
@@ -30,6 +31,26 @@ from connexion.middleware.main import MiddlewarePosition
 from starlette.middleware.cors import CORSMiddleware
 
 from tools.store import APIStore
+
+
+class _NonEmptyPathConvertor(starlette.convertors.Convertor):
+    """Override Starlette's default path convertor (.*) to require at least one character.
+
+    Without this, a trailing slash in e.g. GET /vocabularies/inail/agente_causale/
+    is matched as {itemId:path} with itemId='' and then rejected with 400 by
+    schema validation instead of routing correctly to the listing endpoint.
+    """
+
+    regex = ".+"
+
+    def convert(self, value: str) -> str:
+        return value
+
+    def to_string(self, value: str) -> str:
+        return value
+
+
+starlette.convertors.CONVERTOR_TYPES["path"] = _NonEmptyPathConvertor()
 
 
 @dataclass
@@ -148,8 +169,12 @@ def create_app(config: Config | None = None) -> AsyncApp:
         ),
         position=MiddlewarePosition.BEFORE_CONTEXT,
     )
+
     app.add_middleware(
         CORSMiddleware,
+        # BEFORE_ROUTING ensures CORS headers are added even
+        #  for 3xx responses.
+        position=MiddlewarePosition.BEFORE_ROUTING,
         allow_origins=config.CORS_ORIGINS or [],
         allow_methods=["GET"],
         allow_headers=["*"],

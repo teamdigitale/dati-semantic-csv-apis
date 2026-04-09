@@ -90,4 +90,4 @@ if __name__ == "__main__":
     _validate_db(harvest_db=local_path)
     logger.info("DB validation successful")
 
-    os.execvp("uvicorn", ["uvicorn"] + sys.argv[1:])
+    os.execvp("uvicorn", ["uvicorn", "--no-server-header"] + sys.argv[1:])

@@ -1,3 +1,9 @@
 localhost {
-    reverse_proxy api-data:8080
+    reverse_proxy api-data:8080 {
+        # Explicitly set X-Forwarded-Proto so the upstream app knows the original
+        # request was HTTPS and generates correct scheme in redirect Location headers.
+        # See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/X-Forwarded-Proto
+        # See: https://caddyserver.com/docs/caddyfile/directives/reverse_proxy
+        header_up X-Forwarded-Proto https
+    }
 }

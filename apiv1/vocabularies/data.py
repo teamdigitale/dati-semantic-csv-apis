@@ -245,7 +245,42 @@ async def show_vocabulary_spec(
             "schemas"
         ]["Item"]
         spec.setdefault("servers", []).append(
-            {"url": f"{request.state.api_base_url}{agencyId}/{keyConcept}/"}
+            {
+                "url": f"{request.state.api_base_url}/vocabularies/{agencyId}/{keyConcept}/"
+            }
+        )
+
+        # Remove all paths that don't start with /vocabularies/{agencyId}/{keyConcept}
+        # In the others, replace that prefix with "/"
+        prefix = r"/vocabularies/{agencyId}/{keyConcept}"
+        spec["paths"] = {
+            (path[len(prefix) :] or "/")
+            if path.startswith(prefix)
+            else path: details
+            for path, details in spec["paths"].items()
+            if path.startswith(prefix)
+        }
+
+        # Then, remove the {agencyId} and {keyConcept} path parameters, since they are fixed in this context.
+        for _, methods in spec["paths"].items():
+            for _, details in methods.items():
+                if "parameters" in details:
+                    details["parameters"] = [
+                        param
+                        for param in details["parameters"]
+                        if not any(
+                            x in (param.get("name", "") or param.get("$ref"))
+                            for x in ("agencyId", "keyConcept")
+                        )
+                    ]
+
+        # Accommodate clients that prefer text/* responses
+        #   e.g. users accessing the OAS via a browser.
+        want_text = request.headers.get("accept", "").startswith("text/")
+        content_type = (
+            "text/plain; charset=utf-8"
+            if want_text
+            else "application/openapi+yaml"
         )
 
         # Accommodate clients that prefer text/* responses

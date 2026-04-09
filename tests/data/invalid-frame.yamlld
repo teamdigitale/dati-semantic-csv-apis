@@ -1,0 +1,5 @@
+---
+# Invalid frame: missing required `label` field in @context
+"@context":
+  uri: "@id"
+"@type": skos:Concept

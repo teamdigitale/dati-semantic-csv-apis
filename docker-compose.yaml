@@ -47,6 +47,9 @@ services:
     # Uvicorn configuration.
     - UVICORN_WORKERS=4
     - UVICORN_LOG_LEVEL=debug
+    # Trust X-Forwarded-Proto from the Caddy reverse proxy so that 307 redirects
+    # return https:// Location headers instead of http://.
+    - UVICORN_FORWARDED_ALLOW_IPS=*
     ports:
     - "8001:8080"
     # Allow for downloading the harvest database and for testing the API from the host machine.
