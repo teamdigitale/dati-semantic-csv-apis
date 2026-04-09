@@ -21,7 +21,7 @@
     "@id": skos:prefLabel
     "@language": en
 
-  definition_it:
+  definition:
     "@id": skos:definition
     "@language": it
 
@@ -50,7 +50,7 @@ uri: {}
 id: {}
 label: {}
 label_en: {}
-definition_it: {}
+definition: {}
 level: {}
 
 broader:
