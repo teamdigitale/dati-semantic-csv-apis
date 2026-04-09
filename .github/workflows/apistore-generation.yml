@@ -262,7 +262,7 @@ jobs:
         base: assets
         commit-message: >-
           feat: regenerate artifacts for ${{ matrix.asset.path
-          }}
+          }} [skip ci]
         title: >-
           feat: artifact regeneration for ${{ matrix.asset.path
           }}
