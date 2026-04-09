@@ -105,6 +105,24 @@ testcases:
     response:
       status_code: 400
 #
+# Trailing slash tests
+#
+- name: trailing_slash_listing
+  description: |-
+    When:
+
+    - GET /vocabularies/{agencyId}/{keyConcept}/ with trailing slash
+
+    Then:
+
+    - Response status is 200 (not 400 from empty itemId matched via format:path)
+  request:
+    method: get
+    url: /vocabularies/istat/ateco-2025/
+  expected:
+    response:
+      status_code: 200
+#
 # Pagination tests
 #
 - name: pagination_invalid
@@ -273,6 +291,8 @@ testcases:
   expected:
     response:
       status_code: 200
+      headers:
+      - cache-control: max-age=3600
 - name: random_strings
   request:
   - method: get
