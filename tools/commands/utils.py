@@ -38,6 +38,11 @@ def handle_invalid_frame_error(func):
             for f in files:
                 click.secho(f"✗ File: {f}", fg="red", err=True)
             click.secho(f"✗ Invalid frame: {e}", fg="red", err=True)
+            click.secho(
+                "  Hint: run `help dump-schema` to see the expected frame schema.",
+                fg="yellow",
+                err=True,
+            )
             raise click.exceptions.Exit(1) from e
 
     return wrapper

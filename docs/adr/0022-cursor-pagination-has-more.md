@@ -38,6 +38,7 @@ Pros:
 
 Cons:
 
+- When `id` is not unique (which is not supported), `next_cursor` may result in infinite loops.
 - Clients that relied on `totalResults` to display a total count or compute
   page numbers must be updated.
 - Offset-based navigation is no longer supported on the data endpoint; sequential
