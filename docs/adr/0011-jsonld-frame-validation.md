@@ -28,31 +28,58 @@ and JSON member names.
 
 ## Decision
 
-When validating elements we support the following
-mapping:
+- [x] When validating elements we support the following
+  mapping:
 
-id:
+  id:
 
-- <http://www.w3.org/2004/02/skos/core#notation>
-- <http://purl.org/dc/terms/identifier>
-- <http://purl.org/dc/elements/1.1/identifier>
+  - <http://www.w3.org/2004/02/skos/core#notation>
+  - <http://purl.org/dc/terms/identifier>
+  - <http://purl.org/dc/elements/1.1/identifier>
 
-label:
+  label:
 
-- <http://www.w3.org/2004/02/skos/core#prefLabel>
+  - <http://www.w3.org/2004/02/skos/core#prefLabel>
 
-vocab:
+  vocab:
 
-- <http://www.w3.org/2004/02/skos/core#inScheme>
+  - <http://www.w3.org/2004/02/skos/core#inScheme>
 
-uri:
+  uri:
 
-- the Resource URI (a.k.a the JSON LD `@id` field).
-  We don't use the `url` field because Resource URIs
-  may not be dereferenceable.
+  - the Resource URI (a.k.a the JSON LD `@id` field).
+    We don't use the `url` field because Resource URIs
+    may not be dereferenceable.
+
+- [x] Validation is done via JSON Schema.
+
+- [x] `uri` and `label` are required.
+
+- [x] `vocab` and `parents` are JSON arrays of objects.
+
+- [x] Further labels such as rdfs:label may be tolerated.
+
+- [x] Providers must ensure that `id` is unique across the dataset, but this is not
+  currently enforced by the validation process.
+
+- [x] A CLI command is added to dump the frame JSON Schema for documentation.
+
+The following features are deferred:
+
+- if `id` is not provided, use the last part of the
+  base URI if it's an unique field.
+- validate unicity of `id` across the dataset.
 
 ## Consequences
 
-We can process EU vocabularies
-using <http://purl.org/dc/elements/1.1/identifier>
-even in strict mode.
+Pros:
+
+- clear contract for frame validation
+- can process EU vocabularies
+  using <http://purl.org/dc/elements/1.1/identifier>
+  even in strict mode.
+
+Cons:
+
+- requirements may be relaxed in future to accommodate
+  more vocabularies.

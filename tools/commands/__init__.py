@@ -13,6 +13,7 @@ from importlib.metadata import PackageNotFoundError, version
 
 import click
 
+from tools.base import JsonLDFrame
 from tools.commands.apistore import apistore
 from tools.commands.csv import csv
 from tools.commands.datapackage import datapackage
@@ -62,10 +63,23 @@ def cli(log_level):
     logging.basicConfig(level=getattr(logging, log_level))
 
 
+@click.group(name="help")
+def help_group():
+    """Help and reference commands."""
+    pass
+
+
+@help_group.command(name="dump-schema")
+def dump_schema_command():
+    """Print the JSON-LD frame schema (frame.schema.yaml) to stdout."""
+    click.echo(JsonLDFrame.schema_text(), nl=False)
+
+
 cli.add_command(jsonld)
 cli.add_command(datapackage)
 cli.add_command(csv)
 cli.add_command(openapi)
 cli.add_command(apistore)
+cli.add_command(help_group)
 
 __all__ = ["cli"]

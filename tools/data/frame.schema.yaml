@@ -3,6 +3,13 @@ $schema: https://json-schema.org/draft/2020-12/schema
 description: |-
   This JSON Schema defines the structure of JSON-LD frames used in the API and CSV generation in the https://schema.gov.it ecosystem.
   Thus, it is not a generic JSON Schema validator for all JSON-LD frames, but rather a specific schema that enforces the necessary constraints for the frames used in this project.
+
+  :warning: The CLI applies further validation rules on top
+  of this schema, such as:
+
+  - Specific field mappings for `label`, `parent`, and `vocab` fields;
+  - Only one `@type` is allowed;
+  - Field names must be valid variable names (e.g., no spaces, special characters, etc.);
 $defs:
   HierarchicalArray:
     description: |-
@@ -30,6 +37,11 @@ $defs:
         properties:
           uri:
             const: "@id"
+    examples:
+    - "@id": "skos:broader"
+      "@container": "@set"
+      "@context":
+        uri: "@id"
 
   JSONLDContext:
     description: |-
@@ -51,19 +63,75 @@ $defs:
         const: "@id"
       label:
         description: |-
-          The "label" field is required
+          The "label" field is required and it must be mapped
+          properly to a JSON string field.
+
+          If the rdf Property (e.g., skos:prefLabel) has language-tagged string values,
+          the frame must use "@language" to indicate the language of the label values.
+
+          Supported mappings:
+
+          - skos:prefLabel
+          - rdfs:label
+        examples:
+        - skos:prefLabel
+        - "@id": skos:prefLabel
+          "@language": "it"
+      level:
+        description: |-
+          The "level" field, if present, must be mapped to a JSON string field that indicates the hierarchical level of the item within the vocabulary.
+          This field is used to represent the depth of the item in a hierarchy, allowing for proper structuring and organization of concepts in the JSON-LD output.
+
+          Supported mappings:
+
+          - https://w3id.org/italia/onto/CLV/hasRankOrder
+          - http://rdf-vocabulary.ddialliance.org/xkos#depth
+        examples:
+        - xkos:depth
+        - https://w3id.org/italia/onto/CLV/hasRankOrder
+        - "@id": xkos:depth
+          "@type": "http://www.w3.org/2001/XMLSchema#integer"
+      id:
+        description: |-
+          The "id" field, if present, must be mapped to
+          a property that is an unique identifier for each item
+          within the vocabulary.
+          It's framed value must be a JSON string that serves as the unique identifier for each item in the vocabulary:
+          this could be achieved via type coercion.
+
+          This field is crucial for ensuring that each concept can be uniquely identified in CSV and APIs.
+
+          Supported mappings:
+
+          - skos:notation
+          - dcterms:identifier
+          - "http://purl.org/dc/elements/1.1/identifier"
+
+        examples:
+        - skos:notation
+        - "@id": skos:notation
+          "@type": "http://www.w3.org/2001/XMLSchema#string"
       parent:
         description: |-
-          The "parent" field, if present, must be mapped to "skos:broader" and use "@container": "@set" to ensure that hierarchical relationships between items are correctly represented as an array of broader concepts in the JSON-LD output.
+          The "parent" field tracks hierarchical relationships
+          between items,
+          ensuring they are correctly represented as
+          an array of broader concepts in the JSON-LD output.
 
           Further implementations may allow for additional
           mappings beyond skos:broader.
+
+          Supported mappings:
+
+          - skos:broader
         $ref: "#/$defs/HierarchicalArray"
       vocab:
         description: |-
-          The "vocab" field, if present, must not have an "@type" that conflicts with the JSON array structure.
-
           This field is used to represent the vocabulary or scheme to which the item belongs, and it must be structured as an array of URIs in the JSON-LD output.
+
+          Supported mappings:
+
+          - skos:inScheme
         $ref: "#/$defs/HierarchicalArray"
 
 type: object

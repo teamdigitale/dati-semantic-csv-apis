@@ -210,30 +210,6 @@ def framer(
     return framed
 
 
-def update_frame_with_key_field(framed: JsonLD, base_uri: str) -> None:
-    """
-    If the URI field of every entry starts with base_uri,
-    we can safely assume that the relative part of the URI
-    can be used as a "key" field.
-    So, add the "key" field to every entry containing the relative part of the URI.
-
-    Since a JSON-LD context can only define one "@id" mapping,
-    and this is "uri",
-    disassociate the "key" field in the "@context".
-    """
-    base_uri_len = len(base_uri)
-    context, graph = framed["@context"], framed["@graph"]
-    # Disassociate "key" field in context.
-    context["key"] = None
-
-    for entry in graph:
-        if not entry[URI].startswith(base_uri):
-            raise ValueError(
-                f"Entry URI {entry[URI]} does not start with base URI {base_uri}"
-            )
-        entry["key"] = entry[URI][base_uri_len:]
-
-
 def select_fields_inplace(framed: JsonLD, selected_fields: list[str]) -> None:
     """
     Slice the give data retaining only the

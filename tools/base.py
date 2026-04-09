@@ -30,7 +30,6 @@ APPLICATION_LD_JSON_FRAMED = (
     APPLICATION_LD_JSON + '; profile="http://www.w3.org/ns/json-ld#framed"'
 )
 DATADIR: Traversable = importlib.resources.files(__name__) / "data"
-_FRAME_SCHEMA = yaml.safe_load((DATADIR / "frame.schema.yaml").read_text())
 
 JsonScalar = (int, float, bool, str, type(None))
 DbScalar = JsonScalar + (bytes,)  # SQLite-compatible
@@ -130,7 +129,9 @@ class JsonLDFrame(dict):
             )
 
         try:
-            jsonschema.validate(dict(self), _FRAME_SCHEMA)
+            jsonschema.validate(
+                dict(self), yaml.safe_load(JsonLDFrame.schema_text())
+            )
         except jsonschema.ValidationError as e:
             raise InvalidFrameError(e.message) from e
 
@@ -213,6 +214,11 @@ class JsonLDFrame(dict):
         import yaml
 
         print(yaml.dump(dict(self), sort_keys=False))
+
+    @staticmethod
+    def schema_text() -> str:
+        """Return the raw text of the frame.schema.yaml file."""
+        return (DATADIR / "frame.schema.yaml").read_text()
 
     @staticmethod
     def load(fpath: Path) -> "JsonLDFrame":
