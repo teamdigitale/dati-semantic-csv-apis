@@ -248,9 +248,18 @@ async def show_vocabulary_spec(
             {"url": f"{request.state.api_base_url}{agencyId}/{keyConcept}/"}
         )
 
+        # Accommodate clients that prefer text/* responses
+        #   e.g. users accessing the OAS via a browser.
+        want_text = request.headers.get("accept", "").startswith("text/")
+        content_type = (
+            "text/plain; charset=utf-8"
+            if want_text
+            else "application/openapi+yaml"
+        )
+
         return ConnexionResponse(
             status_code=200,
-            content_type="application/openapi+yaml",
+            content_type=content_type,
             body=yaml.dump(spec),
         )
     except (json.JSONDecodeError, KeyError, AssertionError) as e:
