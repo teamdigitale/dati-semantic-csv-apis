@@ -177,9 +177,15 @@ jobs:
       id: check-files
       working-directory: ${{ matrix.asset.path }}
       shell: python {0}
+      env:
+        NEEDS_JSONLD: ${{ matrix.asset.needs_jsonld }}
+        NEEDS_APISTORE: ${{ matrix.asset.needs_apistore }}
       run: |
         import glob, os
         github_output = os.environ["GITHUB_OUTPUT"]
+        needs_jsonld = os.environ.get("NEEDS_JSONLD", "false") == "true"
+        needs_apistore = os.environ.get("NEEDS_APISTORE", "false") == "true"
+        found = {}
         with open(github_output, "a") as f:
             for pattern, key, file_key in [
                 ("*.oas3.yaml",    "oas3_exists",  "oas3_file"),
@@ -188,6 +194,7 @@ jobs:
                 ("*.data.yaml",    "data_exists",  "data_file"),
             ]:
                 files = glob.glob(pattern)
+                found[key] = bool(files)
                 if files:
                     f.write(f"{key}=true\n")
                     f.write(f"{file_key}={files[0]}\n")
@@ -195,40 +202,55 @@ jobs:
                 else:
                     f.write(f"{key}=false\n")
                     print(f"::warning title=Missing file::No {pattern} found in {os.getcwd()}")
+            ttl_files = glob.glob("*.ttl")
+            asset_name = ttl_files[0].removesuffix(".ttl") if ttl_files else ""
+            f.write(f"asset_name={asset_name}\n")
+            should_jsonld = (
+                (needs_jsonld or not found["data_exists"]) and
+                found["ttl_exists"] and
+                found["frame_exists"]
+            )
+            f.write(f"should_jsonld_create={str(should_jsonld).lower()}\n")
+            should_apistore = (
+                needs_apistore and
+                found["oas3_exists"] and
+                found["frame_exists"]
+            )
+            f.write(f"should_apistore_create={str(should_apistore).lower()}\n")
     - name: Run jsonld create
+      id: jsonld-create
       if: >-
-        matrix.asset.needs_jsonld &&
-        steps.check-files.outputs.ttl_exists == 'true' &&
-        steps.check-files.outputs.frame_exists == 'true' &&
+        steps.check-files.outputs.should_jsonld_create == 'true'
+        &&
         !contains(matrix.asset.path, 'theme-subtheme-mapping')
       working-directory: ${{ matrix.asset.path }}
       run: |
         set -e
-        ASSET_NAME=$(find . -maxdepth 1 -name "*.ttl" -printf "%f\n" | sed 's/\.ttl$//')
+        ASSET_NAME="${STEPS_CHECK_FILES_OUTPUTS_ASSET_NAME}"
 
-        # Extract vocabulary URI from the default @prefix : declaration (strip trailing slash)
-        VOCAB_URI=$(grep "^@prefix : " "${ASSET_NAME}.ttl" \
-          | sed "s|@prefix : <||;s|/*> \. *$||" \
-          | tr -d '[:space:]')
-        echo "Vocabulary URI: ${VOCAB_URI}"
-
+        # Use the only vocabulary URI available in the .ttl file.
+        # Current implementation fails if more than one vocabulary URI is present,
+        #   but this is not the case for any current asset. This is because
+        #   the frame expects exactly one vocabulary URI to be present in the data.
         /usr/local/bin/schema_gov_it_tools.bin \
           jsonld create \
           --ttl "${ASSET_NAME}.ttl" \
           --frame "${ASSET_NAME}.frame.yamlld" \
-          --vocabulary-uri "${VOCAB_URI}" \
+          --vocabulary-uri self \
           --output "${ASSET_NAME}.data.yaml" \
           --force
+      env:
+        STEPS_CHECK_FILES_OUTPUTS_ASSET_NAME: ${{ steps.check-files.outputs.asset_name
+          }}
     - name: Run apistore create
       if: >-
-        matrix.asset.needs_apistore &&
-        steps.check-files.outputs.oas3_exists == 'true' &&
-        steps.check-files.outputs.frame_exists == 'true' &&
+        steps.check-files.outputs.should_apistore_create == 'true'
+        &&
         !contains(matrix.asset.path, 'theme-subtheme-mapping')
       working-directory: ${{ matrix.asset.path }}
       run: |
         set -e
-        ASSET_NAME=$(find . -maxdepth 1 -name "*.ttl" -printf "%f\n" | sed 's/\.ttl$//')
+        ASSET_NAME="${STEPS_CHECK_FILES_OUTPUTS_ASSET_NAME}"
 
         /usr/local/bin/schema_gov_it_tools.bin \
           apistore create \
@@ -240,6 +262,8 @@ jobs:
         echo "Generated DB for ${ASSET_NAME}"
       env:
         MATRIX_ASSET: ${{ matrix.asset.path }}
+        STEPS_CHECK_FILES_OUTPUTS_ASSET_NAME: ${{ steps.check-files.outputs.asset_name
+          }}
     - name: Check for DB files
       id: check-db
       if: >-
@@ -248,21 +272,28 @@ jobs:
         !contains(matrix.asset.path, 'theme-subtheme-mapping')
       working-directory: ${{ matrix.asset.path }}
       run: |
-        if find . -maxdepth 1 -name "*.db" | grep -q .; then
+        DB_FILE="${STEPS_CHECK_FILES_OUTPUTS_ASSET_NAME}.db"
+        if [ -f "$DB_FILE" ]; then
           echo "db_exists=true" >> "$GITHUB_OUTPUT"
-          DB_FILE=$(find . -maxdepth 1 -name "*.db" -printf "%f\n" | head -1)
           echo "db_file=$DB_FILE" >> "$GITHUB_OUTPUT"
         else
           echo "db_exists=false" >> "$GITHUB_OUTPUT"
         fi
+      env:
+        STEPS_CHECK_FILES_OUTPUTS_ASSET_NAME: ${{ steps.check-files.outputs.asset_name
+          }}
     - name: Create Pull Request
       if: steps.check-db.outputs.db_exists == 'true'
       uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0  # v8.1.0
       with:
-        base: assets
+        # By default, the PR is created towards the branch that triggered the workflow.
+        #   If it's not the desider behavior, you can force the base branch with the `base` input.
+        base: >-
+          ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref
+          || github.ref_name }}
         commit-message: >-
           feat: regenerate artifacts for ${{ matrix.asset.path
-          }}
+          }} [skip ci]
         title: >-
           feat: artifact regeneration for ${{ matrix.asset.path
           }}
@@ -276,7 +307,8 @@ jobs:
           - `.oas3.yaml` / `.data.yaml` → `apistore create` only
 
           ## Generated Files
-          - `${{ matrix.asset.path }}/${{ steps.check-db.outputs.db_file }}`
+          ${{ steps.check-files.outputs.should_jsonld_create == 'true' && format('- `{0}/{1}.data.yaml`', matrix.asset.path, steps.check-files.outputs.asset_name) || '' }}
+          ${{ steps.check-db.outputs.db_exists == 'true' && format('- `{0}/{1}.db`', matrix.asset.path, steps.check-files.outputs.asset_name) || '' }}
 
           Generated by the [CI APIStore Create workflow](.github/workflows/apistore-generation.yml).
         branch: >-
