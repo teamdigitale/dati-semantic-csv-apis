@@ -334,3 +334,23 @@ testcases:
   expected:
     response:
       status_code: 404
+- name: get_item_with_slash_in_id
+  description: |-
+    When:
+
+    - GET an item whose skos:notation contains a '/'
+
+    Then:
+
+    - A literal slash in the URL path is accepted (format: path).
+    - A percent-encoded %2F in the URL path is also accepted.
+    - Both return the same 200 response.
+  request:
+  - method: get
+    url: "/vocabularies/istat/ateco-2025/A/01"
+  - method: get
+    url: "/vocabularies/istat/ateco-2025/A%2F01"
+  expected:
+    response:
+      status_code: 200
+      json: {"id": "A/01", "label": "Item A/01"}

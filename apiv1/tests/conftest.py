@@ -60,6 +60,21 @@ def single_entry_db(tmp_path: Path) -> str:
                     ),
                 }
                 for _id in range(100)
+            ]
+            + [
+                {
+                    "id": "A/01",
+                    "uri": "https://example.com/vocabularies/test/A/01",
+                    "label": "Item A/01",
+                    "level": "1",
+                    "_text": json.dumps(
+                        {
+                            "id": "A/01",
+                            "label": "Item A/01",
+                            "uri": "https://example.com/vocabularies/test/A/01",
+                        }
+                    ),
+                }
             ],
         )
         db.create_fts_table()
