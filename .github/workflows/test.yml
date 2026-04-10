@@ -121,6 +121,12 @@ jobs:
         # tox -e coverage -- -v -m asset
     - name: Build CLI binary
       run: |
+        # Since the test process may modify tracked files
+        #   (e.g., by generating code or modifying version numbers),
+        #   we need to reset any changes before building the binary,
+        #   otherwise setuptools_scm will detect a dirty working tree
+        #   and append a dev suffix to the version number.
+        git checkout -- .
         tox -e build
     - name: Upload CLI binary artifact (tagged)
       if: startsWith(github.ref, 'refs/tags/')
