@@ -289,6 +289,10 @@ class APIStore:
         *,
         query: str = "",
         agency_id: str = "",
+        author: str = "",
+        hreflang: str = "",
+        title: str = "",
+        key_concept: str = "",
         limit: int = 20,
         offset: int = 0,
     ) -> list[sqlite3.Row]:
@@ -297,6 +301,9 @@ class APIStore:
         Returns ``_metadata`` rows ranked by FTS5 relevance (best match first).
         Common FTS5 query syntax is supported: ``term``, ``term1 term2``,
         ``"exact phrase"``, ``term*`` (prefix), ``term1 OR term2``.
+
+        Additional filters (``author``, ``hreflang``, ``title``) are applied as
+        SQL predicates via ``json_extract`` on the ``catalog`` column.
         """
         if offset and not limit:
             log.debug(
@@ -316,18 +323,53 @@ class APIStore:
             qp["agency_id"] = agency_id.lower()
             agency_clause = " AND LOWER(m.agency_id) = :agency_id "
 
+        author_clause = ""
+        if author:
+            qp["author"] = f"%{author.lower()}%"
+            author_clause = (
+                " AND LOWER(json_extract(m.catalog, '$.author')) LIKE :author "
+            )
+
+        hreflang_clause = ""
+        if hreflang:
+            qp["hreflang"] = hreflang
+            hreflang_clause = (
+                " AND EXISTS ("
+                " SELECT 1 FROM json_each(json_extract(m.catalog, '$.hreflang'))"
+                " WHERE value = :hreflang"
+                " ) "
+            )
+
+        title_clause = ""
+        if title:
+            qp["title_filter"] = f"%{title.lower()}%"
+            title_clause = " AND LOWER(json_extract(m.catalog, '$.title')) LIKE :title_filter "
+
+        key_concept_clause = ""
+        if key_concept:
+            qp["key_concept"] = f"%{key_concept.lower()}%"
+            key_concept_clause = " AND LOWER(m.key_concept) LIKE :key_concept "
+
+        extra_clauses = (
+            agency_clause
+            + author_clause
+            + hreflang_clause
+            + title_clause
+            + key_concept_clause
+        )
+
         if query:
             qp["query"] = query
             q = f"""
-                    SELECT m.*
+                    SELECT m.*, COUNT(*) OVER () AS total_count
                     FROM _metadata m
                     JOIN {FTS_TABLE} f ON f.rowid = m.rowid
                     WHERE {FTS_TABLE} MATCH :query
-                    {agency_clause}
+                    {extra_clauses}
                     ORDER BY rank
             """
         else:
-            q = f"SELECT * FROM _metadata m WHERE 1=1 {agency_clause}"
+            q = f"SELECT m.*, COUNT(*) OVER () AS total_count FROM _metadata m WHERE 1=1 {extra_clauses}"
 
         if limit:
             qp["limit"] = str(limit)

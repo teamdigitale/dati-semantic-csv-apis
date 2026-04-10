@@ -20,41 +20,6 @@ LIMIT_DEFAULT = 20
 log = logging.getLogger(__name__)
 
 
-def filter_vocabularies(
-    items: list[dict[str, Any]],
-    author: str | None = None,
-    hreflang: str | None = None,
-    concept: str | None = None,
-    type_: str | None = None,
-    title: str | None = None,
-):
-    """
-    Filter vocabulary items based on provided criteria.
-
-    Args:
-        items: list of linkset items to filter.
-        author: Filter by author URI.
-        hreflang: Filter by language code (must be present in hreflang array).
-        concept: Filter by concept identifier (_concept field).
-        type_: Filter by vocabulary type URI (_vocabulary_type field).
-
-    Yields:
-        Filtered linkset items.
-    """
-    for item in items:
-        if title and title.lower() not in item.get("title", "").lower():
-            continue
-        if author and item.get("author") != author:
-            continue
-        if hreflang and hreflang not in item.get("hreflang", []):
-            continue
-        if concept and item.get("_concept") != concept:
-            continue
-        if type_ and item.get("_vocabulary_type") != type_:
-            continue
-        yield item
-
-
 def get_status():
     """
     Get the status of the API.
@@ -122,6 +87,8 @@ def _to_catalog_item(
                     "href": pre_url,
                 }
             ]
+        # Remove total_count if present, as it's not part of the catalog item
+        ret.pop("total_count", None)
         return ret
     except (KeyError, json.JSONDecodeError) as e:
         log.exception(
@@ -137,7 +104,6 @@ def _list_vocabularies_impl(
     author: str | None,
     hreflang: str | None,
     concept: str | None,
-    type: str | None,
     limit: int,
     offset: int,
     kwargs: dict[str, Any],
@@ -151,8 +117,17 @@ def _list_vocabularies_impl(
     db: APIStore = _get_database_or_fail()
 
     rows = db.search_metadata(
-        query=q or "", agency_id=agency_id, limit=limit, offset=offset
+        query=q or "",
+        agency_id=agency_id,
+        author=author or "",
+        hreflang=hreflang or "",
+        title=title or "",
+        key_concept=concept or "",
+        limit=limit,
+        offset=offset,
     )
+
+    total_count: int = dict(rows[0]).get("total_count", 0) if rows else 0
 
     items: list[dict[str, Any]] = [
         item
@@ -167,25 +142,14 @@ def _list_vocabularies_impl(
         is not None
     ]
 
-    filtered_items = list(
-        filter_vocabularies(
-            items,
-            author=author,
-            hreflang=hreflang,
-            concept=concept,
-            type_=type,
-            title=title,
-        )
-    )
-
     result = {
         "linkset": [
             {
                 "anchor": request.state.api_base_url,
                 "api-catalog": request.state.api_base_url,
-                "item": filtered_items[offset : offset + limit],
-                "total_count": len(filtered_items),
-                "count": len(filtered_items[offset : offset + limit]),
+                "item": items,
+                "total_count": total_count,
+                "count": len(items),
                 "limit": limit,
                 "offset": offset,
             }
@@ -201,7 +165,6 @@ def list_vocabularies(
     author: str | None = None,
     hreflang: str | None = None,
     concept: str | None = None,
-    type: str | None = None,
     limit: int = LIMIT_DEFAULT,
     offset: int = 0,
     **kwargs: Any,
@@ -210,10 +173,9 @@ def list_vocabularies(
     Get vocabularies with optional filtering.
 
     Args:
-        author: Filter by author URI.
+        author: Filter by substring of the author URI.
         hreflang: Filter by language code.
-        concept: Filter by concept identifier.
-        type: Filter by vocabulary type URI.
+        concept: Filter by substring of the key concept identifier.
         limit: Maximum number of items to return.
         offset: Number of items to skip before starting to collect the result set.
 
@@ -226,7 +188,6 @@ def list_vocabularies(
         author=author,
         hreflang=hreflang,
         concept=concept,
-        type=type,
         limit=limit,
         offset=offset,
         kwargs=kwargs,
@@ -240,7 +201,6 @@ def list_vocabularies_by_agency(
     author: str | None = None,
     hreflang: str | None = None,
     concept: str | None = None,
-    type: str | None = None,
     limit: int = LIMIT_DEFAULT,
     offset: int = 0,
     **kwargs: Any,
@@ -251,7 +211,6 @@ def list_vocabularies_by_agency(
         author=author,
         hreflang=hreflang,
         concept=concept,
-        type=type,
         limit=limit,
         offset=offset,
         kwargs=kwargs,

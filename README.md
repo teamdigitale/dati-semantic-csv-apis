@@ -13,12 +13,23 @@ This project is related to:
 
 - 💻 [Usage](#usage)
 
-<!-- - 🚀 [API](#api) -->
+- 🚀 [API](#api)
 
 <!-- - 📋 [Development](#development) -->
 
 - 📝 [Contributing](#contributing)
 - ⚖️ [License](#license)
+
+The repository currently contains:
+
+- a Python CLI for generating and validating
+  vocabulary artifacts;
+- an ASGI API for serving vocabulary catalogs,
+  entries, and per-vocabulary OpenAPI specs;
+- architecture and functional documentation in
+  [docs](docs).
+
+The core functional documentation is in Italian:
 
 ## Usage
 
@@ -29,17 +40,53 @@ You can find it in the [docs](docs) folder.
 - [CSV Serialization](docs/README.csv.md)
 - [REST API for Controlled Vocabularies](docs/README.api.md)
 
-Run `tools` tests with:
+## Quick start
+
+The project requires Python 3.12 or newer.
+
+Build CLI:
+
+```bash
+tox -e build
+dist/schema_gov_it_tools.bin --help
+```
+
+Run the root test suite:
+
+```bash
+tox --
+```
+
+Run the API test suite:
+
+```bash
+tox -e api
+```
+
+Run the containerized test environment:
 
 ```bash
 docker compose up test
 ```
 
-Build and run the API with:
+## API
+
+The API implementation lives in [apiv1](apiv1).
+It runs as an ASGI application on `uvicorn`.
+
+Start the local API container:
 
 ```bash
-docker compose up api-data
+docker compose up api-data --build
 ```
+
+Start the local TLS reverse proxy used in tests:
+
+```bash
+docker compose up api-data-tls
+```
+
+Then open <https://localhost/ui/>.
 
 ## Contributing
 
@@ -51,45 +98,26 @@ Please, see [CONTRIBUTING.md](CONTRIBUTING.md) for more details on:
 Repository layout is the following:
 
 ```text
-#
-# Documentation.
-#
-docs/
-└── adr
-#
-# Shared test assets.
-#
-assets/controlled-vocabularies/
-├── agente_causale
-│   └── latest
-├── ateco-2007-2022
-└── ateco-2025
-#
-# PoC Python code and tests.
-#
-tools/
-tests/
+docs/         Project documentation and ADRs
+assets/       Shared controlled vocabulary assets
+tools/        CLI implementation
+tests/        CLI and library tests
+apiv1/        API implementation and API tests
+scripts/      Helper scripts
 ```
 
-## Using this repository
+## Contributing
 
-You can create new projects starting from this repository,
-so you can use a consistent CI and checks for different projects.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for:
 
-See the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+- pre-commit setup;
+- branch and pull request workflow;
+- CI expectations.
 
-## Testing github actions
-
-Tune the Github pipelines in [.github/workflows](.github/workflows/).
-
-To speed up the development, you can test the pipeline with [act](https://github.com/nektos/act).
-Installing `act` is beyond the scope of this document.
-
-To test the pipeline locally and ensure that secrets (e.g., service accounts and other credentials)
-are correctly configured, use:
+You can also test GitHub Actions locally with
+[`act`](https://github.com/nektos/act):
 
 ```bash
 # Run a specific job in the pipeline
-act -j test -s CI_API_TOKEN="$(cat gh-ci.json)" \
-     -s CI_ACCOUNT=my-secret-account
+act -j test
 ```

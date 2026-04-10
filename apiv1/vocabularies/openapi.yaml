@@ -501,10 +501,13 @@ components:
       name: concept
       in: query
       explode: false
-      description: Filter by concept identifier
+      description: >-
+        Filter by a substring of the key concept identifier.
+
+        For example, `ateco` matches both `ateco-2007` and `ateco-2025`.
       schema:
         $ref: '#/components/schemas/TextFilter'
-      example: ateco-2007
+      example: ateco
     #
     # Text filters
     #
@@ -522,7 +525,7 @@ components:
         constrain the maximum length.
       schema:
         $ref: '#/components/schemas/TextFilter'
-      example: ateco
+      example: classificazione
     q:
       name: q
       in: query
