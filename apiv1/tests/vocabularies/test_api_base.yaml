@@ -19,6 +19,28 @@ testcases:
       status_code: 200
       json: {"id": "A01", "label": "Item A01", "uri": "https://example.com/vocabularies/test/A01",
         "href": "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-2025/A01"}
+- name: get_items_list_includes_href
+  description: |-
+    When:
+
+    - GET /vocabularies/istat/ateco-2025
+
+    Then:
+
+    - Each item in the response includes an href pointing to self
+  request:
+    method: get
+    url: /vocabularies/istat/ateco-2025
+  expected:
+    response:
+      status_code: 200
+      json:
+        items:
+        - id: A00
+          label: Item A00
+          uri: "https://example.com/vocabularies/test/A00"
+          href: "https://schema.gov.it/api/vocabularies/v1/istat/ateco-2025/A00"
+
 - name: get_vocabulary_oas
   description: |-
     When:
@@ -205,20 +227,15 @@ testcases:
       json:
         next_cursor: A31
         limit: 30
-        items:
-        - id: A01
-          label: Item A01
-          uri: https://example.com/vocabularies/test/A01
-- name: pagination_data_cursor
+- name: pagination_data_no_cursor
   description: |-
     When:
 
-    - GET with cursor-based pagination parameters
+    - GET without a cursor (default first page)
 
     Then:
 
-    - Response status is 200, cursor parameters are accepted,
-      and next_cursor is absent when there are no more results.
+    - Response status is 200 and next_cursor points to the item after the page.
   request:
   - method: get
     url: /vocabularies/istat/ateco-2025?limit=30
@@ -229,10 +246,6 @@ testcases:
       json:
         limit: 30
         next_cursor: A30
-        items:
-        - id: A01
-          label: Item A01
-          uri: https://example.com/vocabularies/test/A01
 
 - name: pagination_data_cursor_empty
   description: |-
@@ -304,21 +317,6 @@ testcases:
       status_code: 200
       headers:
       - cache-control: max-age=3600
-- name: can_get_existing_item
-  description: |-
-    When:
-
-    - GET with valid query parameters
-
-    Then:
-
-    - Response status is 200, and the expected items are returned.
-  request:
-  - method: get
-    url: "/vocabularies/istat/ateco-2025/A01"
-  expected:
-    response:
-      status_code: 200
 - name: cannot_get_missing_item
   description: |-
     When:
@@ -354,3 +352,44 @@ testcases:
     response:
       status_code: 200
       json: {"id": "A/01", "label": "Item A/01"}
+#
+# catalog.py coverage
+#
+- name: get_status
+  description: |-
+    When:
+
+    - GET /status
+
+    Then:
+
+    - Response status is 200 and body confirms the API is running.
+  request:
+    method: get
+    url: /status
+  expected:
+    response:
+      status_code: 200
+      json:
+        status: 200
+        title: OK
+      headers:
+      - cache-control: max-age=3600
+
+- name: bad_query_parameters
+  description: |-
+    When:
+
+    - GET /vocabularies with bad query parameters
+
+    Then:
+
+    - Response status is 400 and no items match.
+  request:
+  - method: get
+    url: "/vocabularies?type=http://example.com/UnknownType"
+  - method: get
+    url: "/vocabularies?unknown_param=foo"
+  expected:
+    response:
+      status_code: 400

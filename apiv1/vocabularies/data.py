@@ -122,10 +122,13 @@ async def show_items(
     next_cursor = items[limit]["id"] if len(items) > limit else None
     items = items[:limit]
 
+    api_url = "/".join(
+        [request.state.api_base_url.rstrip("/"), agencyId, keyConcept]
+    )
     response = {
         "limit": limit,
         "next_cursor": next_cursor,
-        "items": items,
+        "items": [_transform_item(item, api_url) for item in items],
     }
     return ConnexionResponse(
         status_code=200,
