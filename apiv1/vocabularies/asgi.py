@@ -22,6 +22,7 @@ _config = Config(
         if o.strip()
     ]
     or None,
+    SWAGGER_UI=os.environ.get("SWAGGER_UI", "").lower() == "true",
 )
 
 application = create_app(config=_config)

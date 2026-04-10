@@ -3,7 +3,7 @@ Tests for the show_vocabulary_spec endpoint.
 """
 
 import yaml
-from vocabularies.app import create_app
+from vocabularies.app import Config, create_app
 
 from tests.harness import ATECO_SPEC, _config, client_harness
 
@@ -43,6 +43,18 @@ def test_show_vocabulary_spec(single_entry_db):
         stored_context = stored_item.pop("x-jsonld-context")
         assert returned_item == stored_item
         assert context == stored_context
+
+
+def test_swagger_ui_enabled(single_entry_db):
+    """Swagger UI is accessible at /ui/ when SWAGGER_UI=True."""
+    config = Config(
+        API_BASE_URL="https://schema.gov.it/api/vocabularies/v1/",
+        HARVEST_DB=single_entry_db,
+        SWAGGER_UI=True,
+    )
+    with client_harness(create_app, config) as (client, _logs):
+        response = client.get("/ui/")
+        assert response.status_code == 200
 
 
 def test_show_vocabulary_spec_not_found(single_entry_db):

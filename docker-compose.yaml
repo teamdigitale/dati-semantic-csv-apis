@@ -44,6 +44,8 @@ services:
     - API_BASE_URL=https://localhost
     - PREDECESSOR_BASE_URL=https://schema.gov.it/api/vocabularies
     - CORS_ORIGINS=*
+    # Set to true to enable the Swagger UI (disabled by default).
+    - SWAGGER_UI=true
     # Uvicorn configuration.
     - UVICORN_WORKERS=4
     - UVICORN_LOG_LEVEL=debug

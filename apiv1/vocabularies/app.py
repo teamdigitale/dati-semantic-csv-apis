@@ -28,6 +28,7 @@ from common.printable_parameters_middleware import (
 from connexion import AsyncApp, ConnexionMiddleware
 from connexion.exceptions import ProblemException
 from connexion.middleware.main import MiddlewarePosition
+from connexion.options import SwaggerUIOptions
 from starlette.middleware.cors import CORSMiddleware
 
 from tools.store import APIStore
@@ -60,6 +61,7 @@ class Config:
     CACHE_CONTROL_MAX_AGE: int = 3600
     PREDECESSOR_BASE_URL: str = ""
     CORS_ORIGINS: list[str] | None = None
+    SWAGGER_UI: bool = False
 
 
 # Configure logging
@@ -153,6 +155,7 @@ def create_app(config: Config | None = None) -> AsyncApp:
             app=app,
             predecessor_base_url=config.PREDECESSOR_BASE_URL,
         ),
+        swagger_ui_options=SwaggerUIOptions(swagger_ui=config.SWAGGER_UI),
     )
     app.add_api(
         "openapi.yaml",
