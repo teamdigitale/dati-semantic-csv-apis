@@ -114,6 +114,22 @@ testcases:
           uri: "http://example.com/uri"
     "@type": SomeType
 
+- id: href mapped to non-null value
+  description: |-
+    When:
+
+    - A JSON-LD frame with 'href' in @context mapped to an IRI.
+
+    Then:
+
+    - A ValueError is raised because 'href' is reserved by the API.
+  frame:
+    "@context":
+      uri: "@id"
+      label: "http://www.w3.org/2004/02/skos/core#prefLabel"
+      href: "@id"
+    "@type": SomeType
+
 - id: invalid allowed value for id field
   description: |-
     When:

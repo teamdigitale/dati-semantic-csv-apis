@@ -786,6 +786,7 @@ components:
             uri: '@id'
           '@id': skos:broader
         uri: '@id'
+        href: null
         vocab:
           '@container': '@set'
           '@context':

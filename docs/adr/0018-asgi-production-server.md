@@ -28,6 +28,8 @@ command line options or environment variables.
   via environment variables (e.g., `UVICORN_WORKERS`).
 - [x] Ensure that the API application code is thread-safe when
   accesssing SQLite.
+- [x] Suppress the `server: uvicorn` response header to avoid
+  disclosing implementation details to clients.
 
 ## Consequences
 
