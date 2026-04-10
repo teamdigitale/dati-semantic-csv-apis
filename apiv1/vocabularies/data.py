@@ -246,14 +246,21 @@ async def show_vocabulary_spec(
     )
     try:
         vocabulary_oas: dict = json.loads(row["openapi"])
+        item_oas = vocabulary_oas["components"]["schemas"]["Item"]
+        assert item_oas
+
+        # href is reserved: the API injects it at response time to reference the current resource.
+        item_context = item_oas["x-jsonld-context"]
+        item_context["href"] = None
+        if parent_context := item_context.get("parent", {}).get("@context"):
+            parent_context["href"] = None
+        if vocab_context := item_context.get("vocab", {}).get("@context"):
+            vocab_context["href"] = None
+
         assert vocabulary_oas["info"]
         spec = copy.deepcopy(request.state.base_spec)
         spec["info"] = vocabulary_oas["info"]
-        spec["components"]["schemas"]["Item"] = vocabulary_oas["components"][
-            "schemas"
-        ]["Item"]
-        # href is reserved: the API injects it at response time to reference the current resource.
-        spec["components"]["schemas"]["Item"]["x-jsonld-context"]["href"] = None
+        spec["components"]["schemas"]["Item"] = item_oas
         spec.setdefault("servers", []).append(
             {
                 "url": f"{request.state.api_base_url}/vocabularies/{agencyId}/{keyConcept}/"

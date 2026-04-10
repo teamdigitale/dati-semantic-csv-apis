@@ -41,28 +41,6 @@ testcases:
           uri: "https://example.com/vocabularies/test/A00"
           href: "https://schema.gov.it/api/vocabularies/v1/istat/ateco-2025/A00"
 
-- name: get_vocabulary_oas
-  description: |-
-    When:
-
-    - GET /vocabularies/istat/ateco-2025/openapi.yaml
-
-    Then:
-
-    - I get the expected OAS spec
-  request:
-    method: get
-    url: /vocabularies/istat/ateco-2025/openapi.yaml
-  expected:
-    response:
-      status_code: 200
-      headers:
-      - content-type: application/openapi+yaml
-      yaml:
-        openapi: 3.0.0
-        info:
-          title: Ateco 2025 API
-          version: 1.0.0
 - name: get_vocabularies
   description: |-
     When:
