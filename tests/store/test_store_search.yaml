@@ -72,3 +72,77 @@ testcases:
   results:
   - agency_id: inps
     key_concept: tipo_mansione_lavoratore_domestico
+
+- id: author_substring_match
+  search:
+    author: inail
+  results:
+  - agency_id: inail
+    key_concept: agente_causale
+
+- id: author_no_match
+  search:
+    author: nonexistent-org
+  results: []
+
+- id: hreflang_match_all
+  search:
+    hreflang: it
+  results:
+  - agency_id: inail
+    key_concept: agente_causale
+  - agency_id: inps
+    key_concept: tipo_mansione_lavoratore_domestico
+
+- id: hreflang_no_match
+  search:
+    hreflang: en
+  results: []
+
+- id: title_substring_match
+  search:
+    title: classifica
+  results:
+  - agency_id: inail
+    key_concept: agente_causale
+
+- id: title_no_match
+  search:
+    title: nonexistenttitle
+  results: []
+
+- id: author_and_hreflang_combined
+  search:
+    author: inps
+    hreflang: it
+  results:
+  - agency_id: inps
+    key_concept: tipo_mansione_lavoratore_domestico
+
+- id: key_concept_substring_match
+  search:
+    key_concept: agente
+  results:
+  - agency_id: inail
+    key_concept: agente_causale
+
+- id: key_concept_shared_substring
+  search:
+    key_concept: lavoratore
+  results:
+  - agency_id: inps
+    key_concept: tipo_mansione_lavoratore_domestico
+
+- id: key_concept_no_match
+  search:
+    key_concept: nonexistent
+  results: []
+
+- id: total_count
+  search:
+    query: vocabolario
+  results:
+  - agency_id: inps
+    key_concept: tipo_mansione_lavoratore_domestico
+  - agency_id: inail
+    key_concept: agente_causale

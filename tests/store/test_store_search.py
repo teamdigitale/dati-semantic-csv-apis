@@ -82,3 +82,15 @@ def test_search_metadata(apistore, testcase):
     for result, exp in zip(results, expected, strict=True):
         assert result["agency_id"] == exp["agency_id"]
         assert result["key_concept"] == exp["key_concept"]
+
+
+def test_search_metadata_total_count(apistore):
+    db, loaded_vocabularies = apistore
+    # Search with a query that matches all entries
+    results = db.search_metadata(key_concept="a", limit=1, offset=0)
+
+    # The total_count should reflect the total number of matching entries, not just the returned ones
+    total_count = results[0].get("total_count")
+    assert total_count == len(loaded_vocabularies), (
+        f"Expected total_count to be {len(loaded_vocabularies)}, got {total_count}"
+    )
