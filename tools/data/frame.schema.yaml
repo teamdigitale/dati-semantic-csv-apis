@@ -146,3 +146,15 @@ required:
 properties:
   "@context":
     $ref: "#/$defs/JSONLDContext"
+  "@type":
+    description: |-
+      The "@type" field, if present, indicates the type of the items in the vocabulary.
+      Only one "@type" is allowed to ensure a consistent structure in the framed output,
+      and it will be the valus assignet to the `x-jsonld-type` in the API Schema.
+    oneOf:
+    - type: string
+    - type: array
+      items:
+        type: string
+      minItems: 1
+      maxItems: 1
