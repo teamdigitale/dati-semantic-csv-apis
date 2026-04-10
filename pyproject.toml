@@ -1,4 +1,12 @@
 [build-system]
+#
+# This project uses setuptools_scm to manage version numbers based on git tags.
+#
+# setuptools_scm considers any dirty working tree
+#   (e.g., modified tracked files) as "not a clean release"
+#   and bumps to the next version with a dev suffix.
+#   Untracked files (??) don't matter — only the modified ones do.
+#
 requires = ["setuptools>=80", "wheel", "setuptools-scm[simple]>=9.2"]
 build-backend = "setuptools.build_meta"
 
