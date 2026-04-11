@@ -287,38 +287,40 @@ REST.
 
 ### API v1
 
-La nuova API si compone di due endpoint principali:
+La nuova API si compone di diversi endpoint, divisi
+tra catalogo e dati:
 
-- catalogo: pubblica l'elenco dei vocabolari controllati disponibili, con i
-  metadati e i link alle distribuzioni API REST v1;
+- catalogo: pubblica l'elenco dei vocabolari controllati
+  disponibili, con i metadati e i link alle
+  distribuzioni API REST v1;
 
-- dati: pubblica i dataset dei vocabolari controllati, con i metadati e le annotazioni semantiche
-  che collegano i campi JSON alle proprietà RDF del vocabolario
-  controllato.
+- dati: pubblica i dataset dei vocabolari controllati,
+  con i metadati e le annotazioni semantiche che collegano
+  i campi JSON alle proprietà RDF del vocabolario.
 
 #### Pubblicazione (#api-v1-pubblicazione)
 
 1. Analogamente al modello di erogazione attuale, le API
-   vengono rese disponibili da un URL centralizzato
+   vengono rese disponibili da un Server URL centralizzato
    e.g. <https://schema.gov.it/api/vocabularies/v1/> che funge
    da catalogo e restituisce un linkset RFC 9727 con le
    distribuzioni API dei vocabolari controllati.
 
 1. L'OAS v1 di riferimento è mantenuto in
-   [apiv1/openapi/catalog.yaml](apiv1/openapi/catalog.yaml) ed è basato sulla semantica dei
+   [apiv1/openapi/vocabularies.yaml](apiv1/openapi/vocabularies.yaml) ed è basato sulla semantica dei
    vocabolari RDF, disaccoppiando il contenuto esposto
-   dalle eventuali proiezioni CSV legacy. che ritorna
+   dalle eventuali proiezioni CSV legacy, che ritorna
    l'elenco di tutti gli endpoint. L'OAS è in linea, ma non
    identico, a quello attuale.
 
-1. L'endpoint `/vocabularies` ritorna un JSON
-   machine-readable, con i metadati delle API (href,
-   service-desc, version, hreflang, author, description) e
-   supporta:
+1. Gli endpoint di catalogo e health check sono:
 
-   - paginazione;
-   - filtri testuali;
-   - filtri per metadata.
+   - `/status`: verifica lo stato di salute dell'API.
+   - `/vocabularies`: restituisce il linkset RFC 9727 con
+     i metadati. Supporta paginazione (`limit`, `offset`) e
+     filtri testuali o per metadata.
+   - `/vocabularies/{agencyId}`: restituisce i
+     vocabolari pubblicati da uno specifico ente.
 
 1. Lo schema dati presenta una serie di annotazioni
    semantiche che collegano i campi JSON alle proprietà RDF
@@ -363,7 +365,7 @@ linkset:
    - l'indirizzo con l'elenco dei vocabolari sarà
      <https://schema.gov.it/api/vocabularies/v1>;
    - l'indirizzo di un vocabolario specifico sarà
-     `https://schema.gov.it/api/vocabularies/v1/{agencyId}/{vocabularyId}`.
+     `https://schema.gov.it/api/vocabularies/v1/vocabularies/{agencyId}/{keyConcept}`.
 
 1. L'API REST v1 utilizza i meccanismi di paging descritti
    nelle Linee Guida per le API REST del Modello di
@@ -412,14 +414,29 @@ Elementi di migrazione:
    verrà rediretto sulla versione delle API v0 fino a
    quando la v0 verrà dismessa.
 
+1. Gli endpoint dati pubblicano l'OAS3 all'indirizzo
+   <https://schema.gov.it/api/vocabularies/v1/%7BagencyId%7D/%7BvocabularyId%7D/openapi.yaml>,
+   che supporta sia `application/openapi+yaml` che `text/plain` per
+   human-readability.
+
+1. Per semplificare l'integrazione con sistemi di visualizzazione
+   (e.g., Schema Editor, Swagger UI, ) l'API supporta il meccanismo
+   dei [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
+
+1. I dati dei vocabolari controllati vengono erogati
+   sia in maniera paginata,
+   usando i meccanismi di paginazione descritti nelle Linee Guida per le API REST del Modello di Interoperabilità (i.e. limit, cursor)
+   e puntuale.
+   L'accesso puntuale supporta un sottoinsieme limitato di caratteri
+   che include `/`.
+
+1. I dati dei vocabolari possono contenere riferimenti a risorse
+   collegate, sia via URI presenti nel grafo RDF, sia tramite campi specifici definiti dall'erogatore.
+
 #### Requisiti opzionali
 
-1. Localizzazione: le API REST v1 supporteranno la
-   localizzazione dei risultati laddove fornita nei
-   vocabolari controllati. La lingua della risposta verrà
-   selezionata tramite il query parameter `lang` e/o
-   tramite l'header HTTP `Accept-Language`. Verrà stabilita
-   una lingua di default.
+1. Localizzazione: l'Erogatore decide la lingua principale di pubblicazione
+   dei dati dei vocabolari tramite la mappatura del campo `language` del file di descrizione del mapping. L'API REST v1 supporta la localizzazione dei dati dei vocabolari controllati tramite i meccanismi di content negotiation basati su `Accept-Language` e/o campi specifici definiti dall'erogatore.
 
 #### Metadatazione semantica
 
@@ -462,8 +479,8 @@ Elementi di migrazione:
         skos:prefLabel      "se si tratta di anticipazione;"@it .
    ```
 
-1. Una guida con degli esempi illustrerà vari modi per
-   mostrare le mappature tra i campi RDF e JSON, per
+1. Le guide [manual-csv.md](manual-csv.md) e [manual-api.md](manual-api.md)
+   mostrano come mappare i campi RDF e JSON, per
    permettere agli erogatori di scegliere la
    rappresentazione più adatta ai loro vocabolari
    controllati. Questo semplificherà anche l'erogazione di
@@ -528,7 +545,7 @@ graph TD
    potranno essere oggetto di future evoluzioni delle API
    REST.
 
-1. La piattaforma non validerà nel merito il file di
+1. La piattaforma non valida nel merito il file di
    descrizione del mapping fornito dagli erogatori. La
    responsabilità della correttezza del file di descrizione
    del mapping rimane all'erogatore. Potrà essere validato
