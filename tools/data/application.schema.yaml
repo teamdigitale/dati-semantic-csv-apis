@@ -1,0 +1,81 @@
+---
+$schema: https://json-schema.org/draft/2020-12/schema
+description: |-
+  Various JSON Schemas for the application data structures.
+  These are mainly used for documentation purposes.
+$defs:
+  CatalogEntry:
+    description: |-
+      JSON Schema for the catalog entry stored in the `_metadata.catalog` column
+      of `harvest.db`.
+
+      Each vocabulary is described by one catalog entry that is written during
+      ingestion (see `tools/openapi/__init__.py`) and read by the catalog and
+      items APIs.
+
+      The `catalog.py` layer may inject additional computed fields (e.g. `anchor`,
+      `href`, `service-desc`) into the API response, but those are not part of
+      this stored representation.
+
+    type: object
+    required:
+    - about
+    - title
+    - description
+    - version
+    - hreflang
+    - author
+    - total_count
+    additionalProperties: false
+    properties:
+      about:
+        description: URI that uniquely identifies the vocabulary.
+        type: string
+        format: uri
+        examples:
+        - https://w3id.org/italia/controlled-vocabulary/territorial-classifications/municipalities
+      title:
+        description: Human-readable name of the vocabulary, may
+          be a language map.
+        type: string
+        examples:
+        - Comuni italiani
+      description:
+        description: Free-text description of the vocabulary content
+          and purpose.
+        type: string
+      hreflang:
+        description: |-
+          List of BCP-47 language tags for which labels are available.
+          Used by the catalog API to support `hreflang` link filtering.
+        type: array
+        items:
+          type: string
+          pattern: "^[a-zA-Z]{2,3}(-[a-zA-Z0-9]+)*$"
+        minItems: 1
+        examples:
+        - - it
+        - - it
+          - en
+      version:
+        description: Version string of the vocabulary (e.g. a
+          date or semver tag).
+        type: string
+        examples:
+        - "2024-01-01"
+        - "1.0.0"
+      author:
+        description: Rights holder or publishing organisation.
+        type: string
+        examples:
+        - Istituto Nazionale di Statistica (ISTAT)
+      total_count:
+        description: |-
+          Total number of items in the vocabulary at ingestion time.
+          Stored here so the items API can return it as `total_count`
+          without an extra `COUNT(*)` query per request.
+        type: integer
+        format: int32
+        minimum: 0
+        examples:
+        - 1234
