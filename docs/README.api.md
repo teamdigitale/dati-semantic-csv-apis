@@ -2,7 +2,7 @@
 
 [Glossario](glossario.md)
 
-## Introduzione
+## Introduzione (#introduzione)
 
 Il progetto schema.gov.it (National Data Catalog for
 Semantic Interoperability) è, insieme alla PDND (Piattaforma
@@ -32,7 +32,7 @@ delle API REST dei Vocabolari Controllati,
 basata sui meccanismi di proiezione
 descritti in [README.csv.md](README.csv.md).
 
-## Obiettivo
+## Obiettivo (#obiettivo)
 
 Questo documento definisce le specifiche
 per pubblicare i contenuti dei Vocabolari Controllati
@@ -45,7 +45,7 @@ degli strumenti di supporto all'implementazione delle specifiche
 all'interno dello Schema Editor
 <https://github.com/teamdigitale/dati-semantic-schema-editor>.
 
-## Descrizione generale
+## Descrizione generale (#descrizione-generale)
 
 La versione delle API REST attualmente in produzione
 <https://schema.gov.it/api/vocabularies>
@@ -62,7 +62,7 @@ fatto su:
 - [Schema Editor](https://github.com/teamdigitale/dati-semantic-schema-editor);
 - [REST API Linked Data Keyword](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/);
 
-Inoltre, l'estensione della platea degli erogatori e
+Inoltre, l'estensione della platea degli Erogatori e
 l'arbitrarietà nella produzione dei CSV hanno reso diverse
 API pubblicate non consistenti con il modello di
 interoperabilità.
@@ -82,6 +82,101 @@ Le specifiche di metadatazione e di proiezione dei dati RDF
 in formato JSON che supporteranno le nuove API REST dei
 vocabolari controllati sono definite nel documento
 [README.csv.md](README.csv.md).
+
+```mermaid
+---
+title: Flusso di pubblicazione dei Vocabolari Controllati e loro metadatazione.
+config:
+  layout: elk
+---
+graph
+
+  u((Developer)) --> |produces| assets & legacy-csv
+
+  subgraph E["Erogatore dei Vocabolari Controllati"]
+    u
+
+    subgraph assets-generated
+        annotated-json[/Proiezione<br>JSON-LD/]
+        annotated-api[/Proiezione<br>API annotata/]
+    end
+    subgraph assets
+        ttl[/RDF Vocabulary Data/]
+        frame>Descriptor<br>JSON-LD Framing]
+        oas3>Descriptor<br>OpenAPI Specification]
+        assets-generated
+    end
+    subgraph Tools
+        openapi_create[[OAS3 Stub]]
+        jsonld_create[[JSON-LD Projector]]
+        apistore_create[[API Store]]
+    end
+
+    subgraph git
+        %% annotated-json & api-spec
+        assets
+        %% Componenti legacy che gli Erogatori
+        %%   possono pubblicare ma che non saranno
+        %%   usati dall'harvester.
+        legacy-csv[/CSV legacy <br>Vocabulary Data/]
+    end
+
+    %% u -->|produces| frame
+    %% u -->|updates| oas3
+
+    %% ttl -.-> |used-by|
+    openapi_create -->|produces| oas3
+
+    assets
+        -.->|used-by| jsonld_create
+        -->|produces| annotated-json
+
+    assets
+        -.->|used-by| apistore_create
+        --> |produces| annotated-api
+
+  end
+
+   subgraph H["NDC"]
+      api-v0[[API REST v0]]
+      api-v1[[API REST v1]]
+   end
+
+   legacy-csv -.-|consumed-by| api-v0
+   annotated-api -.-|consumed-by| api-v1
+```
+
+### Relazione tra proiezione JSON e API REST
+
+1. Le API REST pubblicano i dati dei vocabolari
+   in formato JSON, insieme ad una specifica OAS3
+   che include le annotazioni semantiche utili a ricostruire
+   il grafo RDF originale.
+
+1. I dati pubblicati sono basate sulle proiezioni JSON-LD
+   descritte in [README.csv.md](README.csv.md)
+   e generate tramite la CLI. Per tutti quei campi
+   dove non è possibile effettuare una mappatura semantica
+   (e.g., campi che non sono mappati a proprietà RDF)
+   è possibile associare nel `@context` il valore `null`.
+
+1. Le specifiche di metadatazione semantica si basano
+   su [RDF Mapping of OpenAPI Specification](https://datatracker.ietf.org/doc/draft-polli-restapi-ld-keywords/).
+
+1. Gli Erogatori pubblicano sul loro repository git
+   in ogni cartella associata ad un vocabolario controllato,
+   un file `{asset}.db` che contiene sia i dati che i metadati
+   di pubblicazione del vocabolario controllato.
+   La CLI permette di generare questo file, anche tramite il supporto
+   di un Github Workflow.
+
+1. Per ogni vocabolario controllato presente su schema.gov.it,
+   un workflow automatizzato (e.g., GitHub Action) si occupa di
+   verificare la presenza del file `{asset}.db` e, in caso positivo,
+   lo elabora e lo aggiunge ai dataset dei vocabolari da pubblicare.
+
+1. L'API v1 pubblica sia un catalogo di tutti i vocabolari,
+   che i dati dei singoli vocabolari.
 
 ## API Vocabolari
 
@@ -226,7 +321,7 @@ Label_ITA_1_livello: "Architettura militare e fortificata"
 Label_ITA_1_livello_alternativa_altri_sistemi: ""
 ```
 
-#### Cosa migliorare (#api-esistenti-limitazioni)
+#### Limitazioni dell'API esistente (#api-esistenti-limitazioni)
 
 L'OAS delle API esposte è all'URL
 <https://schema.gov.it/api/openapi.yaml>
@@ -264,67 +359,87 @@ paths:
                 $ref: '#/components/schemas/VocabularyTerms'
 ```
 
-#### Generazione indipendente dai CSV
-
-Nella v1 delle API, i dati non saranno più presi dai CSV
-esistenti, ma verranno generati tramite un descrittore
-apposito dei nuovi file (e.g., usando JSON-LD Framing).
-Questo per
-disaccoppiare la distribuzione dei dati presenti nelle API
-da quella dei CSV: questo per non impattare sugli utenti che
-utilizzano i dati attualmente presenti nei CSV e che
-verrebbero impattati da eventuali modifiche.
-
-Quando un erogatore vuole pubblicare l'API REST di un
-vocabolario controllato, dovrà produrre un file di
-descrizione del mapping tra RDF e contenuto delle API.
-Questo descritore verrà usato per generare la proiezione
-JSON da esporre nell'API REST.
-
-Il formato di questo file di descrizione del mapping verrà
-definito durante la fase di progettazione della v1 delle API
-REST.
-
 ### API v1
 
-La nuova API si compone di due endpoint principali:
+La nuova API si compone di diversi endpoint, divisi
+tra catalogo e dati:
 
-- catalogo: pubblica l'elenco dei vocabolari controllati disponibili, con i
-  metadati e i link alle distribuzioni API REST v1;
+- catalogo: pubblica l'elenco dei vocabolari controllati
+  disponibili, con i metadati e i link alle
+  distribuzioni API REST v1;
 
-- dati: pubblica i dataset dei vocabolari controllati, con i metadati e le annotazioni semantiche
-  che collegano i campi JSON alle proprietà RDF del vocabolario
-  controllato.
+- dati: pubblica i dataset dei vocabolari controllati,
+  con i metadati e le annotazioni semantiche che collegano
+  i campi JSON alle proprietà RDF del vocabolario.
+
+#### Generazione indipendente dai CSV
+
+Nella v1 delle API, i dati sono indipendenti dai CSV
+esistenti, e vengono generati a partire dal grafo RDF
+tramite una coppia di descrittori:
+
+- un frame JSON-LD che descrive la proiezione dei dati RDF in
+  formato JSON, e contiene le annotazioni semantiche che
+  collegano i campi JSON alle proprietà RDF del vocabolario
+  controllato;
+- un OAS3.0 con i metadati e lo schema dei dati esposti.
+
+Questo disaccoppia la distribuzione dei dati presenti nelle API
+da quella dei CSV e permette la pubblicazione di nuovi dati
+senza impattare sugli utenti che
+utilizzano i dati attualmente presenti nei CSV.
+
+Quando un erogatore vuole pubblicare l'API REST di un
+vocabolario controllato, dovrà produrre:
+
+- un frame JSON-LD, da cui generare la proiezione JSON;
+- un OAS3.0 che contiene i metadati e lo schema dei dati esposti.
 
 #### Pubblicazione (#api-v1-pubblicazione)
 
 1. Analogamente al modello di erogazione attuale, le API
-   vengono rese disponibili da un URL centralizzato
+   vengono rese disponibili da un Server URL centralizzato
    e.g. <https://schema.gov.it/api/vocabularies/v1/> che funge
    da catalogo e restituisce un linkset RFC 9727 con le
    distribuzioni API dei vocabolari controllati.
 
 1. L'OAS v1 di riferimento è mantenuto in
-   [apiv1/openapi/catalog.yaml](apiv1/openapi/catalog.yaml) ed è basato sulla semantica dei
+   [apiv1/openapi/vocabularies.yaml](apiv1/openapi/vocabularies.yaml) ed è basato sulla semantica dei
    vocabolari RDF, disaccoppiando il contenuto esposto
-   dalle eventuali proiezioni CSV legacy. che ritorna
+   dalle eventuali proiezioni CSV legacy, che ritorna
    l'elenco di tutti gli endpoint. L'OAS è in linea, ma non
    identico, a quello attuale.
 
-1. L'endpoint `/vocabularies` ritorna un JSON
-   machine-readable, con i metadati delle API (href,
-   service-desc, version, hreflang, author, description) e
-   supporta:
+1. Gli endpoint di healt-check e di servizio sono:
 
-   - paginazione;
-   - filtri testuali;
-   - filtri per metadata.
+   - `/openapi.yaml`: restituisce l'OAS3.0 dell'API REST v1, che contiene i
+     metadati e lo schema dei dati esposti. Lo schema dei dati
+     di dettaglio del vocabolario `#/components/schemas/Item`
+     è definito in modo generico; quello di dettaglio
+     è definito nell'OAS del singolo vocabolario,
+     che include anche le annotazioni semantiche che collegano i campi JSON
+     alle proprietà RDF del vocabolario controllato, e viene pubblicato al path
+     (i.e. `/vocabularies/{agencyId}/{vocabularyId}/openapi.yaml`).
+   - `/status`: verifica lo stato di salute dell'API.
+
+<!-- Catalogo -->
+
+1. Gli endpoint di catalogo sono:
+
+   - `/vocabularies`: restituisce il linkset RFC 9727 con
+     i metadati. Supporta paginazione (`limit`, `offset`) e
+     filtri testuali o per metadata.
+   - `/vocabularies/{agencyId}`: restituisce i
+     vocabolari pubblicati da uno specifico ente.
 
 1. Lo schema dati presenta una serie di annotazioni
    semantiche che collegano i campi JSON alle proprietà RDF
-   del vocabolario controllato.
+   del vocabolario controllato;
+   ad esempitraccia
+   la precedente versione dell'API facilitando la migrazione tra v0 e v1.
 
-1. Il campo `predecessor-version` referenzia la versione
+1. Il campo `predecessor-version`, associato alla
+   RDF property <http://purl.org/linked-data/xkos#supersedes>  referenzia la versione
    precedente dell'API, facilitando la migrazione degli
    utenti.
 
@@ -345,46 +460,69 @@ linkset:
     title: My Foo API
     hreflang: [it, en, de]
     service-desc:  # RFC8631
-    - href: http://api.example.com/foo/v1/openapi.yaml
+    - href: http://api.example.com/foo/v1/vocabularies/istat/cities/openapi.yaml
       type: application/openapi+yaml
     predecessor-version: # RFC5829
-    - href: http://api.example.com/foo/v0 # RFC8288
+    - href: https://schema.gov.it/api/vocabularies/istat/cities # RFC8288
     # Campi custom.
     description: "Extracted from vocabulary XYZ"
 ```
 
-1. <http://purl.org/linked-data/xkos#supersedes> traccia
-   la precedente versione dell'API facilitando la migrazione.
-
-1. Conformemente alle Linee Guida per le API REST del
+1. Un esempio di deploy conforme alle Linee Guida per le API REST del
    Modello di Interoperabilità, l'URL delle API REST
-   conterrà la versione dell'API, ad esempio:
+   conterrà la versione dell'API, è il seguente:
 
-   - l'indirizzo con l'elenco dei vocabolari sarà
-     <https://schema.gov.it/api/vocabularies/v1>;
+   - l'indirizzo con l'elenco dei vocabolari
+     <https://schema.gov.it/api/vocabularies/v1/vocabularies>;
    - l'indirizzo di un vocabolario specifico sarà
-     `https://schema.gov.it/api/vocabularies/v1/{agencyId}/{vocabularyId}`.
+     `https://schema.gov.it/api/vocabularies/v1/vocabularies/{agencyId}/{keyConcept}`.
 
 1. L'API REST v1 utilizza i meccanismi di paging descritti
    nelle Linee Guida per le API REST del Modello di
    Interoperabilità.
 
+<!-- Dati -->
+
+1. L'API pubblica anche i dati dei vocabolari controllati,
+   con la specifica di dettaglio del singolo vocabolario
+   pubblicata al path
+   `/vocabularies/{agencyId}/{vocabularyId}/openapi.yaml`;
+   questo supporta sia `application/openapi+yaml` che `text/plain` per
+   human-readability.
+
+1. L'OAS contiene i dati delle annotazioni semantiche che permettono
+   di ricostruire il grafo RDF originale a partire dal JSON.
+   Inoltre contengono il campo `href` che punta alla risorsa stessa:
+   questo campo viene disassociato nel `@context`.
+
 1. L'API REST v1 permette l'accesso puntuale alle risorse
    del vocabolario.
+   L'accesso puntuale supporta un sottoinsieme limitato di caratteri
+   che include `/`.
+
+1. I dati dei vocabolari controllati vengono erogati
+   usando i meccanismi di paginazione descritti nelle Linee Guida
+   per le API REST del Modello di Interoperabilità (i.e. limit, cursor).
+
+1. I dati dei vocabolari possono contenere riferimenti a risorse
+   collegate, sia via URI presenti nel grafo RDF, sia tramite campi specifici definiti dall'erogatore.
+
+1. Per semplificare l'integrazione con sistemi di visualizzazione
+   (e.g., Schema Editor, Swagger UI, ) l'API supporta il meccanismo
+   dei [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS).
 
 ```mermaid
 ---
 config:
   layout: elk
 ---
-graph LR
+graph
    u((d3f:User))
 
    subgraph v1["API REST v1"]
-   v1-api1[["/vocabularies/v1/agencyId1/vocabularyId1"]]
-   v1-api2[["/vocabularies/v1/agencyId2/vocabularyId2"]]
-   v1-api-catalog[["/vocabularies/v1/"]]
-   v1-api-catalog --> |references| v1-api1 & v1-api2
+   v1-api1[["/v1/vocabularies/agencyId1/vocabularyId1"]]
+   v1-api2[["/v1/vocabularies/agencyId2/vocabularyId2"]]
+   v1-api-catalog[["/v1/vocabularies/v1/vocabularies"]]
    end
 
    subgraph v0["API REST v0"]
@@ -396,35 +534,35 @@ graph LR
    u --> |d3f:ResourceAccess| v1-api-catalog
    u -.-> |old flows| v0-api-catalog
 
+   v1-api-catalog --> |references| v1-api1 & v1-api2
    v1-api-catalog --> |references| v0-api1 & v0-api2
 ```
 
 Elementi di migrazione:
 
 1. La precedente versione delle API REST (v0.0.1)
-   continuerà ad essere erogata per un periodo di tempo
-   concordato con gli erogatori all'URL
-   <https://schema.gov.it/api/vocabularies/v0/> per
-   permettere la migrazione degli utenti verso la nuova
+   può essere erogata per il tempo
+   concordato con gli Erogatori all'URL
+   <https://schema.gov.it/api/vocabularies/v0/>
+   permettendo la migrazione degli utenti verso la nuova
    versione.
 
 1. L'URL attuale <https://schema.gov.it/api/vocabularies/>
-   verrà rediretto sulla versione delle API v0 fino a
+   può essere in seguito rediretto sulla versione delle API v0 fino a
    quando la v0 verrà dismessa.
 
 #### Requisiti opzionali
 
-1. Localizzazione: le API REST v1 supporteranno la
-   localizzazione dei risultati laddove fornita nei
-   vocabolari controllati. La lingua della risposta verrà
-   selezionata tramite il query parameter `lang` e/o
-   tramite l'header HTTP `Accept-Language`. Verrà stabilita
-   una lingua di default.
+1. Localizzazione: l'Erogatore decide la lingua principale di pubblicazione
+   dei dati dei vocabolari usando la property `@language` del frame.
+   Poiché i vocabolari non hanno sempre una localizzazione completa,
+   la localizzazione tramite meccanismo di content negotiation
+   (e.g., `Accept-Language`) non verrà implementata in questa release.
 
 #### Metadatazione semantica
 
-1. Le API REST v1 pubblicano la specifica OAS all'indirizzo
-   `https://schema.gov.it/api/vocabularies/v1/{agencyId}/{vocabularyId}/openapi.yaml`
+1. Le API REST v1 pubblicano la specifica OAS
+   di ogni singolo vocabolario.
 
 1. Nella v1, la struttura dell'OAS sarà simile a quella
    attuale per facilitare la migrazione degli utenti, e
@@ -436,9 +574,9 @@ Elementi di migrazione:
    campi delle proiezioni JSON alle proprietà RDF del
    vocabolario controllato. Il contenuto delle annotazioni
    semantiche viene definito dall'Erogatore ed è contenuto
-   nel file di descrizione del mapping. L'OAS viene
-   generato automaticamente a partire dal file di
-   descrizione del mapping.
+   nel template OAS3 generato tramite il supporto della CLI (e.g., `{asset}.oas3.yaml`).
+   L'OAS finale viene generato automaticamente dall'API
+   a partire da esso.
 
 1. I vocabolario possono utilizzare riferimenti semantici
    contenuti o meno in schema.gov.it. Ad esempio, alcuni
@@ -462,9 +600,9 @@ Elementi di migrazione:
         skos:prefLabel      "se si tratta di anticipazione;"@it .
    ```
 
-1. Una guida con degli esempi illustrerà vari modi per
-   mostrare le mappature tra i campi RDF e JSON, per
-   permettere agli erogatori di scegliere la
+1. Le guide [manual-csv.md](manual-csv.md) e [manual-api.md](manual-api.md)
+   mostrano come mappare i campi RDF e JSON, per
+   permettere agli Erogatori di scegliere la
    rappresentazione più adatta ai loro vocabolari
    controllati. Questo semplificherà anche l'erogazione di
    API basate su vocabolari stratificati.
@@ -473,15 +611,15 @@ Elementi di migrazione:
 
 1. Il documento [README.csv.md](README.csv.md) descrive il
    processo di proiezione dei dati RDF in formato JSON per
-   le API REST v1 in modo da validare che il processo di
+   le API REST v1 in modo da verificare che il processo di
    proiezione sia invertibile, ossia che sia possibile
    ricostruire il grafo RDF originale a partire dal JSON e
-   dall'annotazione semantica..
+   dall'annotazione semantica.
 
 1. La CLI facilita la generazione
    delle proiezioni JSON a partire dai dati RDF e
    l'integrazione delle annotazioni semantiche nelle API
-   REST v1. La CLI è open source in conformità al
+   REST v1. La CLI è open source, in conformità al
    Codice per l'Amministrazione Digitale.
 
 ```mermaid
@@ -511,15 +649,6 @@ graph TD
    end
 ```
 
-#### PoC di Funzionalità di autocompletamento dei dizionari
-
-1. Verrà fornito un PoC di una API di autocompletamento che
-   permetta di cercare i termini di un vocabolario
-   controllato tramite una stringa di ricerca parziale.
-
-1. Verrà fornita una PoC di una API che restituisce i
-   vocabolari controllati in formato JSON Schema.
-
 #### Limitazioni
 
 1. Le API REST v1 continueranno a erogare solo proiezioni
@@ -528,10 +657,10 @@ graph TD
    potranno essere oggetto di future evoluzioni delle API
    REST.
 
-1. La piattaforma non validerà nel merito il file di
-   descrizione del mapping fornito dagli erogatori. La
+1. La piattaforma non valida nel merito il file di
+   descrizione del mapping fornito dagli Erogatori. La
    responsabilità della correttezza del file di descrizione
-   del mapping rimane all'erogatore. Potrà essere validato
+   del mapping rimane all'Erogatore. Potrà essere validato
    il formato del file di mappatura (frame) e verificata la
    presenza dei campi obbligatori che ogni API REST v1 deve
    esporre.
@@ -543,11 +672,11 @@ graph TD
    SKOS).
 
 1. I campi ritornati potranno essere limitati ai seguenti
-   tipi: string, array, object. Questo perché i valori dei
+   tipi: `string`, `array`, `object`. Questo perché i valori dei
    vocabolari controllati sono definiti tramite specifiche
    XSD che non sono sempre mappabili in tipi JSON più
    complessi (e.g., date, numeri, booleani). La
-   deserializzazione dei campi è lasciata ai fruitori.
+   deserializzazione dei campi è lasciata ai Fruitori.
 
 1. Gli strumenti forniti a supporto della generazione delle
    proiezioni JSON saranno basati su librerie open source
@@ -565,30 +694,31 @@ graph TD
    Esempio:
 
    Il vocabolario controllato "ateco-2007" viene pubblicato
-   a partire dai dati nella cartella
-   `vocabularies/ISTAT/ateco-2007/latest/`. Quando l'ISTAT
+   a partire dai dati nella directory
+   `/asset/controlled-vocabularies/ISTAT/ateco-2007/latest/`.
+   Se ISTAT
    pubblica una nuova versione del vocabolario controllato
    "ateco-2007" (ad esempio,
-   `vocabularies/ISTAT/ateco-2007/2025-01-01/`), con
-   `latest/` che punta alla nuova versione, l'API REST v1
+   `/asset/controlled-vocabularies/ISTAT/ateco-2007/2025-01-01/`), con
+   `/asset/controlled-vocabularies/ISTAT/ateco-2007/latest/`
+   che punta alla nuova versione, l'API REST v1
    erogherà la nuova versione del vocabolario controllato
    che sarà "ateco 2007 - revisione 2021".
 
-1. TODO: un vocabolario può non avere skos:ConceptScheme ma
-   solo dcatapit:Dataset
-
 ## PoC
 
-La PoC si compone di:
+La PoC si compone:
 
-- un applicativo containerizzato che implementa la Catalog API;
-- un applicativo containerizzato che implementa la Data API.
-  La Data API pubblica un set di vocabolari controllati.
+- di un applicativo containerizzato che implementa gli endpoint
+  della Data e della Catalog API;
+- della CLI che genera lo stub OAS3 e che genera il file `{asset}.db`;
+- di un harvester che recupera  recupera i database generati dagli Erogatori,
+  li aggrega in un unico `vocabularies.db` file che viene pubblicato su github;
 
 Il codice della PoC è implementato in Python 3.12+
 ed utilizza il framework Connexion per l'implementazione delle API REST.
 
-#### CLI {#cli-api}
+### CLI {#cli-api}
 
 Il progetto fornisce una CLI che permette di:
 
@@ -614,7 +744,7 @@ standardizzata:
   che contiene i record ed il payload completo
   di ogni voce del vocabolario.
 
-### Vocabulary API (#poc-catalog-api)
+### Vocabulary API (#poc-vocabulary-api)
 
 L'applicativo che implementa la Catalog API è nella cartella
 [apiv1/](apiv1/).
@@ -635,32 +765,30 @@ docker run ghcr.io/<org>/dati-semantic-csv-apis-data \
 ```
 
 Tutte le opzioni di `uvicorn` possono essere passate come argomenti al container
-oppure tramite le variabili d'ambiente `UVICORN_*` (es. `UVICORN_WORKERS=2`).
+oppure tramite le variabili d'ambiente `UVICORN_*` (es. `UVICORN_WORKERS=2`);
+in particolare si segnalano:
+
+| Variabile                     | Default     | Descrizione                                                                                                                                                     |
+| ----------------------------- | ----------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `UVICORN_WORKERS`             | `1`         | Numero di worker da avviare                                                                                                                                     |
+| `UVICORN_LOG_LEVEL`           | `warning`   | Livello di logging da utilizzare                                                                                                                                |
+| `UVICORN_FORWARDED_ALLOW_IPS` | `0.0.0.0/0` | Indirizzi IP consentiti per l'intestazione `X-Forwarded-For`: necessario per il corretto funzionamento dietro un proxy (e.g. un terminatore TLS, Openshift, ..) |
 
 Le variabili d'ambiente applicative sono:
 
-| Variabile               | Default                 | Descrizione                          |
-| ----------------------- | ----------------------- | ------------------------------------ |
-| `API_BASE_URL`          | `http://localhost:8080` | URL base dell'API                    |
-| `HARVEST_DB`            | `harvest.db`            | Percorso del datastore SQLite        |
-| `CACHE_CONTROL_MAX_AGE` | `3600`                  | Valore `max-age` per `Cache-Control` |
-
-### Data API (#poc-data-api)
-
-La Data API è implementata nella cartella [apiv1/vocabularies/](apiv1/vocabularies/).
-
-Viene avviata tramite uvicorn che esegue il modulo ASGI `vocabularies.asgi:application`.
-Il processo può essere scalato orizzontalmente con `--workers N`:
-ogni worker è un processo OS separato con la propria connessione SQLite in sola lettura,
-quindi non ci sono problemi di thread-safety o locking.
-
-Vedi [ADR 0018](adr/0018-asgi-production-server.md) per i dettagli della scelta.
+| Variabile               | Default                 | Descrizione                                      |
+| ----------------------- | ----------------------- | ------------------------------------------------ |
+| `API_BASE_URL`          | `http://localhost:8080` | URL base dell'API                                |
+| `CACHE_CONTROL_MAX_AGE` | `3600`                  | Valore `max-age` per `Cache-Control`             |
+| `CORS_ORIGINS`          | `*`                     | Valori per `Access-Control-Allow-Origin` (CORS)  |
+| `HARVEST_DB`            | `harvest.db`            | Percorso o URL del datastore SQLite              |
+| `SWAGGER_UI`            | `false`                 | Se `true`, abilita Swagger UI all'endpoint `/ui` |
 
 ### Harvesting PoC (#poc-harvesting)
 
 Per popolare il datastore con i dati dei vocabolari
 controllati pubblicati tramite la Data API,
-viene implementato un harvester che
+è stato implementato un harvester che
 itera i repository dei vocabolari controllati
 presenti su schema.gov.it,
 estrae i link ai file turtle e verifica la
@@ -674,12 +802,19 @@ decidendo i dettagli specifici di pubblicazione,
 che devono comunque essere conformi alle
 specifiche definite in questo documento.
 
-L'harvester:
+L'harvester è implementato tramite github workflow su un repository dedicato:
+<https://github.com/teamdigitale/dati-semantic-harvest>.
 
-1. è implementato come comando CLI;
-1. viene eseguito in un ambiente separato
-   da questo repository: <https://github.com/teamdigitale/dati-semantic-harvest>;
+Questo workflow:
+
+1. viene eseguito periodicamente (ad esempio, ogni 24h);
 1. referenzia una versione rilasciata della CLI,
    per garantire stabilità ed evitare breaking
    changes durante lo sviluppo;
-1. viene eseguito periodicamente.
+1. recupera da <https://schema.gov.it/sparql> l'elenco dei vocabolari controllati
+   con un `NDC:keyConcept`;
+1. per ogni vocabolario:
+   1. verifica la presenza di una `dcat:distribution` in formato `text/turtle`,
+      e in tal caso scarica dall'URL associato il file `{asset_name}.db`;
+   1. aggiunge il contenuto del file `{asset_name}.db` al dataset dei vocabolari da pubblicare.
+1. pubblica il file `vocabularies.db` sul repository.
