@@ -133,7 +133,16 @@ class TabularValidator:
             f"CSV-derived RDF graph has {csv_triples} triples, which meets the minimum expected {min_triples} triples."
         )
         extra_triples = csv_graph - original_graph
+
         if len(extra_triples) > 0:
+            first_extra_triples = [
+                " ".join(x.n3() for x in triple)
+                for i, triple in enumerate(extra_triples)
+                if i < 10
+            ]
+            log.error(
+                f"Extra triples (showing up to 10 triples): {first_extra_triples}"
+            )
             raise ValueError(
                 f"CSV-derived RDF graph contains {len(extra_triples)} triples not present in original RDF graph. Hint: does the CSV contain serialized structured data?"
             )
