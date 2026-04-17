@@ -111,10 +111,11 @@ def create_command(jsonld: Path, datapackage: Path, output: Path, force: bool):
 @click.option(
     "--vocabulary-uri",
     type=str,
-    required=True,
-    help="URI of the vocabulary (ConceptScheme) to validate",
+    required=False,
+    default=None,
+    help="Optional URI of the vocabulary (ConceptScheme). If provided, it must match datapackage id.",
 )
-def validate_command(ttl: Path, datapackage: Path, vocabulary_uri: str):
+def validate_command(ttl: Path, datapackage: Path, vocabulary_uri: str | None):
     """
     Validate CSV roundtrip: CSV → JSON-LD → RDF → subset check.
 
@@ -126,10 +127,20 @@ def validate_command(ttl: Path, datapackage: Path, vocabulary_uri: str):
     """
     click.echo(f"Validating CSV roundtrip for {datapackage}")
     click.echo(f"Original vocabulary: {ttl}")
-    click.echo(f"Vocabulary URI: {vocabulary_uri}")
+
+    datapackage_dict = yaml.safe_load(datapackage.read_text()) or {}
+    datapackage_id = datapackage_dict.get("id")
+
+    if vocabulary_uri is not None:
+        click.echo(f"Vocabulary URI: {vocabulary_uri}")
 
     try:
-        stats = validate_csv_to_rdf_roundtrip(ttl, datapackage, vocabulary_uri)
+        if vocabulary_uri is not None and vocabulary_uri != datapackage_id:
+            raise ValueError(
+                "--vocabulary-uri does not match datapackage id: "
+                f"{vocabulary_uri!r} != {datapackage_id!r}"
+            )
+        stats = validate_csv_to_rdf_roundtrip(ttl, datapackage)
         click.secho(
             f"✓ CSV roundtrip validation passed with {stats['csv_rows']} rows"
             f" and {stats['csv_triples']} triples",
@@ -228,16 +239,13 @@ def create_csv_from_jsonld(
     log.info(f"CSV file created successfully at {output}")
 
 
-def validate_csv_to_rdf_roundtrip(
-    ttl: Path, datapackage: Path, vocabulary_uri: str
-) -> dict:
+def validate_csv_to_rdf_roundtrip(ttl: Path, datapackage: Path) -> dict:
     """
     Validate CSV can roundtrip to RDF and result is subset of original.
 
     Args:
         ttl: Path to original RDF vocabulary in Turtle format
         datapackage: Path to datapackage metadata with CSV and context
-        vocabulary_uri: URI of the vocabulary to validate
 
     Returns:
         dict: Validation statistics including triple counts
