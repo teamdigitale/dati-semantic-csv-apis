@@ -10,11 +10,6 @@ on:
   workflow_dispatch:
   workflow_call:
     inputs:
-      repo:
-        description: 'Repository to fetch the cli-binary artifact
-          from (owner/repo)'
-        required: true
-        type: string
       python_version:
         description: 'Python version to use'
         required: false
@@ -30,6 +25,20 @@ on:
         required: true
         type: number
         default: 1
+      frame_prefix:
+        description: 'Prefix appended to asset name when resolving
+          the frame file (e.g. -csv → <asset>-csv.frame.yamlld).
+          Leave empty for the default <asset>.frame.yamlld.'
+        required: false
+        type: string
+        default: ''
+      assets:
+        description: 'JSON array of asset paths to process. If
+          provided, skips change detection and processes exactly
+          these assets.'
+        required: false
+        type: string
+        default: ''
   push:
     branches:
     - assets
@@ -47,10 +56,12 @@ on:
 env:
   CI: true
   PYTHON_VERSION: ${{ inputs.python_version || '3.14' }}
+  CLI_VERSION: '0.0.14'
   SOURCE_REF: ${{ github.event.pull_request.head.sha || github.sha
     }}
   CHECKOUT_REF: ${{ inputs.checkout_ref || 'assets' }}
   VOCABULARY_DIR: 'assets/controlled-vocabularies'
+  FRAME_PREFIX: ${{ inputs.frame_prefix || '' }}
 jobs:
   detect-changes:
     runs-on: ubuntu-latest
@@ -63,36 +74,69 @@ jobs:
       with:
         persist-credentials: false
         fetch-depth: 0
+        ref: ${{ env.CHECKOUT_REF }}
     - name: Detect changed assets
       id: detect
       shell: bash
       run: |
-        set -x
-        if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-          RAW_ASSETS=$(find "$VOCABULARY_DIR" -maxdepth 3 -type f -name "*.ttl" -exec dirname {} \; | sort -u)
-          echo "Detected assets for manual dispatch:"
-          echo "$RAW_ASSETS"
-        else
-          true # XXX: uncomment
+        set -euo pipefail
+        # If assets were provided by the caller, use them directly.
+        PROVIDED_ASSETS='${{ inputs.assets }}'
+        if [ -n "${PROVIDED_ASSETS}" ] && [ "${PROVIDED_ASSETS}" != "[]" ]; then
+          echo "assets=${PROVIDED_ASSETS}" >> "$GITHUB_OUTPUT"
+          echo "Using provided assets: ${PROVIDED_ASSETS}"
+          exit 0
         fi
-        if [ -z "$RAW_ASSETS" ]; then
-          RAW_ASSETS=$(find "$VOCABULARY_DIR" -type f -name "*.ttl" -exec dirname {} \; | sort -u)
-          echo "Fallback RAW_ASSETS:"
-          echo "$RAW_ASSETS"
-        fi
-        FILTERED_ASSETS=()
-        for DIR in $RAW_ASSETS; do
-        TTL_FILES=($(find "$DIR" -maxdepth 3 -type f -name "*.ttl"))
-        COUNT=${#TTL_FILES[@]}
-        if [ "$COUNT" -gt 1 ]; then
-          echo "::warning::Directory $DIR contains multiple TTL files ($COUNT). Skipping."
-        continue
-        fi
-        FILTERED_ASSETS+=("$DIR")
+
+        EVENT="${{ github.event_name }}"
+
+        mapfile -t ALL_DIRS < <(find "$VOCABULARY_DIR" -type f -name "*.ttl" -exec dirname {} \; | sort -u)
+
+        FILTERED_DIRS=()
+        for DIR in "${ALL_DIRS[@]}"; do
+          mapfile -t TTL_FILES < <(find "$DIR" -maxdepth 3 -type f -name "*.ttl")
+          COUNT=${#TTL_FILES[@]}
+          if [ "$COUNT" -gt 1 ]; then
+            echo "::warning::Directory $DIR contains $COUNT TTL files. Skipping."
+            continue
+          fi
+          FILTERED_DIRS+=("$DIR")
         done
-        ASSETS=$(printf "%s\n" "${FILTERED_ASSETS[@]}" | jq -R -s -c 'split("\n")[:-1]')
-        echo "assets=${ASSETS}" >> "$GITHUB_OUTPUT"
-        echo "Detected assets: ${ASSETS}"
+
+        CHANGED_FILES=""
+        BASE_SHA=""
+        if [ "$EVENT" != "workflow_dispatch" ]; then
+          if [ "$EVENT" = "pull_request" ]; then
+            BASE_SHA="${{ github.event.pull_request.base.sha }}"
+            HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          else
+            BASE_SHA="${{ github.event.before }}"
+            HEAD_SHA="${{ github.sha }}"
+            if [ "$BASE_SHA" = "0000000000000000000000000000000000000000" ]; then
+              BASE_SHA=""
+            fi
+          fi
+        fi
+        if [ -n "${BASE_SHA}" ]; then
+          CHANGED_FILES=$(git diff --name-only "${BASE_SHA}..${HEAD_SHA}" -- "${VOCABULARY_DIR}/" 2>/dev/null || true)
+        fi
+
+        ASSETS_JSON="["
+        FIRST=true
+        for DIR in "${FILTERED_DIRS[@]}"; do
+          if [ -n "${BASE_SHA}" ]; then
+            RELEVANT=$(echo "$CHANGED_FILES" | grep -cE "^${DIR}/.*(\.ttl|\.frame\.yamlld|datapackage\.yaml)$" || true)
+            if [ "$RELEVANT" -eq 0 ]; then
+              continue
+            fi
+          fi
+          if [ "$FIRST" = "false" ]; then ASSETS_JSON+=","; fi
+          ASSETS_JSON+="\"${DIR}\""
+          FIRST=false
+        done
+        ASSETS_JSON+="]"
+        echo "assets=${ASSETS_JSON}" >> "$GITHUB_OUTPUT"
+        echo "Detected assets: ${ASSETS_JSON}"
 
   ci-tabular:
     needs: [detect-changes]
@@ -115,34 +159,15 @@ jobs:
       uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405  # v6.2.0
       with:
         python-version: ${{ env.PYTHON_VERSION }}
-    - name: Download binary artifact
+    - name: Download schema_gov_it_tools.bin
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        INPUTS_REPO: ${{ inputs.repo }}
       run: |
         set -e
-        REPO="${INPUTS_REPO}"
-        echo "Fetching latest workflow run..."
-        RUN_ID=$(gh run list \
-          --repo "$REPO" \
-          --workflow "Test" \
-          --limit 1 \
-          --json databaseId \
-          --jq '.[0].databaseId')
-        echo "Latest run ID: ${RUN_ID}"
-        if [ -z "$RUN_ID" ] || [ "$RUN_ID" = "null" ]; then
-          echo "No run found for workflow Test"
-          exit 1
-        fi
-        echo "Downloading artifact..."
-        gh run download "$RUN_ID" \
-          --repo "$REPO" \
-          --name cli-binary \
-          --dir /tmp/cli-binary
-        cp /tmp/cli-binary/schema_gov_it_tools.bin /usr/local/bin/
+        ARTIFACT_URL=https://github.com/teamdigitale/dati-semantic-csv-apis/releases/download/${{ env.CLI_VERSION }}/schema_gov_it_tools.bin
+        curl -L "${ARTIFACT_URL}" -o /usr/local/bin/schema_gov_it_tools.bin
         chmod +x /usr/local/bin/schema_gov_it_tools.bin
-        /usr/local/bin/schema_gov_it_tools.bin --version
-
+        echo "Downloaded schema_gov_it_tools.bin version $(/usr/local/bin/schema_gov_it_tools.bin --version)"
     - name: Check datapackage exists
       id: check-datapackage
       working-directory: ${{ matrix.asset }}
@@ -151,7 +176,7 @@ jobs:
           echo "exists=true" >> "$GITHUB_OUTPUT"
         else
           echo "exists=false" >> "$GITHUB_OUTPUT"
-          echo "datapackage.yaml not found, skipping CSV generation"
+          echo "::warning title=Missing datapackage::datapackage.yaml not found in ${{ matrix.asset }}, skipping CSV generation"
         fi
 
     - name: Check frame file exists
@@ -190,13 +215,13 @@ jobs:
         /usr/local/bin/schema_gov_it_tools.bin \
           jsonld create \
           --ttl "${ASSET_NAME}.ttl" \
-          --frame "${ASSET_NAME}.frame.yamlld" \
+          --frame "${ASSET_NAME}${FRAME_PREFIX}.frame.yamlld" \
           --vocabulary-uri changeme \
           --frame-only \
-          --output "${ASSET_NAME}.data.yamlld" --force
+          --output "${ASSET_NAME}${FRAME_PREFIX}.data.yamlld" --force
         /usr/local/bin/schema_gov_it_tools.bin \
            csv create \
-          --jsonld "${ASSET_NAME}.data.yamlld" \
+          --jsonld "${ASSET_NAME}${FRAME_PREFIX}.data.yamlld" \
           --datapackage datapackage.yaml \
           --force
         # Validate the CSV
@@ -228,13 +253,16 @@ jobs:
       if: steps.check-csv.outputs.csv_exists == 'true'
       uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0  # v8.1.0
       with:
-        base: ${{ env.CHECKOUT_REF }}
+        base: >-
+          ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref
+          || github.ref_name }}
         commit-message: >-
-          feat: add generated CSV for ${{ matrix.asset }}
+          feat: add generated CSV for ${{ matrix.asset }} [skip
+          ci]
         title: >-
-          feat: CSV generation for ${{ matrix.asset }}
+          feat: CSV regeneration for ${{ matrix.asset }}
         body: |
-          # CSV Generation for ${{ matrix.asset }}
+          # CSV Regeneration for ${{ matrix.asset }}
 
           This PR contains the auto-generated CSV file for the `${{ matrix.asset }}` controlled vocabulary.
 
