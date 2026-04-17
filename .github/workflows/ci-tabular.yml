@@ -6,7 +6,7 @@
 #
 # Logic:
 #   .ttl or .frame.yamlld changed  →  jsonld create + csv create
-#   .datapackage.yaml changed      →  csv create only
+#   datapackage.yaml changed      →  csv create only
 #   .data.yaml changed             →  csv create only
 #   nothing relevant changed       →  skip asset
 #
@@ -192,7 +192,7 @@ jobs:
         found = {}
         with open(github_output, "a") as f:
             for pattern, key, file_key in [
-                ("*.datapackage.yaml",    "datapackage_exists",  "datapackage_file"),
+                ("datapackage.yaml",    "datapackage_exists",  "datapackage_file"),
                 ("*.frame.yamlld", "frame_exists", "frame_file"),
                 ("*.ttl",          "ttl_exists",   "ttl_file"),
                 ("*.data.yaml",    "data_exists",  "data_file"),
@@ -276,6 +276,8 @@ jobs:
         &&
         !contains(matrix.asset.path, 'theme-subtheme-mapping')
       working-directory: ${{ matrix.asset.path }}
+      env:
+        ASSET_NAME: ${{ steps.check-files.outputs.asset_name }}
       run: |
         set -euo pipefail
 
@@ -288,9 +290,6 @@ jobs:
 
         echo "csv_exists=true" >> "$GITHUB_OUTPUT"
         echo "db_file=$DB_FILE" >> "$GITHUB_OUTPUT"
-      env:
-        STEPS_CHECK_FILES_OUTPUTS_ASSET_NAME: ${{ steps.check-files.outputs.asset_name
-          }}
     - name: Create Pull Request
       if: steps.check-db.outputs.csv_exists == 'true'
       uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0  # v8.1.0
