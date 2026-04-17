@@ -55,7 +55,7 @@ resources:
   format: csv
   mediatype: text/csv
   name: subject-disciplines
-  path: self.csv
+  path: subject-disciplines.csv
   schema:
     fields:
     - name: uri
@@ -66,8 +66,10 @@ resources:
       type: string
     - name: definition
       type: string
+    # Since in the .ttl clvapit:hasRankOrder is a Literal without datatype,
+    #   we need to consider it as a string to embed it into the original RDF.
     - name: level
-      type: integer
+      type: string
     x-jsonld-context:
       broader:
         '@container': '@set'
