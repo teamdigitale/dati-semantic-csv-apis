@@ -21,6 +21,7 @@ Riferimenti: [README.csv.md](README.csv.md) e
 - [Validare il CSV](#validare-il-csv)
 - [Pubblicare il CSV](#pubblicare-il-csv)
 - [Scelte di progettazione](#scelte-di-progettazione)
+- [Troubleshooting](#troubleshooting)
 
 ## Obiettivi {#obiettivi}
 
@@ -509,6 +510,21 @@ corretto del grafo RDF originale:
 ```bash
 schema_gov_it_tools.bin csv validate \
   --datapackage datapackage.yaml \
+  --ttl agente_causale.ttl
+```
+
+Il parametro `--vocabulary-uri` è opzionale.
+Se omesso, il comando individua automaticamente
+il vocabolario cercando il solo `skos:ConceptScheme`
+presente nel file `.ttl`.
+Se specificato, deve corrispondere esattamente
+al campo `id` del `datapackage.yaml`; in caso
+contrario la validazione termina con errore.
+
+```bash
+# URI esplicito — deve corrispondere a datapackage#/id
+schema_gov_it_tools.bin csv validate \
+  --datapackage datapackage.yaml \
   --ttl agente_causale.ttl \
   --vocabulary-uri https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale
 ```
@@ -767,3 +783,49 @@ schema_gov_it_tools.bin --log-level debug csv validate \
 I comandi restituiscono exit code `0`
 in caso di successo e un codice non-zero
 in caso di errore.
+
+## Troubleshooting {#troubleshooting}
+
+### Letterali non tipizzati mappati a campi interi
+
+Il comando `csv validate` converte ogni riga del
+CSV in triple RDF tramite l'`x-jsonld-context`.
+Quando un campo è dichiarato di tipo `integer`
+nel `datapackage.yaml`, il valore viene
+serializzato come `xsd:integer`.
+
+Se il grafo RDF originale contiene lo stesso
+predicato con un letterale non tipizzato
+(equivalente a `xsd:string`), le due triple
+non coincidono e la validazione fallisce:
+
+```
+✗ CSV roundtrip validation failed: CSV-derived RDF graph contains N triples
+  not present in original RDF graph.
+```
+
+Esempio: il TTL contiene
+
+```turtle
+agentcaus:11110101 clvapit:hasRankOrder "3" .
+```
+
+mentre il datapackage dichiara
+
+```yaml
+- name: level
+  type: integer
+x-jsonld-context:
+  level:
+    "@id": clvapit:hasRankOrder
+    "@type": xsd:integer
+```
+
+Il CSV produce `clvapit:hasRankOrder "3"^^xsd:integer`,
+che non corrisponde al letterale `"3"` (xsd:string)
+presente nel TTL.
+
+**Soluzione:** allineare il tipo del letterale nel
+TTL sorgente oppure rimuovere `"@type": xsd:integer`
+dal contesto e dichiarare il campo come `type: string`
+nel datapackage.
