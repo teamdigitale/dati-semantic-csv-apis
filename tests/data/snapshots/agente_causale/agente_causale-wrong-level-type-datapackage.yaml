@@ -1,0 +1,37 @@
+$schema: https://datapackage.org/profiles/2.0/datapackage.json
+id: https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale
+name: agente_causale-wrong-level-type
+resources:
+- encoding: utf-8
+  format: csv
+  mediatype: text/csv
+  name: agente_causale-wrong-level-type
+  path: agente_causale-wrong-level-type.csv
+  schema:
+    fields:
+    - name: uri
+      type: string
+    - name: id
+      type: string
+    - name: label
+      type: string
+    - name: level
+      type: integer
+    x-jsonld-context:
+      '@vocab': https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/
+      INAILService: https://w3id.org/italia/work-accident/onto/adm_serv/
+      clvapit: https://w3id.org/italia/onto/CLV/
+      dct: http://purl.org/dc/terms/
+      id:
+        '@id': skos:notation
+      label:
+        '@id': skos:prefLabel
+        '@language': it
+      level:
+        '@id': clvapit:hasRankOrder
+        '@type': xsd:integer
+      skos: http://www.w3.org/2004/02/skos/core#
+      uri: '@id'
+      xsd: http://www.w3.org/2001/XMLSchema#
+  scheme: file
+  type: table

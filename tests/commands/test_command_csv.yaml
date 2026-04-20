@@ -237,6 +237,88 @@
       - >-
         ✗ CSV roundtrip validation failed
 
+- id: csv_validate_without_vocabulary_uri
+  description: |-
+    Given:
+    - a valid datapackage and TTL
+
+    When:
+    - I run `csv validate` without --vocabulary-uri
+
+    Then:
+    - the command exits successfully
+  steps:
+  - command:
+    - csv
+    - validate
+    - --ttl
+    - assets/controlled-vocabularies/provinces/provinces.ttl
+    - --datapackage
+    - assets/controlled-vocabularies/provinces/datapackage.yaml
+    expected:
+      exit_status: 0
+      stdout:
+      - >-
+        CSV roundtrip validation passed with
+
+- id: csv_validate_vocabulary_uri_mismatch
+  description: |-
+    Given:
+    - a datapackage with id different from the provided vocabulary URI
+
+    When:
+    - I run `csv validate` with --vocabulary-uri
+
+    Then:
+    - the command fails with a mismatch error
+  steps:
+  - command:
+    - csv
+    - validate
+    - --vocabulary-uri
+    - https://example.com/not-the-datapackage-id
+    - --ttl
+    - assets/controlled-vocabularies/provinces/provinces.ttl
+    - --datapackage
+    - assets/controlled-vocabularies/provinces/datapackage.yaml
+    expected:
+      exit_status: 1
+      stdout:
+      - >-
+        ✗ CSV roundtrip validation failed
+      - >-
+        --vocabulary-uri does not match datapackage id
+
+- id: csv_validate_fail_wrong_level_type
+  description: |-
+    Given:
+    - a TTL file where hasRankOrder is an untyped (plain string) literal
+    - a datapackage mapping the level field to an untyped clvapit:hasRankOrder
+    - a pre-created CSV whose schema level type is set to integer
+
+    When:
+    - I run `csv validate`
+
+    Then:
+    - the command exits with error code 1
+    - validation fails because the CSV produces xsd:integer triples
+      but the original TTL has plain string literals for hasRankOrder
+  steps:
+  - command:
+    - csv
+    - validate
+    - --vocabulary-uri
+    - https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale
+    - --ttl
+    - tests/data/agente_causale-short.ttl
+    - --datapackage
+    - tests/data/snapshots/agente_causale/agente_causale-wrong-level-type-datapackage.yaml
+    expected:
+      exit_status: 1
+      stdout:
+      - >-
+        ✗ CSV roundtrip validation failed
+
 #
 # Not supported for now
 #
