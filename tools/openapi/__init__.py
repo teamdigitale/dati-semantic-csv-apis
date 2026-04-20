@@ -172,17 +172,20 @@ class Apiable(Vocabulary):
             datafile.unlink()
         with APIStore(str(datafile)) as db:
             db.create_metadata_table()
+            db.update_vocabulary_from_jsonld(
+                metadata.agency_id,
+                metadata.name,
+                data["@graph"],
+            )
             db.upsert_metadata(
                 vocabulary_uri=self.uri() or "",
                 agency_id=metadata.agency_id,
                 key_concept=metadata.name,
                 openapi=openapi,
-                catalog=self.catalog_entry(),
-            )
-            db.update_vocabulary_from_jsonld(
-                metadata.agency_id,
-                metadata.name,
-                data["@graph"],
+                catalog={
+                    **self.catalog_entry(),
+                    "total_count": len(data["@graph"]),
+                },
             )
 
     def from_db(self, datafile: Path) -> JsonLD:
