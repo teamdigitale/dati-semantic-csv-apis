@@ -12,7 +12,7 @@ Riferimenti: [README.csv.md](README.csv.md) e
 
 - [Obiettivi](#obiettivi)
 - [Flusso di lavoro](#flusso-di-lavoro)
-- [Creare la proiezione con la UI](#creare-la-proiezione-con-la-ui)
+- [Creare il frame e generare la proiezione](#creare-la-proiezione)
 - [Requisiti del file di frame](#requisiti-del-frame)
 - [Mappare i valori della proiezione](#mappare-i-valori-della-proiezione)
 - [Generare lo stub del datapackage](#generare-lo-stub-del-datapackage)
@@ -21,6 +21,7 @@ Riferimenti: [README.csv.md](README.csv.md) e
 - [Validare il CSV](#validare-il-csv)
 - [Pubblicare il CSV](#pubblicare-il-csv)
 - [Scelte di progettazione](#scelte-di-progettazione)
+- [Frame CSV-specifico con SUFFIX](#frame-csv-specifico-con-suffix)
 - [Troubleshooting](#troubleshooting)
 
 ## Obiettivi {#obiettivi}
@@ -60,7 +61,7 @@ Il flusso è articolato in questi passi:
 flowchart TD
     Input[/"File sorgente: vocabolario.ttl + vocabolario.frame.yamlld"/]
     GenJsonLD["jsonld create: proietta il vocabolario RDF in JSON-LD strutturato"]
-    Projection[/"File generato: proiezione.data.yamlld"/]
+    Projection[/"File generato: proiezione.data.yaml"/]
     GenDatapackage["datapackage create: genera lo stub dei metadati dal grafo RDF"]
     Stub[/"File generato: datapackage.yaml con metadati e schema delle colonne"/]
     ManualEdit["Modifica manuale: completa dialect, tipi di colonna e schema.fields"]
@@ -80,7 +81,7 @@ flowchart TD
     Validate --> Publish
 ```
 
-## Creare la proiezione con la UI {#creare-la-proiezione-con-la-ui}
+## Creare il frame e generare la proiezione {#creare-la-proiezione}
 
 Lo Schema Editor fornisce un supporto visuale
 alla definizione del frame JSON-LD.
@@ -105,18 +106,22 @@ Il frame deve includere - tramite appositi commenti - documentazione,
 sulle scelte di proiezione e sui campi generati.
 
 Una volta definito il frame, generare la
-proiezione JSON-LD.
-La generazione avviene attraverso il seguente comando del pacchetto schema_gov_it_tools.bin
-
-`jsonld create`:
+proiezione JSON-LD con il comando `jsonld create`:
 
 ```bash
 schema_gov_it_tools.bin jsonld create \
   --ttl agente_causale.ttl \
   --frame agente_causale.frame.yamlld \
-  --vocabulary-uri https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale \
-  --output agente_causale.data.yamlld
+  --vocabulary-uri self \
+  --output agente_causale.data.yaml \
+  --force
 ```
+
+Il valore `self` indica alla CLI di rilevare automaticamente
+l'URI del vocabolario cercando il solo `skos:ConceptScheme`
+presente nel file `.ttl`. Il flag `--force` sovrascrive
+il file di output se già esistente (necessario per le
+rigenerazioni successive).
 
 Per escludere i campi non mappati nel
 `@context` (vedi
@@ -126,8 +131,9 @@ Per escludere i campi non mappati nel
 schema_gov_it_tools.bin jsonld create \
   --ttl agente_causale.ttl \
   --frame agente_causale.frame.yamlld \
-  --vocabulary-uri https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale \
-  --output agente_causale.data.yamlld \
+  --vocabulary-uri self \
+  --output agente_causale.data.yaml \
+  --force \
   --frame-only
 ```
 
@@ -290,27 +296,10 @@ importante sceglierli con cura e mantenerli stabili
 nel tempo (vedi
 [Nomi dei campi nella proiezione](#nomi-dei-campi-nella-proiezione)).
 
-Inoltre, sono ammessi solo alcuni valori per degli specifici campi.
-In caso di errore, il tool suggerisce i valori ammessi.
-Esempio che rompe la validazione del frame:
-
-```yaml
-  label:
-    "@id": skos:altLabel
-    "@language": it
-```
-
-si riceverà un errore simile a :
-
-```
-ValueError: Frame field 'label' must be one of ['http://www.w3.org/2004/02/skos/core#prefLabel', 'http://www.w3.org/2000/01/rdf-schema#label'], got http://www.w3.org/2004/02/skos/core#altLabel.
-Supported fields and their allowed IRIs:
-  - 'id': ['http://www.w3.org/2004/02/skos/core#notation', 'http://purl.org/dc/terms/identifier', 'http://purl.org/dc/elements/1.1/identifier']
-  - 'label': ['http://www.w3.org/2004/02/skos/core#prefLabel', 'http://www.w3.org/2000/01/rdf-schema#label']
-  - 'level': ['https://w3id.org/italia/onto/CLV/hasRankOrder', 'http://rdf-vocabulary.ddialliance.org/xkos#depth']
-  - 'parent': ['http://www.w3.org/2004/02/skos/core#broader']
-  - 'vocab': ['http://www.w3.org/2004/02/skos/core#inScheme']
-```
+Per i campi con nome riservato (`id`, `label`,
+`level`, `parent`, `vocab`) sono ammesse solo
+specifiche proprietà RDF: vedi
+[Valori ammessi in modalità strict](#valori-ammessi-in-modalità-strict).
 
 ## Generare lo stub del datapackage {#generare-lo-stub-del-datapackage}
 
@@ -323,9 +312,13 @@ automaticamente dal grafo RDF.
 schema_gov_it_tools.bin datapackage create \
   --ttl agente_causale.ttl \
   --frame agente_causale.frame.yamlld \
-  --vocabulary-uri https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale \
+  --vocabulary-uri self \
   --output datapackage.yaml
 ```
+
+Come per `jsonld create`, il valore `self` rileva
+automaticamente l'URI del vocabolario dal file `.ttl`
+(vedi [Creare la proiezione](#creare-la-proiezione)).
 
 Esempio di stub generato a partire dal
 vocabolario `agente_causale`:
@@ -466,8 +459,9 @@ il CSV:
 
 ```bash
 schema_gov_it_tools.bin csv create \
-  --jsonld agente_causale.data.yamlld \
-  --datapackage datapackage.yaml
+  --jsonld agente_causale.data.yaml \
+  --datapackage datapackage.yaml \
+  --force
 ```
 
 Il percorso di output viene letto dal campo
@@ -476,14 +470,15 @@ Per specificarne uno diverso:
 
 ```bash
 schema_gov_it_tools.bin csv create \
-  --jsonld agente_causale.data.yamlld \
+  --jsonld agente_causale.data.yaml \
   --datapackage datapackage.yaml \
-  --output output/agente_causale.csv
+  --output output/agente_causale.csv \
+  --force
 ```
 
 Di default, se il file di destinazione esiste, la CLI non lo sovrascrive.
-Per sovrascrivere un file di destinazione esistente,
-usare il flag `--force`.
+Il flag `--force` sovrascrive il file esistente ed è richiesto
+dal workflow CI per le rigenerazioni successive.
 
 Esempio di CSV prodotto a partire dal
 vocabolario `agente_causale`:
@@ -509,23 +504,27 @@ corretto del grafo RDF originale:
 
 ```bash
 schema_gov_it_tools.bin csv validate \
-  --datapackage datapackage.yaml \
-  --ttl agente_causale.ttl
+  --ttl agente_causale.ttl \
+  --datapackage datapackage.yaml
 ```
 
 Il parametro `--vocabulary-uri` è opzionale.
 Se omesso, il comando individua automaticamente
-il vocabolario cercando il solo `skos:ConceptScheme`
-presente nel file `.ttl`.
-Se specificato, deve corrispondere esattamente
-al campo `id` del `datapackage.yaml`; in caso
-contrario la validazione termina con errore.
+l'URI del vocabolario cercando il solo `skos:ConceptScheme`
+presente nel file `.ttl`. Questa è la modalità
+raccomandata ed è quella usata dal workflow CI.
+
+Se specificato, il valore deve corrispondere esattamente
+al campo `id` del `datapackage.yaml`; in caso contrario
+la validazione termina con errore. Il valore speciale `self`
+(supportato da `jsonld create`) **non** è accettato da
+`csv validate` e verrebbe confrontato letteralmente.
 
 ```bash
-# URI esplicito — deve corrispondere a datapackage#/id
+# URI esplicito — deve corrispondere esattamente a datapackage#/id
 schema_gov_it_tools.bin csv validate \
-  --datapackage datapackage.yaml \
   --ttl agente_causale.ttl \
+  --datapackage datapackage.yaml \
   --vocabulary-uri https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale
 ```
 
@@ -549,21 +548,75 @@ schema_gov_it_tools.bin datapackage validate \
 
 ## Pubblicare il CSV {#pubblicare-il-csv}
 
-Il repository include un workflow CI che
-automatizza la generazione e la validazione
-dei CSV. Il workflow:
+Il repository include il workflow CI
+[`ci-tabular.yml`](.github/workflows/ci-tabular.yml)
+che automatizza la generazione e la validazione
+dei CSV.
 
-1. Si attiva con una `push` su un branch
-   dedicato (ad esempio `#asset`) o
-   manualmente.
-1. Per ogni cartella in
-   `assets/controlled-vocabularies/*`:
-   - installa la CLI;
-   - genera il CSV dal `datapackage.yaml`;
-   - valida il CSV rispetto al
-     `datapackage.yaml`;
-   - crea o aggiorna una PR verso il
-     branch di destinazione.
+### Trigger del workflow
+
+Il workflow si attiva su:
+
+- `push` o `pull_request` verso il branch `assets`
+  con modifiche in `assets/controlled-vocabularies/**`;
+- avvio manuale (`workflow_dispatch`);
+- chiamata da un altro workflow (`workflow_call`).
+
+### Logica di rilevamento delle modifiche
+
+Per ogni cartella asset il workflow determina
+cosa rigenerare in base ai file cambiati:
+
+| File cambiato                     | Azione                         |
+| --------------------------------- | ------------------------------ |
+| `.ttl` o `.frame.yamlld`          | `jsonld create` + `csv create` |
+| `datapackage.yaml` o `.data.yaml` | solo `csv create`              |
+| Nulla di rilevante                | asset saltato                  |
+| `workflow_dispatch`               | tutto ricalcolato              |
+
+Le directory con più di un file `.ttl` vengono
+saltate con un avviso. L'asset
+`theme-subtheme-mapping` è esplicitamente
+escluso dalla generazione.
+
+### Comandi eseguiti dal workflow
+
+Per ogni asset che richiede rigenerazione,
+il workflow esegue in sequenza:
+
+```bash
+# 1. Genera la proiezione JSON-LD (se .ttl o .frame.yamlld cambiati)
+schema_gov_it_tools.bin jsonld create \
+  --ttl "${ASSET_NAME}.ttl" \
+  --frame "${ASSET_NAME}.frame.yamlld" \
+  --vocabulary-uri self \
+  --output "${ASSET_NAME}.data.yaml" \
+  --force
+
+# 2. Genera il CSV
+schema_gov_it_tools.bin csv create \
+  --jsonld "${ASSET_NAME}.data.yaml" \
+  --datapackage datapackage.yaml \
+  --force
+
+# 3. Valida il CSV
+schema_gov_it_tools.bin csv validate \
+  --ttl "${ASSET_NAME}.ttl" \
+  --datapackage datapackage.yaml
+```
+
+### Apertura della PR
+
+Se la validazione va a buon fine, il workflow
+apre (o aggiorna) automaticamente una PR con:
+
+- branch: `build/csv-generation<path-asset>`
+- commit message: `build: CSV regenerate assets for <path> [skip ci]`
+  (il `[skip ci]` previene loop infiniti)
+- label: `automated, csv-generation`
+
+La PR viene aperta verso il branch che ha
+triggerato il workflow.
 
 L'Erogatore deve:
 
@@ -754,6 +807,137 @@ comparire nella proiezione come
 Per escludere questi campi, usare
 `--frame-only` nel comando `jsonld create`.
 
+### Frame CSV-specifico con SUFFIX {#frame-csv-specifico-con-suffix}
+
+Il workflow CI supporta una variabile `SUFFIX`
+che consente di usare frame e proiezioni distinti
+per la distribuzione CSV rispetto a quelli usati
+per l'APIStore.
+
+Con `SUFFIX: ''` (default), il workflow usa gli
+stessi file per CSV e API:
+
+```mermaid
+flowchart LR
+    A["vocabolario.frame.yamlld"] --> B["vocabolario.data.yaml"] --> C["CSV"]
+```
+
+Con `SUFFIX: '-csv'`, il workflow cerca file
+dedicati per il CSV:
+
+```mermaid
+flowchart LR
+    A["vocabolario-csv.frame.yamlld"] --> B["vocabolario-csv.data.yaml"] --> C["CSV"]
+```
+
+Usare un frame CSV-specifico è utile quando il
+frame API include campi ad albero (`parent`,
+`vocab`, `broader`) che nel CSV produrrebbero
+stringhe JSON non utilizzabili dai consumatori.
+
+#### Campi da escludere nel frame CSV-specifico
+
+I campi da escludere sono quelli che nel frame API
+mappano proprietà RDF su **array di oggetti annidati**
+(usando `@container: "@set"`). Se inclusi nel CSV,
+vengono serializzati come stringhe JSON.
+
+| Campo tipico         | Proprietà RDF   | Effetto nel CSV                   |
+| -------------------- | --------------- | --------------------------------- |
+| `parent` / `broader` | `skos:broader`  | `"[{'id': '001', 'uri': '...'}]"` |
+| `vocab` / `scheme`   | `skos:inScheme` | `"[{'uri': '...'}]"`              |
+
+Il campo `scheme` può essere mantenuto nel
+`@context` e nel corpo del frame: serve a
+selezionare solo i concetti del vocabolario
+corrente durante il framing. Non compare nel
+CSV perché assente da `schema.fields` nel
+`datapackage.yaml`.
+
+#### Esempio: subject-disciplines-csv.frame.yamlld
+
+```yaml
+"@type": "skos:Concept"
+"@explicit": true
+"@embed": "@never"
+"@omitDefault": true
+"@requireAll": true
+
+"@context":
+  skos: "http://www.w3.org/2004/02/skos/core#"
+  clvapit: "https://w3id.org/italia/onto/CLV/"
+  uri: "@id"
+  id: skos:notation
+  label:
+    "@id": skos:prefLabel
+    "@language": it
+  definition:
+    "@id": skos:definition
+    "@language": it
+  level:
+    "@id": clvapit:hasRankOrder
+  scheme:
+    "@id": skos:inScheme
+    "@container": "@set"
+    "@context":
+      uri: "@id"
+
+# Seleziona solo i concetti di questo vocabolario.
+# Non incluso in schema.fields → non compare nel CSV.
+scheme:
+  - uri: "https://w3id.org/italia/controlled-vocabulary/classifications-for-culture/subject-disciplines"
+    "@explicit": true
+    "@embed": "@never"
+
+uri: {}
+id: {}
+label: {}
+definition:
+  "@default": "@null"
+level: {}
+```
+
+#### Compatibilità con datapackage.yaml
+
+Il `datapackage.yaml` è condiviso tra il flusso
+con e senza SUFFIX. I campi in `schema.fields`
+devono essere presenti anche nel frame CSV-specifico.
+I campi assenti dal frame CSV (es. `broader`) devono
+essere esclusi da `schema.fields`.
+
+#### Eseguire il flusso manualmente con SUFFIX
+
+```bash
+schema_gov_it_tools.bin jsonld create \
+  --ttl subject-disciplines.ttl \
+  --frame subject-disciplines-csv.frame.yamlld \
+  --vocabulary-uri self \
+  --output subject-disciplines-csv.data.yaml \
+  --force
+```
+
+```bash
+schema_gov_it_tools.bin csv create \
+  --jsonld subject-disciplines-csv.data.yaml \
+  --datapackage datapackage.yaml \
+  --force
+```
+
+```bash
+schema_gov_it_tools.bin csv validate \
+  --ttl subject-disciplines.ttl \
+  --datapackage datapackage.yaml
+```
+
+Il CSV risultante con `SUFFIX: '-csv'` contiene
+solo campi flat, senza `broader` o `scheme`:
+
+```
+"uri","id","label","definition","level"
+"https://.../001","001","scienze matematiche","","1"
+"https://.../001-001","001.001","logica matematica","...","2"
+```
+
 ### Uso dello strumento di validazione {#uso-dello-strumento-di-validazione}
 
 Il comando `csv validate` è lo strumento
@@ -775,9 +959,8 @@ sono: `critical`, `error`, `warning`,
 
 ```bash
 schema_gov_it_tools.bin --log-level debug csv validate \
-  --datapackage datapackage.yaml \
   --ttl agente_causale.ttl \
-  --vocabulary-uri https://w3id.org/italia/work-accident/controlled-vocabulary/adm_serv/agente_causale
+  --datapackage datapackage.yaml
 ```
 
 I comandi restituiscono exit code `0`
