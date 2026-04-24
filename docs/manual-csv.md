@@ -299,7 +299,7 @@ nel tempo (vedi
 Per i campi con nome riservato (`id`, `label`,
 `level`, `parent`, `vocab`) sono ammesse solo
 specifiche proprietà RDF: vedi
-[Valori ammessi in modalità strict](#valori-ammessi-in-modalità-strict).
+[Valori ammessi in modalità strict](#valori-ammessi-in-modalit%C3%A0-strict).
 
 ## Generare lo stub del datapackage {#generare-lo-stub-del-datapackage}
 
