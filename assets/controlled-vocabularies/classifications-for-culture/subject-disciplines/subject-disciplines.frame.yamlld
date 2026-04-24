@@ -49,8 +49,8 @@ scheme:
 uri: {}
 id: {}
 label: {}
-label_en: {}
-definition: {}
+definition:
+  "@default": "@null"
 level: {}
 
 broader:
