@@ -9,9 +9,11 @@ import json
 import logging
 from typing import Any
 
+from _generated.models import APICatalog, APIDistribution, Linkset
 from common.utils import _get_database_or_fail
 from connexion import request
 from connexion.exceptions import BadRequestProblem
+from pydantic import ValidationError
 
 from tools.store import APIStore
 
@@ -39,13 +41,11 @@ def _to_catalog_item(
     item: dict[str, Any],
     api_base_url: str,
     predecessor_base_url: str,
-) -> dict[str, Any] | None:
+) -> APIDistribution | None:
     """
     Convert a dictionary item from _metadata
     containing agency_id, key_concept, vocabulary_uri
-    to a catalog_item of the form
-
-
+    to an APIDistribution model instance.
     """
     try:
         catalog = json.loads(item["catalog"])
@@ -59,13 +59,12 @@ def _to_catalog_item(
             )
         )
         oas_url = "/".join((api_url, "openapi.yaml"))
-        ret = {
+        dist_dict: dict[str, Any] = {
             "href": api_url,
             "about": vocabulary_uri,
             "title": catalog["title"],
             "description": catalog["description"],
             "hreflang": catalog["hreflang"],
-            # "type": "application/json",
             "version": catalog["version"],
             "author": catalog["author"],
             "service-desc": [
@@ -82,15 +81,9 @@ def _to_catalog_item(
             pre_url = "/".join(
                 (predecessor_base_url, item["agency_id"], item["key_concept"])
             )
-            ret["predecessor-version"] = [
-                {
-                    "href": pre_url,
-                }
-            ]
-        # Remove total_count if present, as it's not part of the catalog item
-        ret.pop("total_count", None)
-        return ret
-    except (KeyError, json.JSONDecodeError) as e:
+            dist_dict["predecessor-version"] = [{"href": pre_url}]
+        return APIDistribution.model_validate(dist_dict)
+    except (KeyError, json.JSONDecodeError, ValidationError) as e:
         log.exception(
             f"Skipping invalid catalog entry in database for agency_id={item['agency_id']} "
             f"and key_concept={item['key_concept']}: {e}"
@@ -129,7 +122,7 @@ def _list_vocabularies_impl(
 
     total_count: int = dict(rows[0]).get("total_count", 0) if rows else 0
 
-    items: list[dict[str, Any]] = [
+    items: list[APIDistribution] = [
         item
         for x in rows
         if (
@@ -142,21 +135,24 @@ def _list_vocabularies_impl(
         is not None
     ]
 
-    result = {
-        "linkset": [
-            {
-                "anchor": request.state.api_base_url,
-                "api-catalog": request.state.api_base_url,
-                "item": items,
-                "total_count": total_count,
-                "count": len(items),
-                "limit": limit,
-                "offset": offset,
-            }
-        ]
-    }
+    catalog = APICatalog.model_validate(
+        {
+            "api-catalog": request.state.api_base_url,
+            "anchor": request.state.api_base_url,
+            "item": items,
+            "total_count": total_count,
+            "count": len(items),
+            "limit": limit,
+            "offset": offset,
+        }
+    )
+    linkset = Linkset(linkset=[catalog])
 
-    return result, 200, {"Content-Type": "application/linkset+json"}
+    return (
+        linkset.model_dump(by_alias=True, mode="json", exclude_none=True),
+        200,
+        {"Content-Type": "application/linkset+json"},
+    )
 
 
 def list_vocabularies(
