@@ -623,6 +623,7 @@ components:
         l0: https://w3id.org/italia/onto/l0/
         limit: null
         next_cursor: null
+        total_count: null
         "items":
           "@container": "@set"
           "@id": l0:hasMember
@@ -639,6 +640,13 @@ components:
           nullable: true
           oneOf:
           - $ref: "#/components/schemas/IdString"
+        total_count:
+          description: Total number of items in the vocabulary
+            (unfiltered).
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100000
         items:
           type: array
           minItems: 0

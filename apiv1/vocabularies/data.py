@@ -125,9 +125,17 @@ async def show_items(
     api_url = "/".join(
         [request.state.api_base_url.rstrip("/"), agencyId, keyConcept]
     )
+
+    metadata = harvest_db.get_metadata(agencyId, keyConcept)
+    total_count = 0
+    if metadata:
+        catalog = json.loads(metadata["catalog"])
+        total_count = catalog.get("total_count", 0)
+
     response = {
         "limit": limit,
         "next_cursor": next_cursor,
+        "total_count": total_count,
         "items": [_transform_item(item, api_url) for item in items],
     }
     return ConnexionResponse(
@@ -206,7 +214,7 @@ async def dump_vocabulary_dataset(
                 gz.write(b",")
             gz.write(json.dumps(_transform_item(item, api_url)).encode())
         gz.write(
-            f'],"metadata":{{"totalItems":{len(vocabulary_items)},"dumpDate":"{dump_date}"}}}}'.encode()
+            f'],"metadata":{{"total_count":{len(vocabulary_items)},"dumpDate":"{dump_date}"}}}}'.encode()
         )
 
     headers = {
