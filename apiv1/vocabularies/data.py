@@ -123,7 +123,12 @@ async def show_items(
     items = items[:limit]
 
     api_url = "/".join(
-        [request.state.api_base_url.rstrip("/"), agencyId, keyConcept]
+        [
+            request.state.api_base_url.rstrip("/"),
+            "vocabularies",
+            agencyId,
+            keyConcept,
+        ]
     )
     response = {
         "limit": limit,
@@ -261,11 +266,11 @@ async def show_vocabulary_spec(
         spec = copy.deepcopy(request.state.base_spec)
         spec["info"] = vocabulary_oas["info"]
         spec["components"]["schemas"]["Item"] = item_oas
-        spec.setdefault("servers", []).append(
+        spec["servers"] = [
             {
                 "url": f"{request.state.api_base_url}/vocabularies/{agencyId}/{keyConcept}/"
             }
-        )
+        ]
 
         # Remove all paths that don't start with /vocabularies/{agencyId}/{keyConcept}
         # In the others, replace that prefix with "/"

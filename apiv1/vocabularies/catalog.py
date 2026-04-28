@@ -135,7 +135,7 @@ def _list_vocabularies_impl(
         if (
             item := _to_catalog_item(
                 dict(x),
-                request.state.api_base_url,
+                request.state.api_base_url.rstrip("/"),
                 request.state.predecessor_base_url,
             )
         )
