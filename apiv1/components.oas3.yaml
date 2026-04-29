@@ -71,9 +71,15 @@ components:
 
         This is a substring match on the corresponding field of
         the vocabulary metadata.
+
+        Accepts ASCII letters/digits, common punctuation, and precomposed
+        Latin characters (U+00C0-U+024F) covering Italian, French, German,
+        Spanish and other European Latin-script languages (e.g. "città").
+        Non-Latin Unicode (Cyrillic, Arabic, CJK, …) and binary bytes are
+        rejected.
       type: string
       maxLength: 128
-      pattern: '^[A-Za-z0-9 ._:/-]{1,128}$'
+      pattern: '^[A-Za-z0-9\u00C0-\u024F ._:/-]{1,128}$'
     Link:
       description: |-
         A link to a resource.
