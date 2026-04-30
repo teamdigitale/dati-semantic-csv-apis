@@ -5,10 +5,9 @@ from typing import Any, cast
 
 import pytest
 import yaml
-from deepdiff import DeepDiff
 from vocabularies.app import create_app
 
-from tests.harness import _config, client_harness
+from tests.harness import _config, check_substructure, client_harness
 
 TESTCASES_FILE = Path(__file__).with_suffix(".yaml")
 TESTCASES = cast(
@@ -77,19 +76,10 @@ def test_base_requests(single_entry_db, testcase):
                             )
             # .. the content is as expected ..
             if expected_json := expected["response"].get("json"):
-                diff = DeepDiff(
-                    expected_json,
-                    response.json(),
-                    ignore_order=True,
-                )
-                unexpected = {
-                    key: value
-                    for key, value in diff.items()
-                    if not key.endswith("_added")
-                }
-                assert not unexpected, (
+                issues = check_substructure(expected_json, response.json())
+                assert not issues, (
                     "Missing/changed expected JSON fields:\n"
-                    + yaml.safe_dump(unexpected, sort_keys=True)
+                    + "\n".join(f"  {path}: {msg}" for path, msg in issues)
                 )
 
             # .. and the logs contain the expected messages.
