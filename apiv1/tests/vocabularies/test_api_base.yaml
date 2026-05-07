@@ -1,500 +1,534 @@
 ---
 testcases:
-- name: get_single_item
-  description: |-
-    When:
+  - name: get_single_item
+    description: |-
+      When:
 
-    - GET /vocabularies/istat/ateco-2025/A01
+      - GET /vocabularies/istat/ateco-2025/A01
 
-    Then:
+      Then:
 
-    - I get the expected item
-  request:
-    method: get
-    url: /vocabularies/istat/ateco-2025/A01
-  expected:
-    logs:
-    - "Application startup complete"
-    response:
-      status_code: 200
-      json: {"id": "A01", "label": "Item A01", "uri": "https://example.com/vocabularies/test/A01",
-        "href": "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-2025/A01"}
-- name: get_items_list_includes_href
-  description: |-
-    When:
+      - I get the expected item
+    request:
+      method: get
+      url: /vocabularies/istat/ateco-2025/A01
+    expected:
+      logs:
+        - "Application startup complete"
+      response:
+        status_code: 200
+        json:
+          {
+            "id": "A01",
+            "label": "Item A01",
+            "uri": "https://example.com/vocabularies/test/A01",
+            "href": "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-202\
+              5/A01",
+          }
+  - name: get_items_list_includes_href
+    description: |-
+      When:
 
-    - GET /vocabularies/istat/ateco-2025
+      - GET /vocabularies/istat/ateco-2025
 
-    Then:
+      Then:
 
-    - Each item in the response includes an href pointing to self
-    - The parent item includes an href pointing to the parent item
-    - If the parent item does not include an id, it only shows the uri
-  request:
-    method: get
-    url: /vocabularies/istat/ateco-2025
-  expected:
-    response:
-      status_code: 200
-      json:
-        items:
-        - id: A00
-          label: Item A00
-          uri: "https://example.com/vocabularies/test/A00"
-          href: "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-2025/A00"
+      - Each item in the response includes an href pointing to self
+      - The parent item includes an href pointing to the parent item
+      - If the parent item does not include an id, it only shows the uri
+    request:
+      method: get
+      url: /vocabularies/istat/ateco-2025
+    expected:
+      response:
+        status_code: 200
+        json:
+          items:
+            - id: A00
+              label: Item A00
+              uri: "https://example.com/vocabularies/test/A00"
+              href: "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-2025/\
+                A00"
 
-- name: get_vocabularies
-  description: |-
-    When:
+  - name: get_vocabularies
+    description: |-
+      When:
 
-    - GET /vocabularies
+      - GET /vocabularies
 
-    Then:
+      Then:
 
-    - I get the expected linkset item
-  request:
-    method: get
-    url: /vocabularies
-  expected:
-    response:
-      status_code: 200
-      json:
-        linkset: [{anchor: "https://schema.gov.it/api/vocabularies/v1/",
-            api-catalog: "https://schema.gov.it/api/vocabularies/v1/",
-            count: 1, item: [{about: "https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025",
-                author: "https://w3id.org/italia/data/public-organization/ISTAT",
+      - I get the expected linkset item
+    request:
+      method: get
+      url: /vocabularies
+    expected:
+      response:
+        status_code: 200
+        json:
+          linkset:
+            [
+              {
+                  anchor: "https://schema.gov.it/api/vocabularies/v1/",
+                  api-catalog: "https://schema.gov.it/api/vocabularies/v1/",
+                  count: 1,
+                  item:
+                    [
+                      {
+                          about: "https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025",
+                          author: "https://w3id.org/italia/data/public-organization/ISTAT",
 
-                href: "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-2025",
-                hreflang: [it], predecessor-version: [{href: "https://old.example.com/istat/ateco-2025"}],
-                service-desc: [{href: "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-2025/openapi.yaml",
-                    type: application/openapi+yaml}], service-meta: [
-                  {href: "https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025?output=application/ld+json",
-                    type: application/ld+json}], title: Ateco
-                  2025 - Classificazione delle attività economiche,
-                version: versione 2025}], limit: 20, offset: 0,
-            total_count: 1}]
+                          href: "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-2025",
+                          hreflang: [ it ],
+                          predecessor-version: [ { href: "https://old.example.com/istat/ateco-2025" } ],
+                          service-desc:
+                            [
+                              {
+                                  href: "https://schema.gov.it/api/vocabularies/v1/vocabularies/istat/ateco-2025/\
+                                    openapi.yaml",
+                                  type: application/openapi+yaml,
+                                },
+                            ],
+                          service-meta:
+                            [
+                              {
+                                  href: "https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025?ou\
+                                    tput=application/ld+json",
+                                  type: application/ld+json,
+                                },
+                            ],
+                          title: Ateco 2025 - Classificazione delle attività economiche,
+                          version: versione 2025,
+                        },
+                    ],
+                  limit: 20,
+                  offset: 0,
+                  total_count: 1,
+                },
+            ]
 
-- name: test_latin_header
-  description: |-
-    When:
+  - name: test_latin_header
+    description: |-
+      When:
 
-    - GET /status with a latin1 header value
+      - GET /status with a latin1 header value
 
-    Then:
+      Then:
 
-    - Response status is 200
-  request:
-    method: get
-    url: /status
-    headers:
-      X-Test-Header: "Café\x80"
-  expected:
-    response:
-      status_code: 200
-- name: reject_non_printable_query_parameter
-  description: |-
-    When:
-
-    - Request parameters contain non-printable characters
-
-    Then:
-
-    - Response status is 400
-  request:
-    method: get
-    url: "/istat/ateco-2025/?label= invalid"
-  expected:
-    response:
-      status_code: 400
-- name: trailing_slash_listing
-  #
-  #
-  # Trailing slash tests
-  description: |-
-    When:
-
-    - GET /vocabularies/{agencyId}/{keyConcept}/ with trailing slash
-
-    Then:
-
-    - Response status is 200 (not 400 from empty itemId matched via format:path)
-  request:
-    method: get
-    url: /vocabularies/istat/ateco-2025/
-  expected:
-    response:
-      status_code: 200
-- name: pagination_invalid
-  #
-  #
-  # Pagination tests
-  description: |-
-    When:
-
-    - GET with invalid pagination parameters
-
-    Then:
-
-    - Response status is 400
-  request:
-  - method: get
-    url: /vocabularies?limit=1,2,3&offset=0
-  - method: get
-    url: /vocabularies?limit=-1&offset=0
-  - method: get
-    url: /vocabularies/istat/ateco-2025?limit=1,2,3
-  - method: get
-    url: /vocabularies/istat/ateco-2025?limit=1.2
-  - method: get
-    url: /vocabularies/istat/ateco-2025?limit=5&offset=10
-  expected:
-    response:
-      status_code: 400
-- name: pagination_data_limit
-  description: |-
-    When:
-
-    - GET with an explicit limit parameter
-
-    Then:
-
-    - Response status is 200 and limit is echoed back correctly.
-  request:
-  - method: get
-    url: /vocabularies/istat/ateco-2025?limit=5
-  expected:
-    response:
-      status_code: 200
-      json:
-        limit: 5
-- name: pagination_acceptable
-  description: |-
-    When:
-
-    - GET with acceptable pagination parameters
-
-    Then:
-
-    - Response status is 200, and the last pagination parameter is used.
-  request:
-  - description: limit=0 is ignored and silently treated as 10
-    method: get
-    url: "/vocabularies?limit=0&offset=12506&q=%2F3f"
-  - method: get
-    url: /vocabularies?limit=5&offset=10
-  - method: get
-    url: /vocabularies?limit=5&limit=10&offset=0&offset=20
-  expected:
-    response:
-      status_code: 200
-- name: pagination_data_cursor
-  description: |-
-    When:
-
-    - GET with cursor-based pagination parameters
-
-    Then:
-
-    - Response status is 200, cursor parameters are accepted,
-      and next_cursor is absent when there are no more results.
-  request:
-  - method: get
-    url: /vocabularies/istat/ateco-2025?cursor=A00&limit=30
-  expected:
-    response:
-      status_code: 200
-      count: 30
-      json:
-        next_cursor: A31
-        limit: 30
-- name: pagination_data_no_cursor
-  description: |-
-    When:
-
-    - GET without a cursor (default first page)
-
-    Then:
-
-    - Response status is 200 and next_cursor points to the item after the page.
-  request:
-  - method: get
-    url: /vocabularies/istat/ateco-2025?limit=30
-  expected:
-    response:
-      status_code: 200
-      count: 30
-      json:
-        limit: 30
-        next_cursor: A30
-
-- name: pagination_data_cursor_empty
-  description: |-
-    When:
-
-    - GET with a cursor pointing past the last item
-
-    Then:
-
-    - Response status is 200 and items is empty.
-  request:
-  - method: get
-    url: /vocabularies/istat/ateco-2025?cursor=A01
-  expected:
-    response:
-      status_code: 200
-      json:
-        limit: 20
-        items: []
-
-#
-# Non-printable characters in query parameters
-#
-- name: non_printable_query_parameter
-  description: |-
-    When:
-
-    - GET with non-printable characters in query parameters
-
-    Then:
-
-    - Response status is 400
-  request:
-  - method: get
-    url: "/vocabularies?concept=t%1E&q=%E2%80%88S7H&hreflang=sx&limit=131"
-  - method: get
-    url: "/vocabularies?concept=G%2Fx%0C%C2%A0uhJ%0B%1FSp%2F%E2%81%9F%C2%85tXQ0B"
-  expected:
-    response:
-      status_code: 400
+      - Response status is 200
+    request:
+      method: get
+      url: /status
       headers:
-      - cache-control: max-age=3600
-        present: false
-- name: non_printable_query_parameter_acceptable
-  description: |-
-    When:
+        X-Test-Header: "Café"
+    expected:
+      response:
+        status_code: 200
+  - name: reject_non_printable_query_parameter
+    description: |-
+      When:
 
-    - GET with non-printable characters in query parameters that are percent-encoded
+      - Request parameters contain non-printable characters
 
-    Then:
+      Then:
 
-    - Response status is 200
-  request:
-  - method: get
-    url: "/vocabularies?concept=valid&q=valid&hreflang=sx&limit=131"
-  expected:
-    response:
-      status_code: 200
-      headers:
-      - cache-control: max-age=3600
-- name: random_strings
-  request:
-  - method: get
-    url: "/vocabularies?concept=OYWHWxVQtX9Qxn%2F&q=PbBMRDxk1BTD23%2F&hreflang=us"
-  - method: get
-    url: "/vocabularies?limit=172&concept=br7Z5E2sx8&hreflang=rl&offset=43029&title=GyN&q=-"
-  expected:
-    response:
-      status_code: 200
-      headers:
-      - cache-control: max-age=3600
-- name: cannot_get_missing_item
-  description: |-
-    When:
+      - Response status is 400
+    request:
+      method: get
+      url: "/istat/ateco-2025/?label= invalid"
+    expected:
+      response:
+        status_code: 400
+  - name: trailing_slash_listing
+    #
+    #
+    # Trailing slash tests
+    description: |-
+      When:
 
-    - GET with valid query parameters
+      - GET /vocabularies/{agencyId}/{keyConcept}/ with trailing slash
 
-    Then:
+      Then:
 
-    - Response status is 404, and the expected error message is returned.
-  request:
-  - method: get
-    url: "/vocabularies/istat/ateco-2025/INVALID_ID"
-  expected:
-    response:
-      status_code: 404
-- name: get_item_with_slash_in_id
-  description: |-
-    When:
+      - Response status is 200 (not 400 from empty itemId matched via format:path)
+    request:
+      method: get
+      url: /vocabularies/istat/ateco-2025/
+    expected:
+      response:
+        status_code: 200
+  - name: pagination_invalid
+    #
+    #
+    # Pagination tests
+    description: |-
+      When:
 
-    - GET an item whose skos:notation contains a '/'
+      - GET with invalid pagination parameters
 
-    Then:
+      Then:
 
-    - A literal slash in the URL path is accepted (format: path).
-    - A percent-encoded %2F in the URL path is also accepted.
-    - Both return the same 200 response.
-  request:
-  - method: get
-    url: "/vocabularies/istat/ateco-2025/A/01"
-  - method: get
-    url: "/vocabularies/istat/ateco-2025/A%2F01"
-  expected:
-    response:
-      status_code: 200
-      json: {"id": "A/01", "label": "Item A/01"}
-- name: get_status
+      - Response status is 400
+    request:
+      - method: get
+        url: /vocabularies?limit=1,2,3&offset=0
+      - method: get
+        url: /vocabularies?limit=-1&offset=0
+      - method: get
+        url: /vocabularies/istat/ateco-2025?limit=1,2,3
+      - method: get
+        url: /vocabularies/istat/ateco-2025?limit=1.2
+      - method: get
+        url: /vocabularies/istat/ateco-2025?limit=5&offset=10
+    expected:
+      response:
+        status_code: 400
+  - name: pagination_data_limit
+    description: |-
+      When:
+
+      - GET with an explicit limit parameter
+
+      Then:
+
+      - Response status is 200 and limit is echoed back correctly.
+    request:
+      - method: get
+        url: /vocabularies/istat/ateco-2025?limit=5
+    expected:
+      response:
+        status_code: 200
+        json:
+          limit: 5
+  - name: pagination_acceptable
+    description: |-
+      When:
+
+      - GET with acceptable pagination parameters
+
+      Then:
+
+      - Response status is 200, and the last pagination parameter is used.
+    request:
+      - description: limit=0 is ignored and silently treated as 10
+        method: get
+        url: "/vocabularies?limit=0&offset=12506&q=%2F3f"
+      - method: get
+        url: /vocabularies?limit=5&offset=10
+      - method: get
+        url: /vocabularies?limit=5&limit=10&offset=0&offset=20
+    expected:
+      response:
+        status_code: 200
+  - name: pagination_data_cursor
+    description: |-
+      When:
+
+      - GET with cursor-based pagination parameters
+
+      Then:
+
+      - Response status is 200, cursor parameters are accepted,
+        and next_cursor is absent when there are no more results.
+    request:
+      - method: get
+        url: /vocabularies/istat/ateco-2025?cursor=A00&limit=30
+    expected:
+      response:
+        status_code: 200
+        count: 30
+        json:
+          next_cursor: A31
+          limit: 30
+  - name: pagination_data_no_cursor
+    description: |-
+      When:
+
+      - GET without a cursor (default first page)
+
+      Then:
+
+      - Response status is 200 and next_cursor points to the item after the page.
+    request:
+      - method: get
+        url: /vocabularies/istat/ateco-2025?limit=30
+    expected:
+      response:
+        status_code: 200
+        count: 30
+        json:
+          limit: 30
+          next_cursor: A30
+
+  - name: pagination_data_cursor_empty
+    description: |-
+      When:
+
+      - GET with a cursor pointing past the last item
+
+      Then:
+
+      - Response status is 200 and items is empty.
+    request:
+      - method: get
+        url: /vocabularies/istat/ateco-2025?cursor=A01
+    expected:
+      response:
+        status_code: 200
+        json:
+          limit: 20
+          items: []
+
   #
+  # Non-printable characters in query parameters
   #
-  # catalog.py coverage
-  description: |-
-    When:
+  - name: non_printable_query_parameter
+    description: |-
+      When:
 
-    - GET /status
+      - GET with non-printable characters in query parameters
 
-    Then:
+      Then:
 
-    - Response status is 200 and body confirms the API is running.
-  request:
-    method: get
-    url: /status
-  expected:
-    response:
-      status_code: 200
-      json:
-        status: 200
-        title: OK
-      headers:
-      - cache-control: max-age=3600
+      - Response status is 400
+    request:
+      - method: get
+        url: "/vocabularies?concept=t%1E&q=%E2%80%88S7H&hreflang=sx&limit=131"
+      - method: get
+        url: "/vocabularies?concept=G%2Fx%0C%C2%A0uhJ%0B%1FSp%2F%E2%81%9F%C2%85tXQ0B"
+    expected:
+      response:
+        status_code: 400
+        headers:
+          - cache-control: max-age=3600
+            present: false
+  - name: non_printable_query_parameter_acceptable
+    description: |-
+      When:
 
-- name: bad_query_parameters
-  description: |-
-    When:
+      - GET with non-printable characters in query parameters that are percent-encoded
 
-    - GET /vocabularies with bad query parameters
+      Then:
 
-    Then:
+      - Response status is 200
+    request:
+      - method: get
+        url: "/vocabularies?concept=valid&q=valid&hreflang=sx&limit=131"
+    expected:
+      response:
+        status_code: 200
+        headers:
+          - cache-control: max-age=3600
+  - name: random_strings
+    request:
+      - method: get
+        url: "/vocabularies?concept=OYWHWxVQtX9Qxn%2F&q=PbBMRDxk1BTD23%2F&hreflang=us"
+      - method: get
+        url: "/vocabularies?limit=172&concept=br7Z5E2sx8&hreflang=rl&offset=43029&title\
+          =GyN&q=-"
+    expected:
+      response:
+        status_code: 200
+        headers:
+          - cache-control: max-age=3600
+  - name: cannot_get_missing_item
+    description: |-
+      When:
 
-    - Response status is 400 and no items match.
-  request:
-  - method: get
-    url: "/vocabularies?type=http://example.com/UnknownType"
-  - method: get
-    url: "/vocabularies?unknown_param=foo"
-  expected:
-    response:
-      status_code: 400
-- name: accented_query_allowed_uppercase
-  #
-  #
-  # Accented / Latin-extended character tests (TextFilter pattern U+00C0-U+024F)
-  description: |-
-    When:
+      - GET with valid query parameters
 
-    - GET /vocabularies with q containing uppercase accented Latin words.
+      Then:
 
-    Then:
+      - Response status is 404, and the expected error message is returned.
+    request:
+      - method: get
+        url: "/vocabularies/istat/ateco-2025/INVALID_ID"
+    expected:
+      response:
+        status_code: 404
+  - name: get_item_with_slash_in_id
+    description: |-
+      When:
 
-    - Response status is 200 (U+00C0-U+024F covers uppercase precomposed forms).
-  request:
-  - description: Italian - ATTIVITÀ
-    method: get
-    url: "/vocabularies?q=ATTIVIT%C3%80"
-  - description: Italian - attività (uppercase À)
-    method: get
-    url: "/vocabularies?q=attivit%C3%A0"
-  - description: Italian - ATTIVITÀ
-    method: get
-    url: "/vocabularies?q=ATTIVITÀ"
-  - description: Italian - attività
-    method: get
-    url: "/vocabularies?q=attività"
-  expected:
-    response:
-      status_code: 200
-      json:
-        linkset:
-        - item:
-          - about: "https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025"
-- name: accented_label_filter_allowed
-  description: |-
-    When:
+      - GET an item whose skos:notation contains a '/'
 
-    - GET /vocabularies/istat/ateco-2025 with a label filter containing
-      accented characters from several European languages.
+      Then:
 
-    Then:
+      - A literal slash in the URL path is accepted (format: path).
+      - A percent-encoded %2F in the URL path is also accepted.
+      - Both return the same 200 response.
+    request:
+      - method: get
+        url: "/vocabularies/istat/ateco-2025/A/01"
+      - method: get
+        url: "/vocabularies/istat/ateco-2025/A%2F01"
+    expected:
+      response:
+        status_code: 200
+        json: { "id": "A/01", "label": "Item A/01" }
+  - name: get_status
+    #
+    #
+    # catalog.py coverage
+    description: |-
+      When:
 
-    - Response status is 200 (filter accepted; result set may be empty).
-  request:
-  - description: Italian label filter - città
-    method: get
-    url: "/vocabularies/istat/ateco-2025?label=citt%C3%A0"
-  - description: French label filter - résumé
-    method: get
-    url: "/vocabularies/istat/ateco-2025?label=r%C3%A9sum%C3%A9"
-  - description: Spanish label filter - Ñoño
-    method: get
-    url: "/vocabularies/istat/ateco-2025?label=%C3%B1o%C3%B1o"
-  - description: German label filter - Ångström (Å = U+00C5)
-    method: get
-    url: "/vocabularies/istat/ateco-2025?label=%C3%85ngstr%C3%B6m"
-  - description: Italian - CITTÀ (U+00C0 range)
-    method: get
-    url: "/vocabularies?q=CITT%C3%80"
-  - description: Italian - ATTIVITÀ
-    method: get
-    url: "/vocabularies?q=ATTIVIT%C3%80"
-  - description: French - ÉCONOMIE (É = U+00C9)
-    method: get
-    url: "/vocabularies?q=%C3%89CONOMIE"
-  - description: Spanish - CAÑÓN (Ñ = U+00D1, Ó = U+00D3)
-    method: get
-    url: "/vocabularies?q=CA%C3%91%C3%93N"
-  - description: German - ÜBER (Ü = U+00DC)
-    method: get
-    url: "/vocabularies?q=%C3%9CBER"
-  expected:
-    response:
-      status_code: 200
-- name: non_latin_query_rejected
-  description: |-
-    When:
+      - GET /status
 
-    - GET /vocabularies with q or title containing characters outside the
-      allowed Latin range (Cyrillic, Arabic, CJK, mathematical symbols).
+      Then:
 
-    Then:
+      - Response status is 200 and body confirms the API is running.
+    request:
+      method: get
+      url: /status
+    expected:
+      response:
+        status_code: 200
+        json:
+          status: 200
+          title: OK
+        headers:
+          - cache-control: max-age=3600
 
-    - Response status is 400 (TextFilter pattern rejects non-Latin Unicode).
-  request:
-  - description: Chinese character 北 (U+5317)
-    method: get
-    url: "/vocabularies?q=%E5%8C%97"
-  - description: Arabic مرحبا (U+0645 etc.)
-    method: get
-    url: "/vocabularies?q=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7"
-  - description: Cyrillic Привет (U+041F etc.)
-    method: get
-    url: "/vocabularies?q=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82"
-  - description: Mathematical script U+2115 ℕ
-    method: get
-    url: "/vocabularies?q=%E2%84%95"
-  expected:
-    response:
-      status_code: 400
-- name: binary_and_control_chars_rejected
-  description: |-
-    When:
+  - name: bad_query_parameters
+    description: |-
+      When:
 
-    - GET /vocabularies with query parameters containing raw binary bytes
-      or C0/C1 control characters (non-printable, outside any allowed range).
+      - GET /vocabularies with bad query parameters
 
-    Then:
+      Then:
 
-    - Response status is 400.
-  request:
-  - description: NUL byte percent-encoded
-    method: get
-    url: "/vocabularies?q=%00"
-  - description: C1 control character U+0080
-    method: get
-    url: "/vocabularies?q=%C2%80"
-  - description: DEL character U+007F
-    method: get
-    url: "/vocabularies?q=%7F"
-  - description: High surrogate U+D800 (invalid in UTF-8 text)
-    method: get
-    url: "/vocabularies?q=%ED%A0%80"
-  expected:
-    response:
-      status_code: 400
+      - Response status is 400 and no items match.
+    request:
+      - method: get
+        url: "/vocabularies?type=http://example.com/UnknownType"
+      - method: get
+        url: "/vocabularies?unknown_param=foo"
+    expected:
+      response:
+        status_code: 400
+  - name: accented_query_allowed_uppercase
+    #
+    #
+    # Accented / Latin-extended character tests (TextFilter pattern U+00C0-U+024F)
+    description: |-
+      When:
+
+      - GET /vocabularies with q containing uppercase accented Latin words.
+
+      Then:
+
+      - Response status is 200 (U+00C0-U+024F covers uppercase precomposed forms).
+    request:
+      - description: Italian - ATTIVITÀ
+        method: get
+        url: "/vocabularies?q=ATTIVIT%C3%80"
+      - description: Italian - attività (uppercase À)
+        method: get
+        url: "/vocabularies?q=attivit%C3%A0"
+      - description: Italian - ATTIVITÀ
+        method: get
+        url: "/vocabularies?q=ATTIVITÀ"
+      - description: Italian - attività
+        method: get
+        url: "/vocabularies?q=attività"
+    expected:
+      response:
+        status_code: 200
+        json:
+          linkset:
+            - item:
+                - about: "https://w3id.org/italia/stat/controlled-vocabulary/economy/ateco-2025"
+  - name: accented_label_filter_allowed
+    description: |-
+      When:
+
+      - GET /vocabularies/istat/ateco-2025 with a label filter containing
+        accented characters from several European languages.
+
+      Then:
+
+      - Response status is 200 (filter accepted; result set may be empty).
+    request:
+      - description: Italian label filter - città
+        method: get
+        url: "/vocabularies/istat/ateco-2025?label=citt%C3%A0"
+      - description: French label filter - résumé
+        method: get
+        url: "/vocabularies/istat/ateco-2025?label=r%C3%A9sum%C3%A9"
+      - description: Spanish label filter - Ñoño
+        method: get
+        url: "/vocabularies/istat/ateco-2025?label=%C3%B1o%C3%B1o"
+      - description: German label filter - Ångström (Å = U+00C5)
+        method: get
+        url: "/vocabularies/istat/ateco-2025?label=%C3%85ngstr%C3%B6m"
+      - description: Italian - CITTÀ (U+00C0 range)
+        method: get
+        url: "/vocabularies?q=CITT%C3%80"
+      - description: Italian - ATTIVITÀ
+        method: get
+        url: "/vocabularies?q=ATTIVIT%C3%80"
+      - description: French - ÉCONOMIE (É = U+00C9)
+        method: get
+        url: "/vocabularies?q=%C3%89CONOMIE"
+      - description: Spanish - CAÑÓN (Ñ = U+00D1, Ó = U+00D3)
+        method: get
+        url: "/vocabularies?q=CA%C3%91%C3%93N"
+      - description: German - ÜBER (Ü = U+00DC)
+        method: get
+        url: "/vocabularies?q=%C3%9CBER"
+    expected:
+      response:
+        status_code: 200
+  - name: non_latin_query_rejected
+    description: |-
+      When:
+
+      - GET /vocabularies with q or title containing characters outside the
+        allowed Latin range (Cyrillic, Arabic, CJK, mathematical symbols).
+
+      Then:
+
+      - Response status is 400 (TextFilter pattern rejects non-Latin Unicode).
+    request:
+      - description: Chinese character 北 (U+5317)
+        method: get
+        url: "/vocabularies?q=%E5%8C%97"
+      - description: Arabic مرحبا (U+0645 etc.)
+        method: get
+        url: "/vocabularies?q=%D9%85%D8%B1%D8%AD%D8%A8%D8%A7"
+      - description: Cyrillic Привет (U+041F etc.)
+        method: get
+        url: "/vocabularies?q=%D0%9F%D1%80%D0%B8%D0%B2%D0%B5%D1%82"
+      - description: Mathematical script U+2115 ℕ
+        method: get
+        url: "/vocabularies?q=%E2%84%95"
+    expected:
+      response:
+        status_code: 400
+  - name: binary_and_control_chars_rejected
+    description: |-
+      When:
+
+      - GET /vocabularies with query parameters containing raw binary bytes
+        or C0/C1 control characters (non-printable, outside any allowed range).
+
+      Then:
+
+      - Response status is 400.
+    request:
+      - description: NUL byte percent-encoded
+        method: get
+        url: "/vocabularies?q=%00"
+      - description: C1 control character U+0080
+        method: get
+        url: "/vocabularies?q=%C2%80"
+      - description: DEL character U+007F
+        method: get
+        url: "/vocabularies?q=%7F"
+      - description: High surrogate U+D800 (invalid in UTF-8 text)
+        method: get
+        url: "/vocabularies?q=%ED%A0%80"
+    expected:
+      response:
+        status_code: 400
