@@ -72,6 +72,11 @@ def single_entry_db(tmp_path: Path) -> str:
                             "id": "A/01",
                             "label": "Item A/01",
                             "uri": "https://example.com/vocabularies/test/A/01",
+                            "parent": [
+                                {
+                                    "uri": "https://example.com/vocabularies/test/A00"
+                                }
+                            ],
                         }
                     ),
                 }

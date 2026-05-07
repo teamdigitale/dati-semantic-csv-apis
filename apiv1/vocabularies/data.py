@@ -48,7 +48,11 @@ def _transform_item(obj: Any, api_base_url: str) -> Any:
         # Add href to parent items by extracting ID from their url
         if isinstance(item.get("parent"), list):
             for parent in item["parent"]:
-                if isinstance(parent, dict) and URI in parent:
+                if (
+                    isinstance(parent, dict)
+                    and URI in parent
+                    and "id" in parent
+                ):
                     parent_id = parent["id"]
                     parent["href"] = "/".join([api_base_url, parent_id])
 

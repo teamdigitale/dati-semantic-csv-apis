@@ -4,7 +4,7 @@ testcases:
   description: |-
     When:
 
-    - GET /vocabularies/istat/ateco-2025
+    - GET /vocabularies/istat/ateco-2025/A01
 
     Then:
 
@@ -28,6 +28,8 @@ testcases:
     Then:
 
     - Each item in the response includes an href pointing to self
+    - The parent item includes an href pointing to the parent item
+    - If the parent item does not include an id, it only shows the uri
   request:
     method: get
     url: /vocabularies/istat/ateco-2025
@@ -104,10 +106,10 @@ testcases:
   expected:
     response:
       status_code: 400
-#
-# Trailing slash tests
-#
 - name: trailing_slash_listing
+  #
+  #
+  # Trailing slash tests
   description: |-
     When:
 
@@ -122,10 +124,10 @@ testcases:
   expected:
     response:
       status_code: 200
-#
-# Pagination tests
-#
 - name: pagination_invalid
+  #
+  #
+  # Pagination tests
   description: |-
     When:
 
@@ -330,10 +332,10 @@ testcases:
     response:
       status_code: 200
       json: {"id": "A/01", "label": "Item A/01"}
-#
-# catalog.py coverage
-#
 - name: get_status
+  #
+  #
+  # catalog.py coverage
   description: |-
     When:
 
@@ -371,10 +373,10 @@ testcases:
   expected:
     response:
       status_code: 400
-#
-# Accented / Latin-extended character tests (TextFilter pattern U+00C0-U+024F)
-#
 - name: accented_query_allowed_uppercase
+  #
+  #
+  # Accented / Latin-extended character tests (TextFilter pattern U+00C0-U+024F)
   description: |-
     When:
 
