@@ -4,7 +4,7 @@ testcases:
   description: |-
     When:
 
-    - GET /vocabularies/istat/ateco-2025
+    - GET /vocabularies/istat/ateco-2025/A01
 
     Then:
 
@@ -28,6 +28,8 @@ testcases:
     Then:
 
     - Each item in the response includes an href pointing to self
+    - The parent item includes an href pointing to the parent item
+    - If the parent item does not include an id, it only shows the uri
   request:
     method: get
     url: /vocabularies/istat/ateco-2025

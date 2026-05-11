@@ -32,7 +32,6 @@ RUN chown -R appuser:appuser /app
 FROM api-base AS data-api
 COPY apiv1/vocabularies /app/vocabularies
 COPY apiv1/openapi/vocabularies.yaml /app/vocabularies/openapi.yaml
-COPY apiv1/components.oas3.yaml /app/vocabularies/components.oas3.yaml
 COPY apiv1/entrypoint.py /app/entrypoint.py
 
 RUN chown -R appuser:appuser /app
