@@ -40,9 +40,12 @@ classifiers = [
 
 dynamic = [ "dependencies", "optional-dependencies", "version" ]
 
+# Read the abstract/direct dependencies from the *.in files; the *.txt
+#   lockfiles (compiled by the uv pip-compile pre-commit hook) carry the
+#   full pinned + hashed transitive closure and are used for installs only.
 [tool.setuptools.dynamic]
-dependencies = { file = [ "requirements.txt" ] }
-optional-dependencies.dev = { file = [ "requirements-dev.txt" ] }
+dependencies = { file = [ "requirements.in" ] }
+optional-dependencies.dev = { file = [ "requirements-dev.in" ] }
 
 
 [project.urls]
