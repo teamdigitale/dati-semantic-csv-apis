@@ -80,6 +80,37 @@ repos:
     entry: >-
       bash -c 'cd apiv1 && mypy -p common -p vocabularies --ignore-missing-imports' --
 #
+# Lockfiles: compile requirements*.in -> requirements*.txt with uv.
+#
+# The *.in files hold the abstract/direct dependencies (the source of truth).
+# The *.txt files are fully-pinned, hashed lockfiles and are generated:
+#   do NOT edit them by hand. To change a dependency, edit the matching *.in
+#   and re-run pre-commit (or `pre-commit run pip-compile --all-files`).
+#
+# NOTE: because the lockfiles contain hashes, they might be installed with uv
+#   (the Docker image and tox-uv already do). Plain `pip install -r` enters
+#   hash-checking mode, and may reject the git-pinned `pyld` URL.
+#
+- repo: https://github.com/astral-sh/uv-pre-commit
+  rev: 0.10.3
+  hooks:
+  - id: pip-compile
+    name: pip-compile requirements.in
+    args: [requirements.in, -o, requirements.txt, --generate-hashes, --universal]
+    files: ^requirements\.(in|txt)$
+  - id: pip-compile
+    name: pip-compile requirements-dev.in
+    args: [requirements-dev.in, -c, requirements.txt, -o, requirements-dev.txt, --generate-hashes, --universal]
+    files: ^requirements.*\.(in|txt)$
+  - id: pip-compile
+    name: pip-compile apiv1/requirements.in
+    args: [apiv1/requirements.in, -o, apiv1/requirements.txt, --generate-hashes, --universal]
+    files: ^apiv1/requirements\.(in|txt)$
+  - id: pip-compile
+    name: pip-compile apiv1/requirements-dev.in
+    args: [apiv1/requirements-dev.in, -c, apiv1/requirements.txt, -o, apiv1/requirements-dev.txt, --generate-hashes, --universal]
+    files: ^apiv1/requirements.*\.(in|txt)$
+#
 # Generators.
 #
 - repo: local
