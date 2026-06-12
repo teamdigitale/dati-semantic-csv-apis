@@ -10,7 +10,7 @@ import sqlite3
 from collections.abc import AsyncIterator
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import starlette.convertors
 import yaml
@@ -62,6 +62,7 @@ class Config:
     PREDECESSOR_BASE_URL: str = ""
     CORS_ORIGINS: list[str] | None = None
     SWAGGER_UI: bool = False
+    SERVERS_URL_OVERRIDE: Literal["FALSE", "BASE_URL", "PATH_ONLY"] = "FALSE"
 
 
 # Configure logging
@@ -123,6 +124,46 @@ async def load_dataset_handler(
         harvest_database.close()
 
 
+def _patch_spec_servers(
+    specification: Any,
+    mode: Literal["FALSE", "BASE_URL", "PATH_ONLY"] = "FALSE",
+    api_base_url: str = "",
+) -> None:
+    """Patch with_base_path on a Connexion Specification instance.
+
+    Connexion's default with_base_path (PATH_ONLY) sets servers=[{url: root_path}],
+    discarding scheme+host on every request via _spec_for_prefix.
+
+    - FALSE:     freeze servers as-is from the spec file.
+    - BASE_URL:  prepend the origin from api_base_url to the proxy root_path.
+    - PATH_ONLY: leave Connexion's default behaviour untouched.
+    """
+    if mode == "PATH_ONLY":
+        return
+
+    import types
+    from urllib.parse import urlsplit, urlunsplit
+
+    if mode == "FALSE":
+
+        def _with_base_path(self, base_path: str):  # noqa: ANN001
+            return self.clone()
+    else:  # BASE_URL
+        parsed = urlsplit(api_base_url)
+        origin = urlunsplit(parsed._replace(path="", query="", fragment=""))
+
+        def _with_base_path(self, base_path: str):  # noqa: ANN001
+            new_spec = self.clone()
+            url = origin.rstrip("/") + base_path if base_path else api_base_url
+            new_spec._raw_spec["servers"] = [{"url": url}]
+            new_spec._spec["servers"] = [{"url": url}]
+            return new_spec
+
+    specification.with_base_path = types.MethodType(
+        _with_base_path, specification
+    )
+
+
 def create_app(config: Config | None = None) -> AsyncApp:
     """
     Create and configure the Connexion application.
@@ -160,6 +201,13 @@ def create_app(config: Config | None = None) -> AsyncApp:
     app.add_api(
         "openapi.yaml",
         strict_validation=True,
+    )
+    # _spec_for_prefix calls specification.with_base_path(root_path) on every
+    # request. The default setter discards scheme+host, yielding servers=[{url: "/"}].
+    _patch_spec_servers(
+        app.middleware.apis[-1].specification,
+        mode=config.SERVERS_URL_OVERRIDE,
+        api_base_url=api_base_url,
     )
     # Ensure that request parameters are safe (e.g., for logging, ..)
     app.add_middleware(

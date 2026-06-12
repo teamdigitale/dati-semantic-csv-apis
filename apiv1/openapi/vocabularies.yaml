@@ -25,7 +25,7 @@ info:
     This content will be generated merging this
     "template" with the specific schema definition
     published by the provider in the repository.
-  version: 0.0.17
+  version: 0.0.19
   contact:
     name: Repository and API maintainer
     url: https://github.com/teamdigitale/dati-semantic-csv-apis
@@ -34,11 +34,11 @@ info:
   termsOfService: https://schema.gov.it/terms
   x-api-id: a68b0d9e-0445-4f98-bd6e-269a97268d8b
 servers:
-  - url: http://localhost:8080
-    description: Local development server
-    x-sandbox: true
   - url: https://vocabularies-ndc-dev.apps.cloudpub.testedev.istat.it
     description: Development server
+    x-sandbox: true
+  - url: http://localhost:8080
+    description: Local development server
     x-sandbox: true
 tags:
   - name: discover-vocabularies

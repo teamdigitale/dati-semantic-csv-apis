@@ -776,13 +776,14 @@ in particolare si segnalano:
 
 Le variabili d'ambiente applicative sono:
 
-| Variabile               | Default                 | Descrizione                                      |
-| ----------------------- | ----------------------- | ------------------------------------------------ |
-| `API_BASE_URL`          | `http://localhost:8080` | URL base dell'API                                |
-| `CACHE_CONTROL_MAX_AGE` | `3600`                  | Valore `max-age` per `Cache-Control`             |
-| `CORS_ORIGINS`          | `*`                     | Valori per `Access-Control-Allow-Origin` (CORS)  |
-| `HARVEST_DB`            | `harvest.db`            | Percorso o URL del datastore SQLite              |
-| `SWAGGER_UI`            | `false`                 | Se `true`, abilita Swagger UI all'endpoint `/ui` |
+| Variabile               | Default                 | Descrizione                                                                                                                              |
+| ----------------------- | ----------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| `API_BASE_URL`          | `http://localhost:8080` | URL base dell'API                                                                                                                        |
+| `SERVERS_URL_OVERRIDE`  | `FALSE`                 | Valori ammessi: `FALSE` (non modifica l'OAS), `BASE_URL` (usa `API_BASE_URL`), `PATH_ONLY` (default di connexion, rimuove schema e host) |
+| `CACHE_CONTROL_MAX_AGE` | `3600`                  | Valore `max-age` per `Cache-Control`                                                                                                     |
+| `CORS_ORIGINS`          | `*`                     | Valori per `Access-Control-Allow-Origin` (CORS)                                                                                          |
+| `HARVEST_DB`            | `harvest.db`            | Percorso o URL del datastore SQLite                                                                                                      |
+| `SWAGGER_UI`            | `false`                 | Se `true`, abilita Swagger UI all'endpoint `/ui`                                                                                         |
 
 ### Harvesting PoC (#poc-harvesting)
 

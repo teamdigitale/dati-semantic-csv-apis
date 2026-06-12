@@ -7,12 +7,18 @@ import pytest
 import yaml
 from vocabularies.app import create_app
 
-from tests.harness import _config, check_substructure, client_harness
+from tests.harness import (
+    OPENAPI_SPEC_PATH,
+    _config,
+    check_substructure,
+    client_harness,
+)
 
 TESTCASES_FILE = Path(__file__).with_suffix(".yaml")
 TESTCASES = cast(
     dict[str, list[dict[str, Any]]], yaml.safe_load(TESTCASES_FILE.read_text())
 )
+OPENAPI_SPEC = yaml.safe_load(OPENAPI_SPEC_PATH.read_text())
 
 
 @pytest.mark.parametrize(
@@ -75,8 +81,15 @@ def test_base_requests(single_entry_db, testcase):
                                 f"Unexpected header present: {header}={response.headers[header]!r}"
                             )
             # .. the content is as expected ..
-            if expected_json := expected["response"].get("json"):
-                issues = check_substructure(expected_json, response.json())
+            if expected_data := expected["response"].get("json"):
+                response_data = response.json()
+            elif expected_data := expected["response"].get("yaml"):
+                response_data = yaml.safe_load(response.text)
+            else:
+                response_data = None
+
+            if response_data is not None:
+                issues = check_substructure(expected_data, response_data)
                 assert not issues, (
                     "Missing/changed expected JSON fields:\n"
                     + "\n".join(f"  {path}: {msg}" for path, msg in issues)
@@ -118,3 +131,28 @@ def test_missing_vocab_returns_404(
         assert body["title"] == "Not Found"
         assert body["status"] == 404
         assert body["detail"] == "The requested vocabulary was not found"
+
+
+@pytest.mark.parametrize(
+    "override,expected_url",
+    [
+        # FALSE: servers served as-is from openapi.yaml (first static entry)
+        ("FALSE", OPENAPI_SPEC["servers"][0]["url"]),
+        # BASE_URL: first server reflects API_BASE_URL (set by _config)
+        ("BASE_URL", "https://schema.gov.it/api/vocabularies/v1/"),
+        # PATH_ONLY: Connexion default strips scheme+host; root_path="" in tests
+        ("PATH_ONLY", ""),
+    ],
+)
+def test_servers_url_from_env(
+    monkeypatch, single_entry_db, override, expected_url
+):
+    """SERVERS_URL_OVERRIDE controls the servers.url in the served openapi.yaml."""
+    monkeypatch.setenv("SERVERS_URL_OVERRIDE", override)
+    config = _config(single_entry_db)
+    config.SERVERS_URL_OVERRIDE = override
+    with client_harness(create_app, config) as (client, _):
+        response = client.get("/openapi.yaml")
+        assert response.status_code == 200
+        spec = yaml.safe_load(response.text)
+        assert spec["servers"][0]["url"] == expected_url
