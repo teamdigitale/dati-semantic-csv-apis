@@ -37,7 +37,7 @@ env:
   CI: true
   PYTHON_VERSION: ${{ inputs.python_version }}
   VOCABULARY_DIR: 'assets/controlled-vocabularies'
-  CLI_VERSION: '0.0.15'
+  CLI_VERSION: '0.0.19'
   # To avoid clashes between CSV and API frames and data,
   #  you can use the "-csv" suffix for CSV-specific files,
   #  otherwise the same data.yaml is used for both CSV and APIStore.
@@ -281,8 +281,7 @@ jobs:
         set -euo pipefail
         ASSET_NAME="${STEPS_CHECK_FILES_OUTPUTS_ASSET_NAME}"
 
-        # The CSV file to create and the vocabulary-uri
-        #   are defined in the datapackage.yaml.
+        # The CSV file to create is defined in the datapackage.yaml.
         /usr/local/bin/schema_gov_it_tools.bin \
           csv validate \
           --ttl "${ASSET_NAME}.ttl" \
