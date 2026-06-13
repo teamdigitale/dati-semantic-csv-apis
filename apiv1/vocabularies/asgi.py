@@ -6,6 +6,7 @@ Usage:
 """
 
 import os
+from typing import Literal, cast
 
 from . import Config, create_app
 
@@ -23,6 +24,10 @@ _config = Config(
     ]
     or None,
     SWAGGER_UI=os.environ.get("SWAGGER_UI", "").lower() == "true",
+    SERVERS_URL_OVERRIDE=cast(
+        Literal["FALSE", "BASE_URL", "PATH_ONLY"],
+        os.environ.get("SERVERS_URL_OVERRIDE", "FALSE"),
+    ),
 )
 
 application = create_app(config=_config)

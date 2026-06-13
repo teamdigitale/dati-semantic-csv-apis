@@ -21,6 +21,7 @@ ENV SPARQL_URL=https://schema.gov.it/sparql
 ENV API_BASE_URL=https://schema.gov.it/vocabularies/v1
 ENV PREDECESSOR_BASE_URL=https://schema.gov.it/api
 ENV PYTHONPATH=/app
+ENV SERVERS_URL_OVERRIDE=FALSE
 WORKDIR /app
 
 COPY apiv1/common /app/common
