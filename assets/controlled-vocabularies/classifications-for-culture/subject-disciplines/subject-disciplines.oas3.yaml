@@ -44,10 +44,10 @@ components:
           maxLength: 500
           minLength: 1
           type: string
-        label_en:
-          maxLength: 500
-          minLength: 1
-          type: string
+        # label_en:
+        #   maxLength: 500
+        #   minLength: 1
+        #   type: string
         level:
           type: string
         scheme:
@@ -70,7 +70,7 @@ components:
       - definition
       - id
       - label
-      - label_en
+      # - label_en
       - level
       - scheme
       - uri
@@ -90,9 +90,9 @@ components:
         label:
           '@id': skos:prefLabel
           '@language': it
-        label_en:
-          '@id': skos:prefLabel
-          '@language': en
+        # label_en:
+        #   '@id': skos:prefLabel
+        #   '@language': en
         level:
           '@id': clvapit:hasRankOrder
         scheme:
