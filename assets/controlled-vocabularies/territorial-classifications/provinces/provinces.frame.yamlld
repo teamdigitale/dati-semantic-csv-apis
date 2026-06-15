@@ -26,7 +26,7 @@
     "@id": skos:prefLabel
     "@language": it
 
-  plate_it:
+  plate_id:
     "@id": clvapit:acronym
 
   #
