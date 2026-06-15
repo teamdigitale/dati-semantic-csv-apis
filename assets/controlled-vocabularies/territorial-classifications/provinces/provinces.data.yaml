@@ -1,8 +1,6 @@
 '@context':
   '@base': https://w3id.org/italia/controlled-vocabulary/territorial-classifications/provinces/
   '@vocab': https://w3id.org/italia/onto/CLV/
-  acronym:
-    '@id': clvapit:acronym
   clvapit: https://w3id.org/italia/onto/CLV/
   dct: http://purl.org/dc/terms/
   id:
@@ -22,6 +20,8 @@
     '@context':
       uri: '@id'
     '@id': skos:broader
+  plate_id:
+    '@id': clvapit:acronym
   rdfs: http://www.w3.org/2000/01/rdf-schema#
   skos: http://www.w3.org/2004/02/skos/core#
   uri: '@id'
@@ -37,13 +37,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: TO
   id: '001'
   label: Torino
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC11
   parent:
   - uri: ../regions/01
+  plate_id: TO
   uri: '001'
   vocab:
   - uri: ../provinces
@@ -52,13 +52,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: VC
   id: '002'
   label: Vercelli
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC12
   parent:
   - uri: ../regions/01
+  plate_id: VC
   uri: '002'
   vocab:
   - uri: ../provinces
@@ -67,13 +67,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: 'NO'
   id: '003'
   label: Novara
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC15
   parent:
   - uri: ../regions/01
+  plate_id: 'NO'
   uri: '003'
   vocab:
   - uri: ../provinces
@@ -82,13 +82,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CN
   id: '004'
   label: Cuneo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC16
   parent:
   - uri: ../regions/01
+  plate_id: CN
   uri: '004'
   vocab:
   - uri: ../provinces
@@ -97,13 +97,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AT
   id: '005'
   label: Asti
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC17
   parent:
   - uri: ../regions/01
+  plate_id: AT
   uri: '005'
   vocab:
   - uri: ../provinces
@@ -112,13 +112,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AL
   id: '006'
   label: Alessandria
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC18
   parent:
   - uri: ../regions/01
+  plate_id: AL
   uri: '006'
   vocab:
   - uri: ../provinces
@@ -127,13 +127,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AO
   id: '007'
   label: Valle d'Aosta/Vallée d'Aoste
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC20
   parent:
   - uri: ../regions/02
+  plate_id: AO
   uri: '007'
   vocab:
   - uri: ../provinces
@@ -142,13 +142,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: IM
   id: 008
   label: Imperia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC31
   parent:
   - uri: ../regions/07
+  plate_id: IM
   uri: 008
   vocab:
   - uri: ../provinces
@@ -157,13 +157,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: SV
   id: 009
   label: Savona
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC32
   parent:
   - uri: ../regions/07
+  plate_id: SV
   uri: 009
   vocab:
   - uri: ../provinces
@@ -172,13 +172,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: GE
   id: '010'
   label: Genova
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC33
   parent:
   - uri: ../regions/07
+  plate_id: GE
   uri: '010'
   vocab:
   - uri: ../provinces
@@ -187,13 +187,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: SP
   id: '011'
   label: La Spezia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC34
   parent:
   - uri: ../regions/07
+  plate_id: SP
   uri: '011'
   vocab:
   - uri: ../provinces
@@ -202,13 +202,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: VA
   id: '012'
   label: Varese
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC41
   parent:
   - uri: ../regions/03
+  plate_id: VA
   uri: '012'
   vocab:
   - uri: ../provinces
@@ -217,13 +217,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CO
   id: '013'
   label: Como
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC42
   parent:
   - uri: ../regions/03
+  plate_id: CO
   uri: '013'
   vocab:
   - uri: ../provinces
@@ -232,13 +232,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: SO
   id: '014'
   label: Sondrio
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC44
   parent:
   - uri: ../regions/03
+  plate_id: SO
   uri: '014'
   vocab:
   - uri: ../provinces
@@ -247,13 +247,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: MI
   id: '015'
   label: Milano
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC45
   parent:
   - uri: ../regions/03
+  plate_id: MI
   uri: '015'
   vocab:
   - uri: ../provinces
@@ -262,7 +262,6 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BG
   id: '016'
   label: Bergamo
   nuts:
@@ -270,6 +269,7 @@
   - uri: http://nuts.geovocab.org/id/ITC46
   parent:
   - uri: ../regions/03
+  plate_id: BG
   uri: '016'
   vocab:
   - uri: ../provinces
@@ -278,13 +278,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BS
   id: '017'
   label: Brescia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC47
   parent:
   - uri: ../regions/03
+  plate_id: BS
   uri: '017'
   vocab:
   - uri: ../provinces
@@ -293,13 +293,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PV
   id: 018
   label: Pavia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC48
   parent:
   - uri: ../regions/03
+  plate_id: PV
   uri: 018
   vocab:
   - uri: ../provinces
@@ -308,13 +308,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CR
   id: 019
   label: Cremona
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC4A
   parent:
   - uri: ../regions/03
+  plate_id: CR
   uri: 019
   vocab:
   - uri: ../provinces
@@ -323,13 +323,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: MN
   id: '020'
   label: Mantova
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC4B
   parent:
   - uri: ../regions/03
+  plate_id: MN
   uri: '020'
   vocab:
   - uri: ../provinces
@@ -338,13 +338,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BZ
   id: '021'
   label: Bolzano/Bozen
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD10
   parent:
   - uri: ../regions/04
+  plate_id: BZ
   uri: '021'
   vocab:
   - uri: ../provinces
@@ -353,13 +353,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: TN
   id: '022'
   label: Trento
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD20
   parent:
   - uri: ../regions/04
+  plate_id: TN
   uri: '022'
   vocab:
   - uri: ../provinces
@@ -368,13 +368,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: VR
   id: '023'
   label: Verona
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD31
   parent:
   - uri: ../regions/05
+  plate_id: VR
   uri: '023'
   vocab:
   - uri: ../provinces
@@ -383,13 +383,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: VI
   id: '024'
   label: Vicenza
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD32
   parent:
   - uri: ../regions/05
+  plate_id: VI
   uri: '024'
   vocab:
   - uri: ../provinces
@@ -398,13 +398,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BL
   id: '025'
   label: Belluno
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD33
   parent:
   - uri: ../regions/05
+  plate_id: BL
   uri: '025'
   vocab:
   - uri: ../provinces
@@ -413,13 +413,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: TV
   id: '026'
   label: Treviso
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD34
   parent:
   - uri: ../regions/05
+  plate_id: TV
   uri: '026'
   vocab:
   - uri: ../provinces
@@ -428,13 +428,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: VE
   id: '027'
   label: Venezia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD35
   parent:
   - uri: ../regions/05
+  plate_id: VE
   uri: '027'
   vocab:
   - uri: ../provinces
@@ -443,13 +443,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PD
   id: 028
   label: Padova
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD36
   parent:
   - uri: ../regions/05
+  plate_id: PD
   uri: 028
   vocab:
   - uri: ../provinces
@@ -458,13 +458,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: RO
   id: 029
   label: Rovigo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD37
   parent:
   - uri: ../regions/05
+  plate_id: RO
   uri: 029
   vocab:
   - uri: ../provinces
@@ -473,7 +473,6 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: UD
   id: '030'
   label: Udine
   nuts:
@@ -481,6 +480,7 @@
   - uri: http://nuts.geovocab.org/id/ITD42
   parent:
   - uri: ../regions/06
+  plate_id: UD
   uri: '030'
   vocab:
   - uri: ../provinces
@@ -489,13 +489,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: GO
   id: '031'
   label: Gorizia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD43
   parent:
   - uri: ../regions/06
+  plate_id: GO
   uri: '031'
   vocab:
   - uri: ../provinces
@@ -504,13 +504,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: TS
   id: '032'
   label: Trieste
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD44
   parent:
   - uri: ../regions/06
+  plate_id: TS
   uri: '032'
   vocab:
   - uri: ../provinces
@@ -519,13 +519,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PC
   id: '033'
   label: Piacenza
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD51
   parent:
   - uri: ../regions/08
+  plate_id: PC
   uri: '033'
   vocab:
   - uri: ../provinces
@@ -534,13 +534,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PR
   id: '034'
   label: Parma
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD52
   parent:
   - uri: ../regions/08
+  plate_id: PR
   uri: '034'
   vocab:
   - uri: ../provinces
@@ -549,13 +549,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: RE
   id: '035'
   label: Reggio nell'Emilia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD53
   parent:
   - uri: ../regions/08
+  plate_id: RE
   uri: '035'
   vocab:
   - uri: ../provinces
@@ -564,13 +564,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: MO
   id: '036'
   label: Modena
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD54
   parent:
   - uri: ../regions/08
+  plate_id: MO
   uri: '036'
   vocab:
   - uri: ../provinces
@@ -579,13 +579,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BO
   id: '037'
   label: Bologna
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD55
   parent:
   - uri: ../regions/08
+  plate_id: BO
   uri: '037'
   vocab:
   - uri: ../provinces
@@ -594,13 +594,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: FE
   id: 038
   label: Ferrara
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD56
   parent:
   - uri: ../regions/08
+  plate_id: FE
   uri: 038
   vocab:
   - uri: ../provinces
@@ -609,13 +609,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: RA
   id: 039
   label: Ravenna
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD57
   parent:
   - uri: ../regions/08
+  plate_id: RA
   uri: 039
   vocab:
   - uri: ../provinces
@@ -624,13 +624,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: FC
   id: '040'
   label: Forlì-Cesena
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD58
   parent:
   - uri: ../regions/08
+  plate_id: FC
   uri: '040'
   vocab:
   - uri: ../provinces
@@ -639,13 +639,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PU
   id: '041'
   label: Pesaro e Urbino
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE31
   parent:
   - uri: ../regions/11
+  plate_id: PU
   uri: '041'
   vocab:
   - uri: ../provinces
@@ -654,13 +654,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AN
   id: '042'
   label: Ancona
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE32
   parent:
   - uri: ../regions/11
+  plate_id: AN
   uri: '042'
   vocab:
   - uri: ../provinces
@@ -669,13 +669,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: MC
   id: '043'
   label: Macerata
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE33
   parent:
   - uri: ../regions/11
+  plate_id: MC
   uri: '043'
   vocab:
   - uri: ../provinces
@@ -684,13 +684,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AP
   id: '044'
   label: Ascoli Piceno
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE34
   parent:
   - uri: ../regions/11
+  plate_id: AP
   uri: '044'
   vocab:
   - uri: ../provinces
@@ -699,13 +699,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: MS
   id: '045'
   label: Massa-Carrara
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE11
   parent:
   - uri: ../regions/09
+  plate_id: MS
   uri: '045'
   vocab:
   - uri: ../provinces
@@ -714,13 +714,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: LU
   id: '046'
   label: Lucca
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE12
   parent:
   - uri: ../regions/09
+  plate_id: LU
   uri: '046'
   vocab:
   - uri: ../provinces
@@ -729,13 +729,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PT
   id: '047'
   label: Pistoia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE13
   parent:
   - uri: ../regions/09
+  plate_id: PT
   uri: '047'
   vocab:
   - uri: ../provinces
@@ -744,13 +744,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: FI
   id: 048
   label: Firenze
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE14
   parent:
   - uri: ../regions/09
+  plate_id: FI
   uri: 048
   vocab:
   - uri: ../provinces
@@ -759,13 +759,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: LI
   id: 049
   label: Livorno
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE16
   parent:
   - uri: ../regions/09
+  plate_id: LI
   uri: 049
   vocab:
   - uri: ../provinces
@@ -774,13 +774,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PI
   id: '050'
   label: Pisa
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE17
   parent:
   - uri: ../regions/09
+  plate_id: PI
   uri: '050'
   vocab:
   - uri: ../provinces
@@ -789,13 +789,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AR
   id: '051'
   label: Arezzo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE18
   parent:
   - uri: ../regions/09
+  plate_id: AR
   uri: '051'
   vocab:
   - uri: ../provinces
@@ -804,13 +804,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: SI
   id: '052'
   label: Siena
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE19
   parent:
   - uri: ../regions/09
+  plate_id: SI
   uri: '052'
   vocab:
   - uri: ../provinces
@@ -819,13 +819,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: GR
   id: '053'
   label: Grosseto
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE1A
   parent:
   - uri: ../regions/09
+  plate_id: GR
   uri: '053'
   vocab:
   - uri: ../provinces
@@ -834,13 +834,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PG
   id: '054'
   label: Perugia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE21
   parent:
   - uri: ../regions/10
+  plate_id: PG
   uri: '054'
   vocab:
   - uri: ../provinces
@@ -849,13 +849,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: TR
   id: '055'
   label: Terni
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE22
   parent:
   - uri: ../regions/10
+  plate_id: TR
   uri: '055'
   vocab:
   - uri: ../provinces
@@ -864,13 +864,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: VT
   id: '056'
   label: Viterbo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE41
   parent:
   - uri: ../regions/12
+  plate_id: VT
   uri: '056'
   vocab:
   - uri: ../provinces
@@ -879,13 +879,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: RI
   id: '057'
   label: Rieti
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE42
   parent:
   - uri: ../regions/12
+  plate_id: RI
   uri: '057'
   vocab:
   - uri: ../provinces
@@ -894,13 +894,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: RM
   id: 058
   label: Roma
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE43
   parent:
   - uri: ../regions/12
+  plate_id: RM
   uri: 058
   vocab:
   - uri: ../provinces
@@ -909,13 +909,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: LT
   id: 059
   label: Latina
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE44
   parent:
   - uri: ../regions/12
+  plate_id: LT
   uri: 059
   vocab:
   - uri: ../provinces
@@ -924,13 +924,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: FR
   id: '060'
   label: Frosinone
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE45
   parent:
   - uri: ../regions/12
+  plate_id: FR
   uri: '060'
   vocab:
   - uri: ../provinces
@@ -939,13 +939,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CE
   id: '061'
   label: Caserta
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF31
   parent:
   - uri: ../regions/15
+  plate_id: CE
   uri: '061'
   vocab:
   - uri: ../provinces
@@ -954,13 +954,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BN
   id: '062'
   label: Benevento
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF32
   parent:
   - uri: ../regions/15
+  plate_id: BN
   uri: '062'
   vocab:
   - uri: ../provinces
@@ -969,13 +969,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: NA
   id: '063'
   label: Napoli
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF33
   parent:
   - uri: ../regions/15
+  plate_id: NA
   uri: '063'
   vocab:
   - uri: ../provinces
@@ -984,13 +984,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AV
   id: '064'
   label: Avellino
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF34
   parent:
   - uri: ../regions/15
+  plate_id: AV
   uri: '064'
   vocab:
   - uri: ../provinces
@@ -999,13 +999,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: SA
   id: '065'
   label: Salerno
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF35
   parent:
   - uri: ../regions/15
+  plate_id: SA
   uri: '065'
   vocab:
   - uri: ../provinces
@@ -1014,13 +1014,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AQ
   id: '066'
   label: L'Aquila
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF11
   parent:
   - uri: ../regions/13
+  plate_id: AQ
   uri: '066'
   vocab:
   - uri: ../provinces
@@ -1029,13 +1029,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: TE
   id: '067'
   label: Teramo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF12
   parent:
   - uri: ../regions/13
+  plate_id: TE
   uri: '067'
   vocab:
   - uri: ../provinces
@@ -1044,13 +1044,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PE
   id: 068
   label: Pescara
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF13
   parent:
   - uri: ../regions/13
+  plate_id: PE
   uri: 068
   vocab:
   - uri: ../provinces
@@ -1059,13 +1059,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CH
   id: 069
   label: Chieti
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF14
   parent:
   - uri: ../regions/13
+  plate_id: CH
   uri: 069
   vocab:
   - uri: ../provinces
@@ -1074,13 +1074,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CB
   id: '070'
   label: Campobasso
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF22
   parent:
   - uri: ../regions/14
+  plate_id: CB
   uri: '070'
   vocab:
   - uri: ../provinces
@@ -1089,13 +1089,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: FG
   id: '071'
   label: Foggia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF41
   parent:
   - uri: ../regions/16
+  plate_id: FG
   uri: '071'
   vocab:
   - uri: ../provinces
@@ -1104,13 +1104,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BA
   id: '072'
   label: Bari
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF42
   parent:
   - uri: ../regions/16
+  plate_id: BA
   uri: '072'
   vocab:
   - uri: ../provinces
@@ -1119,13 +1119,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: TA
   id: '073'
   label: Taranto
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF43
   parent:
   - uri: ../regions/16
+  plate_id: TA
   uri: '073'
   vocab:
   - uri: ../provinces
@@ -1134,13 +1134,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BR
   id: '074'
   label: Brindisi
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF44
   parent:
   - uri: ../regions/16
+  plate_id: BR
   uri: '074'
   vocab:
   - uri: ../provinces
@@ -1149,13 +1149,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: LE
   id: '075'
   label: Lecce
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF45
   parent:
   - uri: ../regions/16
+  plate_id: LE
   uri: '075'
   vocab:
   - uri: ../provinces
@@ -1164,13 +1164,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PZ
   id: '076'
   label: Potenza
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF51
   parent:
   - uri: ../regions/17
+  plate_id: PZ
   uri: '076'
   vocab:
   - uri: ../provinces
@@ -1179,13 +1179,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: MT
   id: '077'
   label: Matera
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF52
   parent:
   - uri: ../regions/17
+  plate_id: MT
   uri: '077'
   vocab:
   - uri: ../provinces
@@ -1194,13 +1194,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CS
   id: 078
   label: Cosenza
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF61
   parent:
   - uri: ../regions/18
+  plate_id: CS
   uri: 078
   vocab:
   - uri: ../provinces
@@ -1209,13 +1209,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CZ
   id: 079
   label: Catanzaro
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF63
   parent:
   - uri: ../regions/18
+  plate_id: CZ
   uri: 079
   vocab:
   - uri: ../provinces
@@ -1224,13 +1224,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: RC
   id: 080
   label: Reggio di Calabria
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF65
   parent:
   - uri: ../regions/18
+  plate_id: RC
   uri: 080
   vocab:
   - uri: ../provinces
@@ -1239,13 +1239,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: TP
   id: 081
   label: Trapani
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG11
   parent:
   - uri: ../regions/19
+  plate_id: TP
   uri: 081
   vocab:
   - uri: ../provinces
@@ -1254,13 +1254,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PA
   id: 082
   label: Palermo
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG12
   parent:
   - uri: ../regions/19
+  plate_id: PA
   uri: 082
   vocab:
   - uri: ../provinces
@@ -1269,13 +1269,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: ME
   id: 083
   label: Messina
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG13
   parent:
   - uri: ../regions/19
+  plate_id: ME
   uri: 083
   vocab:
   - uri: ../provinces
@@ -1284,13 +1284,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: AG
   id: 084
   label: Agrigento
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG14
   parent:
   - uri: ../regions/19
+  plate_id: AG
   uri: 084
   vocab:
   - uri: ../provinces
@@ -1299,13 +1299,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CL
   id: 085
   label: Caltanissetta
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG15
   parent:
   - uri: ../regions/19
+  plate_id: CL
   uri: 085
   vocab:
   - uri: ../provinces
@@ -1314,13 +1314,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: EN
   id: 086
   label: Enna
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG16
   parent:
   - uri: ../regions/19
+  plate_id: EN
   uri: 086
   vocab:
   - uri: ../provinces
@@ -1329,13 +1329,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CT
   id: 087
   label: Catania
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG17
   parent:
   - uri: ../regions/19
+  plate_id: CT
   uri: 087
   vocab:
   - uri: ../provinces
@@ -1344,13 +1344,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: RG
   id: 088
   label: Ragusa
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG18
   parent:
   - uri: ../regions/19
+  plate_id: RG
   uri: 088
   vocab:
   - uri: ../provinces
@@ -1359,13 +1359,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: SR
   id: 089
   label: Siracusa
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG19
   parent:
   - uri: ../regions/19
+  plate_id: SR
   uri: 089
   vocab:
   - uri: ../provinces
@@ -1374,7 +1374,6 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: SS
   id: 090
   label: Sassari
   nuts:
@@ -1382,6 +1381,7 @@
   - uri: http://nuts.geovocab.org/id/ITG29
   parent:
   - uri: ../regions/20
+  plate_id: SS
   uri: 090
   vocab:
   - uri: ../provinces
@@ -1390,7 +1390,6 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: NU
   id: 091
   label: Nuoro
   nuts:
@@ -1398,6 +1397,7 @@
   - uri: http://nuts.geovocab.org/id/ITG26
   parent:
   - uri: ../regions/20
+  plate_id: NU
   uri: 091
   vocab:
   - uri: ../provinces
@@ -1406,13 +1406,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: CA
   id: 092
   label: Cagliari
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG27
   parent:
   - uri: ../regions/20
+  plate_id: CA
   uri: 092
   vocab:
   - uri: ../provinces
@@ -1421,13 +1421,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PN
   id: 093
   label: Pordenone
   nuts:
   - uri: http://nuts.geovocab.org/id/ITD41
   parent:
   - uri: ../regions/06
+  plate_id: PN
   uri: 093
   vocab:
   - uri: ../provinces
@@ -1436,13 +1436,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: IS
   id: 094
   label: Isernia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF21
   parent:
   - uri: ../regions/14
+  plate_id: IS
   uri: 094
   vocab:
   - uri: ../provinces
@@ -1451,13 +1451,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: OR
   id: 095
   label: Oristano
   nuts:
   - uri: http://nuts.geovocab.org/id/ITG28
   parent:
   - uri: ../regions/20
+  plate_id: OR
   uri: 095
   vocab:
   - uri: ../provinces
@@ -1466,13 +1466,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BI
   id: 096
   label: Biella
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC13
   parent:
   - uri: ../regions/01
+  plate_id: BI
   uri: 096
   vocab:
   - uri: ../provinces
@@ -1481,13 +1481,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: LC
   id: 097
   label: Lecco
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC43
   parent:
   - uri: ../regions/03
+  plate_id: LC
   uri: 097
   vocab:
   - uri: ../provinces
@@ -1496,13 +1496,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: LO
   id: 098
   label: Lodi
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC49
   parent:
   - uri: ../regions/03
+  plate_id: LO
   uri: 098
   vocab:
   - uri: ../provinces
@@ -1511,7 +1511,6 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: RN
   id: 099
   label: Rimini
   nuts:
@@ -1519,6 +1518,7 @@
   - uri: http://nuts.geovocab.org/id/ITE31
   parent:
   - uri: ../regions/08
+  plate_id: RN
   uri: 099
   vocab:
   - uri: ../provinces
@@ -1527,13 +1527,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: PO
   id: '100'
   label: Prato
   nuts:
   - uri: http://nuts.geovocab.org/id/ITE15
   parent:
   - uri: ../regions/09
+  plate_id: PO
   uri: '100'
   vocab:
   - uri: ../provinces
@@ -1542,13 +1542,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: KR
   id: '101'
   label: Crotone
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF62
   parent:
   - uri: ../regions/18
+  plate_id: KR
   uri: '101'
   vocab:
   - uri: ../provinces
@@ -1557,13 +1557,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: VV
   id: '102'
   label: Vibo Valentia
   nuts:
   - uri: http://nuts.geovocab.org/id/ITF64
   parent:
   - uri: ../regions/18
+  plate_id: VV
   uri: '102'
   vocab:
   - uri: ../provinces
@@ -1572,13 +1572,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: VB
   id: '103'
   label: Verbano-Cusio-Ossola
   nuts:
   - uri: http://nuts.geovocab.org/id/ITC14
   parent:
   - uri: ../regions/01
+  plate_id: VB
   uri: '103'
   vocab:
   - uri: ../provinces
@@ -1587,13 +1587,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: MB
   id: '108'
   label: Monza e della Brianza
   nuts:
   - uri: http://nuts.geovocab.org/id/-
   parent:
   - uri: ../regions/03
+  plate_id: MB
   uri: '108'
   vocab:
   - uri: ../provinces
@@ -1602,13 +1602,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: FM
   id: '109'
   label: Fermo
   nuts:
   - uri: http://nuts.geovocab.org/id/-
   parent:
   - uri: ../regions/11
+  plate_id: FM
   uri: '109'
   vocab:
   - uri: ../provinces
@@ -1617,13 +1617,13 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: BT
   id: '110'
   label: Barletta-Andria-Trani
   nuts:
   - uri: http://nuts.geovocab.org/id/-
   parent:
   - uri: ../regions/16
+  plate_id: BT
   uri: '110'
   vocab:
   - uri: ../provinces
@@ -1632,7 +1632,6 @@
   - Feature
   - Province
   - skos:Concept
-  acronym: SU
   id: '111'
   label: Sud Sardegna
   nuts:
@@ -1643,6 +1642,7 @@
   - uri: http://nuts.geovocab.org/id/ITG28
   parent:
   - uri: ../regions/20
+  plate_id: SU
   uri: '111'
   vocab:
   - uri: ../provinces
@@ -1779,4 +1779,4 @@ statistics:
   - voc_AgID
   framed_items: 107
   source_items: 343
-# Generated by dati-semantic-apis 0.0.14.dev0+gcb3cace23.d20260408
+# Generated by dati-semantic-apis 0.0.19
