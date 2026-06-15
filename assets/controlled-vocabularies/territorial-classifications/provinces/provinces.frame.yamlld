@@ -26,7 +26,7 @@
     "@id": skos:prefLabel
     "@language": it
 
-  acronym:
+  plate_id:
     "@id": clvapit:acronym
 
   #
@@ -67,7 +67,7 @@
 uri: {}
 id: {}
 label: {}
-acronym: {}
+plate_id: {}
 
 vocab:
 - uri: https://w3id.org/italia/controlled-vocabulary/territorial-classifications/provinces

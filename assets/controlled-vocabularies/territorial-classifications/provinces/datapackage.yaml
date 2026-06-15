@@ -32,12 +32,12 @@ resources:
       type: string
     - name: label
       type: string
-    - name: acronym
+    - name: plate_id
       type: string
     x-jsonld-context:
       '@base': https://w3id.org/italia/controlled-vocabulary/territorial-classifications/provinces/
       '@vocab': https://w3id.org/italia/onto/CLV/
-      acronym:
+      plate_id:
         '@id': clvapit:acronym
       clvapit: https://w3id.org/italia/onto/CLV/
       dct: http://purl.org/dc/terms/
