@@ -1,0 +1,70 @@
+$schema: https://datapackage.org/profiles/2.0/datapackage.json
+created: "2018-01-23T00:00:00Z"
+description: Vocabolario controllato sul grado di istruzione e titoli di studio delle persone.
+id: https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-levels
+keywords:
+  - Grado istruzione
+  - Istruzione
+  - Titolo di studio
+  - Education level
+  - Education
+name: education-levels
+resources:
+  - dialect:
+      commentChar: "#"
+      delimiter: ","
+      doubleQuote: true
+      header: true
+      lineTerminator: "\r\n"
+      quoteChar: '"'
+      skipInitialSpace: true
+    encoding: utf-8
+    format: csv
+    mediatype: text/csv
+    name: education-levels
+    path: education-levels.csv
+    schema:
+      fields:
+        - name: uri
+          type: string
+        - name: id
+          type: string
+        - name: label
+          type: string
+        - name: label_en
+          type: string
+        - name: definition
+          type: string
+        - name: level
+          type: string
+      x-jsonld-context:
+        "@base": https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-levels/
+        clvapit: https://w3id.org/italia/onto/CLV/
+        cpvapit: https://w3id.org/italia/onto/CPV/
+        dct: http://purl.org/dc/terms/
+        definition:
+          "@id": skos:definition
+          "@language": it
+        id:
+          "@id": skos:notation
+        label:
+          "@id": skos:prefLabel
+          "@language": it
+        label_en:
+          "@id": skos:prefLabel
+          "@language": en
+        level:
+          "@id": clvapit:hasRankOrder
+        scheme:
+          "@container": "@set"
+          "@context":
+            uri: "@id"
+          "@id": skos:inScheme
+        skos: http://www.w3.org/2004/02/skos/core#
+        uri: "@id"
+    scheme: file
+    type: table
+sources:
+  - path: https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-levels
+title: Vocabolario controllato grado di istruzione e titoli di studio
+version: "1.0"

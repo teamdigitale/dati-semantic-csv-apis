@@ -1,0 +1,53 @@
+"@type": "cpvapit:EducationLevel"
+
+"@explicit": true
+"@embed": "@never"
+"@omitDefault": true
+"@requireAll": true
+
+"@context":
+  "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-levels/"
+  skos: "http://www.w3.org/2004/02/skos/core#"
+  clvapit: "https://w3id.org/italia/onto/CLV/"
+  cpvapit: "https://w3id.org/italia/onto/CPV/"
+  dct: "http://purl.org/dc/terms/"
+
+  uri: "@id"
+
+  id:
+    "@id": skos:notation
+
+  label:
+    "@id": skos:prefLabel
+    "@language": it
+
+  label_en:
+    "@id": skos:prefLabel
+    "@language": en
+
+  definition:
+    "@id": skos:definition
+    "@language": it
+
+  level:
+    "@id": clvapit:hasRankOrder
+
+  scheme:
+    "@id": skos:inScheme
+    "@container": "@set"
+    "@context":
+      uri: "@id"
+
+scheme:
+  - uri: "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-levels"
+    "@explicit": true
+    "@embed": "@never"
+
+uri: {}
+id: {}
+label: {}
+label_en:
+  "@default": "@null"
+definition:
+  "@default": "@null"
+level: {}
