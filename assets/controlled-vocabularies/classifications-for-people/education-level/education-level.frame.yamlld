@@ -1,3 +1,8 @@
+#
+# To build the jsonld data use:
+#
+# $ ./schema_gov_it_tools.bin jsonld create --ttl *ttl --frame *frame* --vocabulary-uri self --output education-levels.data.yaml
+#
 "@type": "cpvapit:EducationLevel"
 
 "@explicit": true
@@ -6,7 +11,7 @@
 "@requireAll": true
 
 "@context":
-  "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-levels/"
+  "@base": "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level/"
   skos: "http://www.w3.org/2004/02/skos/core#"
   clvapit: "https://w3id.org/italia/onto/CLV/"
   cpvapit: "https://w3id.org/italia/onto/CPV/"
@@ -32,16 +37,17 @@
   level:
     "@id": clvapit:hasRankOrder
 
-  scheme:
+  vocab:
     "@id": skos:inScheme
     "@container": "@set"
     "@context":
       uri: "@id"
+      "@base": https://w3id.org/italia/controlled-vocabulary/classifications-for-people/
 
-scheme:
-  - uri: "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-levels"
-    "@explicit": true
-    "@embed": "@never"
+vocab:
+- uri: "https://w3id.org/italia/controlled-vocabulary/classifications-for-people/education-level"
+  "@explicit": true
+  "@embed": "@never"
 
 uri: {}
 id: {}
